@@ -3,6 +3,9 @@
 The one list to work from. Tick each box when the owner approves the item and it's committed.
 One item at a time: build → checks → owner reviews in the browser → commit.
 
+## 0. Next up
+- [ ] **Realistic 3D:** (1) finer terrain near the landing spot from NASA's 40 m data, (2) regolith texture and fine surface detail that works with the moving Sun, (3) real lunar lighting: black shadows, faint earthshine, film-style exposure, Sun glow, (4) NASA Blue Marble Earth with the correct phase, (5) Sun disc clipped by the horizon
+
 ## 1. Core features (what the challenge asks for)
 - [ ] **Landing-date chart:** the next 60 days for the selected site, coloured good to bad (hours of sunlight before the first sunset, and Earth contact). Click a day to jump there.
 - [ ] **Season view:** % sunlit and % Earth in view for each of the 12 months (active site plus compared sites)
@@ -15,7 +18,6 @@ One item at a time: build → checks → owner reviews in the browser → commit
 
 ## 2. Polish
 - [ ] **Tour click-through:** fix anything ugly or wrong in the 8 scenes
-- [ ] **Cinematic 3D:** Sun glow and bloom, a real textured Earth showing its phase, the Sun clipped by terrain
 - [ ] **Smooth camera fly-to** when the site changes
 - [ ] **Loading and error messages** (never a blank screen)
 - [ ] **Screen-size check:** 1080p for recording, 720p (the dock is too tall and the scene 8 table is hidden)
