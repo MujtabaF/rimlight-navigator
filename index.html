@@ -62,6 +62,10 @@
         <p class="verdict-chip" id="verdict-chip">–</p>
         <p class="verdict-text" id="verdict-text"></p>
       </section>
+      <section id="compare" class="compare" hidden aria-labelledby="compare-title">
+        <h2 id="compare-title">Side by side right now. Click a site to switch to it.</h2>
+        <div id="compare-list" class="compare-list"></div>
+      </section>
       <section class="dates" aria-labelledby="dates-title">
         <h2 id="dates-title">Best days to land (same 30 days as the timeline)</h2>
         <canvas id="datechart" aria-label="Landing quality for each day of the 30-day window. Click a day to land then."></canvas>
@@ -97,13 +101,6 @@
           <div><dt>Longest night</dt><dd id="m-dark">–</dd></div>
           <div><dt>Longest Earth blackout</dt><dd id="m-noearth">–</dd></div>
         </dl>
-      </section>
-      <section id="compare" hidden>
-        <h2>Side by side</h2>
-        <table>
-          <thead><tr><th scope="col">Site</th><th scope="col">Sun</th><th scope="col">Earth</th><th scope="col">Longest night</th></tr></thead>
-          <tbody id="compare-body"></tbody>
-        </table>
       </section>
       <p id="site-blurb" class="blurb"></p>
     </aside>
@@ -172,7 +169,7 @@
           <tr><th>Rotate / move / zoom</th><td>Drag / right-drag / scroll (orbit view)</td></tr>
           <tr><th>Look around</th><td>Drag (surface view)</td></tr>
           <tr><th>Switch view</th><td><b>Stand on the surface</b> / <b>Orbit view</b> button</td></tr>
-          <tr><th>Compare sites</th><td><b>+</b> next to a site in the list</td></tr>
+          <tr><th>Compare sites</th><td><b>+</b> next to a site in the list (up to 4). Cards appear side by side on the right; click one to switch to it</td></tr>
           <tr><th>Guided tour</th><td><kbd>N</kbd> next, <kbd>P</kbd> back, <kbd>Esc</kbd> to leave</td></tr>
           <tr><th>Hide side panels</th><td><kbd>F</kbd></td></tr>
           <tr><th>This help</th><td><kbd>?</kbd> or <kbd>H</kbd></td></tr>

@@ -94,7 +94,7 @@ h1, h2, h3, p { margin: 0; }
 .msg { color: var(--sun); font-size: 12px; margin-top: 6px; }
 
 /* ---------- readout: the one frosted side panel ---------- */
-#readout { position: absolute; z-index: 2; right: var(--gap); width: var(--readout-w); top: var(--top); bottom: calc(var(--dock-h) + var(--gap)); overflow-y: auto; padding: 16px; display: grid; gap: 16px; align-content: start; background: var(--glass); border: 1px solid var(--glass-edge); border-radius: 10px; backdrop-filter: blur(16px) saturate(1.15); -webkit-backdrop-filter: blur(16px) saturate(1.15); scrollbar-width: thin; scrollbar-color: var(--line) transparent; transition: opacity 0.3s; }
+#readout { position: absolute; z-index: 2; right: var(--gap); width: var(--readout-w); top: var(--top); bottom: calc(var(--dock-h) + var(--gap)); overflow-y: auto; overflow-x: hidden; padding: 16px; display: grid; gap: 16px; align-content: start; background: var(--glass); border: 1px solid var(--glass-edge); border-radius: 10px; backdrop-filter: blur(16px) saturate(1.15); -webkit-backdrop-filter: blur(16px) saturate(1.15); scrollbar-width: thin; scrollbar-color: var(--line) transparent; transition: opacity 0.3s; }
 #readout h2 { font-size: 12px; font-weight: 500; color: var(--ink-3); margin-bottom: 2px; }
 .now { padding-left: 12px; border-left: 2px solid var(--line); }
 .now.sun { border-left-color: var(--sun); }
@@ -112,11 +112,29 @@ h1, h2, h3, p { margin: 0; }
 .window dl div { display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 4px 0; }
 .window dt { color: var(--ink-2); font-size: 14px; }
 .window dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
-#compare table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
-#compare th, #compare td { text-align: right; padding: 4px; border-bottom: 1px solid var(--line); }
-#compare th[scope="row"], #compare thead th:first-child { text-align: left; font-weight: 400; }
-#compare thead th { color: var(--ink-3); font-weight: 500; }
-#compare tr.is-active th { color: var(--sun); }
+/* side-by-side comparison cards */
+.compare { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.compare-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 5px; }
+.cmp-card { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; width: 100%; min-width: 0; text-align: left; padding: 7px 10px 6px; border-radius: 8px; cursor: pointer; background: var(--panel-2); border: 1px solid var(--line); border-left: 3px solid var(--ink-3); }
+.cmp-card:hover { border-color: rgba(233, 228, 218, 0.3); }
+.cmp-card[data-level="good"] { border-left-color: var(--good); }
+.cmp-card[data-level="ok"] { border-left-color: var(--sun); }
+.cmp-card[data-level="poor"] { border-left-color: var(--poor); }
+.cmp-card.is-active { background: rgba(233, 228, 218, 0.1); box-shadow: inset 0 0 0 1px rgba(233, 228, 218, 0.25); }
+.cc-head { min-width: 0; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.cc-name { flex: 1; min-width: 0; font: 500 15px/1.15 var(--serif); color: var(--ink-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cmp-card.is-active .cc-name::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--sun); vertical-align: 2px; }
+.cc-verdict { font-size: 12px; font-weight: 650; white-space: nowrap; }
+.cc-verdict.lvl-good { color: var(--good); }
+.cc-verdict.lvl-ok { color: var(--sun); }
+.cc-verdict.lvl-poor { color: var(--poor); }
+.cc-strip { display: flex; align-items: flex-end; gap: 1px; height: 16px; }
+.cc-strip i { flex: 1; min-block-size: 2px; border-radius: 1px; }
+.cc-strip .lvl-good { background: var(--good); }
+.cc-strip .lvl-ok { background: var(--sun); }
+.cc-strip .lvl-poor { background: var(--poor); opacity: 0.6; block-size: 2px !important; }
+.cc-stats { display: flex; justify-content: space-between; gap: 6px; font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.cc-stats b { color: var(--ink-1); font-weight: 650; }
 .blurb { color: var(--ink-2); font: 15px/1.55 var(--serif); max-width: 60ch; }
 
 /* verdict: serif headline, colour = meaning */

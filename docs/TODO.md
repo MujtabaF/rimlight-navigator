@@ -4,7 +4,6 @@ The one list to work from. Tick each box when the owner approves the item and it
 One item at a time: build → checks → owner reviews in the browser → commit.
 
 ## 1. Core features (what the challenge asks for)
-- [ ] **Side-by-side comparison in the right panel:** when sites are compared with **+**, show each one's verdict, sunlight, Earth contact and best day next to each other near the top of the panel; click one to switch to it
 - [ ] **Date vs date:** the same site on two landing dates, side by side
 - [ ] **Earth vs Moon panel:** day length, night length, Sun height, temperature swing, side by side
 - [ ] **Libration explainer:** a short overlay on why Earth traces a small loop in the sky
@@ -37,3 +36,4 @@ One item at a time: build → checks → owner reviews in the browser → commit
 - [x] Landing-date chart: one bar per day of the 30-day window (sunlight before first sunset, Earth contact), best-day buttons, click to jump; verdict uses the same rule
 - [x] Season view: Year switch in the dock, 12 months of Sun % and Earth % per site, instant tooltips, click a month to jump
 - [x] Readability: right panel names its site, calm numbers while playing (3 updates/s, whole hours), selected site marked in timeline rows
+- [x] Side-by-side comparison: a card per compared site under the verdict (verdict now, landing-day strip, Sun/Earth %, best day); click to switch

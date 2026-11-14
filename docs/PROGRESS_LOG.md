@@ -122,3 +122,7 @@ Any AI or human picking this up should read the **last entry** first.
 - `npm test`: 12 checks. New: the ridge's monthly mean equals the yearly value (88.8), and its seasonal swing is 38 points.
 
 **Next**: side-by-side comparison in the right panel (owner request), then date vs date.
+
+## Session 9: Sat 2026-11-14 (side-by-side comparison), approved by owner and committed
+
+- Replaced the bottom-of-panel comparison table with **cards under the verdict**: name, verdict right now (same rule, updated with the readout), a mini landing-day strip for the 30-day window, Sun % and Earth % over the window, and best day. The selected site is highlighted; click a card to switch. `datesFor()` caches landing days per site and window (shared with the main chart). Fixed a flex overflow with long names (`minmax(0, 1fr)` and `width: 100%` on button cards).

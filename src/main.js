@@ -104,7 +104,7 @@ function renderAnalyses() {
   scene.setTracks(a);
   panorama.setAnalysis(a);
   const rows = [app.active, ...app.compare.filter((s) => s.id !== app.active.id)]
-    .map((s) => ({ name: s.name, analysis: analysisFor(s), active: s === app.active }));
+    .map((s) => ({ id: s.id, name: s.name, analysis: analysisFor(s), active: s === app.active }));
   timeline.setRows(rows);
   renderCompare(rows);
   if (app.dockView === 'year') renderSeasons();
@@ -132,6 +132,7 @@ function renderReadout(site, a, st) {
   set('#m-noearth', hours(m.longestNoEarthHours));
   $('#readout').dataset.sun = st.sun.visible > 0.5 ? 'up' : 'down';
   renderVerdict(m, sun, earth, a);
+  updateCompareVerdicts();
 }
 
 // Plain-English verdict for a solar lander touching down at the current time. Same rule as the
@@ -171,12 +172,42 @@ function renderSiteHeader(site) {
   document.querySelectorAll('.site-btn').forEach((b) => b.setAttribute('aria-pressed', b.dataset.id === site.id));
 }
 
+// Side-by-side cards for the selected site and every compared site: verdict right now, a mini
+// strip of landing days for the same 30-day window, Sun % / Earth % over the window, best day.
+const datesCache = new Map();
+function datesFor(site) {
+  const key = `${site.id}|${site.lat}|${site.lon}|${+app.windowStart}`;
+  if (!datesCache.has(key)) datesCache.set(key, landingDays(site, site.horizon, app.windowStart, WINDOW_DAYS));
+  return datesCache.get(key);
+}
 function renderCompare(rows) {
-  const body = $('#compare-body');
-  body.innerHTML = rows.map((r) => `<tr class="${r.active ? 'is-active' : ''}"><th scope="row">${r.name}</th>
-    <td>${r.analysis.summary.sunlitPct.toFixed(0)}%</td><td>${r.analysis.summary.earthVisiblePct.toFixed(0)}%</td>
-    <td>${hours(r.analysis.summary.longestDarkHours)}</td></tr>`).join('');
   $('#compare').hidden = rows.length < 2;
+  if (rows.length < 2) return;
+  $('#compare-list').innerHTML = rows.map((r) => {
+    const s = app.byId.get(r.id) || app.active, days = datesFor(s), best = bestDays(days, 1)[0];
+    const m = r.analysis.summary;
+    const strip = days.map((d) => `<i class="lvl-${d.level}" style="block-size:${Math.max(8, Math.min(100, (d.lightHours / 24 / 20) * 100))}%"></i>`).join('');
+    return `<button class="cmp-card${r.active ? ' is-active' : ''}" data-id="${r.id}">
+      <span class="cc-head"><span class="cc-name">${r.name.replace(/ \(.*\)$/, '')}</span><span class="cc-verdict" data-id="${r.id}"></span></span>
+      <span class="cc-strip" aria-hidden="true">${strip}</span>
+      <span class="cc-stats"><span><b class="c-sun">${m.sunlitPct.toFixed(0)}%</b> sunlit</span><span><b class="c-earth">${m.earthVisiblePct.toFixed(0)}%</b> Earth</span><span>Best <b>${best ? fmtDay(best.date) : 'none'}</b></span></span>
+    </button>`;
+  }).join('');
+  updateCompareVerdicts();
+}
+// Verdict "right now" for every card (same rule as the main verdict). Runs with the readout.
+function updateCompareVerdicts() {
+  if ($('#compare').hidden) return;
+  document.querySelectorAll('.cc-verdict').forEach((el) => {
+    const s = el.dataset.id === app.active.id ? app.active : app.byId.get(el.dataset.id);
+    if (!s) return;
+    const a = analysisFor(s), sun = countdown(s, a, 'sun');
+    const light = sun.now ? (sun.at ? sun.at - app.date : 60 * DAY) : 0;
+    const level = classify(light / DAY, earthNextDays(a, EARTH_DAYS));
+    el.className = `cc-verdict lvl-${level}`;
+    el.textContent = { good: 'Good now', ok: 'Workable now', poor: 'Poor now' }[level];
+    el.closest('.cmp-card').dataset.level = level;
+  });
 }
 
 // ---------------- actions ----------------
@@ -224,7 +255,7 @@ function renderDates() {
   const site = app.active;
   if (!site) return;
   ensureWindow();
-  const days = landingDays(site, site.horizon, app.windowStart, WINDOW_DAYS);
+  const days = datesFor(site);
   dateChart.setDays(days);
   const picks = bestDays(days, 3);
   $('#dates-best').innerHTML = picks.length
@@ -315,6 +346,10 @@ function syncEye() {
 function wire() {
   $('#play').addEventListener('click', () => setPlaying(!app.playing));
   document.querySelectorAll('.dock-tab').forEach((b) => b.addEventListener('click', () => setDockView(b.dataset.dock)));
+  $('#compare-list').addEventListener('click', (e) => {
+    const c = e.target.closest('.cmp-card');
+    if (c && c.dataset.id !== app.active.id) setSite(app.byId.get(c.dataset.id));
+  });
   $('#dates-best').addEventListener('click', (e) => { const b = e.target.closest('.day-chip'); if (b) setDate(new Date(+b.dataset.t)); });
   $('#speed').addEventListener('change', (e) => { app.speed = +e.target.value; });
   $('#back-day').addEventListener('click', () => setDate(new Date(app.date - DAY)));
