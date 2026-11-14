@@ -69,3 +69,20 @@ Any AI or human picking this up should read the **last entry** first.
 **Ideas parked:** a "best spots" heatmap on the 2D map (stretch, ~2–3 h). The owner has Easter-egg ideas to add at the end.
 
 **Next**: the tour click-through (P0), then the projector check, then the loading indicator, then Challenge coverage starting with the landing-date chart.
+
+## Session 5: Sat 2026-11-14 (design overhaul), approved by owner and committed
+
+**Context:** the owner said the app "looks AI-coded", and the presentation is now a **recorded video**: a 30-second official demo with the owner's voice-over, plus a 3-minute walkthrough. Checked the official 2026 submission guide: the demo must be a video of 30 s or less (or ≤ 7 slides), linked rather than uploaded, with English subtitles if needed and no one under 18. Both video plans are in PLAN.md → Delivery. The owner picked the **"mission control"** look.
+
+**Done**
+- Full-window 3D. The top bar, site list, readout, time dock and tour card float over it. Panel heights follow the dock through a `--dock-h` CSS variable set from JS.
+- `scene.setInsetBottom()`: the camera view offset centres the 3D scene in the part not covered by the dock.
+- Site name as a large Newsreader serif title over the sky (new dependency `@fontsource-variable/newsreader`). Serif for the verdict, tour titles and help headings. Archivo stays for interface text and numbers.
+- Site list as text on a dark fade with an amber active dot. The compare toggle is a circle that turns blue with a ✓. An instruction line sits above the list. The site list hides during the tour.
+- Frosted-glass readout and dock, pill buttons, glowing numbers. Countdowns keep each number with its unit (non-breaking spaces).
+
+**Verified:** `npm test` passes (8/8 plus the build). Screenshots reviewed at 1600×900 and 1280×720 and on the tour scenes. The owner approved ("looks so much better").
+
+**Known:** at 720p the dock takes nearly half the height, and scene 8's comparison table is scrolled out of view. This goes to the 1080p/720p check.
+
+**Next**: the owner wants to find *where* to land (and where the water is), not only when. A proposed site-finder map is under discussion.

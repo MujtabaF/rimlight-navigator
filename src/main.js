@@ -1,4 +1,5 @@
 import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource-variable/newsreader/opsz.css';
 import './style.css';
 import { loadSites, loadPatch, customSite, fmtLat, fmtLon } from './sites.js';
 import { analyse, stateAt, nextTransition } from './core/analysis.js';
@@ -169,7 +170,7 @@ function setDate(d) {
 function toggleCompare(id) {
   const s = app.byId.get(id);
   app.compare = app.compare.includes(s) ? app.compare.filter((x) => x !== s) : [...app.compare, s].slice(-4);
-  document.querySelectorAll('.cmp-btn').forEach((b) => b.setAttribute('aria-pressed', app.compare.some((x) => x.id === b.dataset.id)));
+  syncCompareButtons();
   renderAnalyses();
 }
 function setPlaying(p) {
@@ -194,7 +195,7 @@ app.nextSunrise = (id, afterHours = 0) => {
 app.applyChapter = async (c) => {
   setPlaying(false);
   app.compare = (c.compare || []).map((id) => app.byId.get(id));
-  document.querySelectorAll('.cmp-btn').forEach((b) => b.setAttribute('aria-pressed', app.compare.some((x) => x.id === b.dataset.id)));
+  syncCompareButtons();
   await setSite(app.byId.get(c.site));
   const at = c.at({ ...app, windowStart: () => app.windowStart });
   setDate(at);
@@ -219,6 +220,15 @@ function buildSiteList() {
     if (!b) return;
     if (b.classList.contains('site-btn')) setSite(app.byId.get(b.dataset.id));
     else toggleCompare(b.dataset.id);
+  });
+}
+
+function syncCompareButtons() {
+  document.querySelectorAll('.cmp-btn').forEach((b) => {
+    const on = app.compare.some((x) => x.id === b.dataset.id);
+    b.setAttribute('aria-pressed', on);
+    b.textContent = on ? '✓' : '+';
+    b.title = on ? 'Remove from comparison' : 'Add to comparison';
   });
 }
 
@@ -254,6 +264,13 @@ function wire() {
   $('#help-close').addEventListener('click', () => help.close());
   help.addEventListener('click', (e) => { if (e.target === help) help.close(); }); // click outside the panel
   $('#hint-close').addEventListener('click', dismissHint);
+
+  // Floating panels sit above the time dock; keep them clear of it whatever its height.
+  new ResizeObserver(([e]) => {
+    const h = Math.ceil(e.borderBoxSize[0].blockSize);
+    document.documentElement.style.setProperty('--dock-h', `${h}px`);
+    scene.setInsetBottom(matchMedia('(max-width: 900px)').matches ? 0 : h + 16);
+  }).observe($('#bottom'));
 
   window.addEventListener('keydown', (e) => {
     if (help.open) return; // the dialog handles its own Esc
@@ -294,10 +311,11 @@ function dismissHint() {
 function set(sel, v) { const el = $(sel); if (el.textContent !== v) el.textContent = v; }
 function dur(ms) {
   const min = Math.max(1, Math.round(ms / 60e3));
-  if (min < 60) return `${min} min`;
-  if (min < 48 * 60) return `${Math.floor(min / 60)} h ${min % 60} min`;
+  const nb = '\u00a0'; // keep each number on the same line as its unit
+  if (min < 60) return `${min}${nb}min`;
+  if (min < 48 * 60) return `${Math.floor(min / 60)}${nb}h ${min % 60}${nb}min`;
   const h = Math.floor(min / 60);
-  return `${Math.floor(h / 24)} d ${h % 24} h`;
+  return `${Math.floor(h / 24)}${nb}d ${h % 24}${nb}h`;
 }
 function hours(h) { return h >= 48 ? `${(h / 24).toFixed(1)} days` : `${h.toFixed(0)} h`; }
 function groupBy(arr) { const m = new Map(); for (const s of arr) { if (!m.has(s.group)) m.set(s.group, []); m.get(s.group).push(s); } return m; }

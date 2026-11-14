@@ -131,13 +131,19 @@ export function createScene(container) {
     siteMarker.visible = !on;
   }
 
+  // The interface floats over the bottom of the view. Shift the picture up by half that
+  // height so the scene is centred in the part you can actually see.
+  let insetBottom = 0;
   function resize() {
     const w = container.clientWidth, h = container.clientHeight;
     renderer.setSize(w, h);
     labels.setSize(w, h);
     camera.aspect = w / h;
+    if (insetBottom > 0 && insetBottom < h) camera.setViewOffset(w, h, 0, insetBottom / 2, w, h);
+    else camera.clearViewOffset();
     camera.updateProjectionMatrix();
   }
+  function setInsetBottom(px) { if (px !== insetBottom) { insetBottom = px; resize(); } }
   new ResizeObserver(resize).observe(container);
   resize();
 
@@ -147,7 +153,7 @@ export function createScene(container) {
     labels.render(scene, camera);
   });
 
-  return { setSite, setState, setTracks, setEyeLevel, get eye() { return eye; } };
+  return { setSite, setState, setTracks, setEyeLevel, setInsetBottom, get eye() { return eye; } };
 }
 
 // ---------- builders ----------

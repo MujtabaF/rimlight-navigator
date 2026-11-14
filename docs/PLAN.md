@@ -30,6 +30,11 @@ Priority key: **P0** = must have for the demo · **P1** = makes it impressive ·
 - [x] Year-long sanity check matches literature (ridge 88.8% sunlit)
 
 ### P0: simulation polish (next)
+*Revised in Session 5: the presentation is a recorded video, so looks matter more. One item at a time; the owner reviews each before it's committed.*
+- [x] **Design overhaul ("mission control"):** full-window 3D, floating glass panels, Newsreader serif titles, clearer compare toggle
+- [ ] **Cinematic 3D:** bloom and Sun glow (`postprocessing`), textured Earth with visible phase, Sun disc clipped by terrain
+- [ ] **Smooth camera fly-to** and transitions (`gsap`)
+- [ ] **1080p recording check** (plus the 720p check: the dock is too tall and scene 8's comparison table is out of view)
 - [x] **Help and legend:** a "How to use" button and the `?` key open the controls and a "how to read the screen" panel. A one-time tip on first visit points to it.
 - [x] **Verdict line:** a plain-English "Good / Workable / Poor time to land" summary for the current site and moment
 - [x] **Speed labels:** each speed option says how long a Moon day takes; rationale in DECISIONS.md #11
@@ -39,7 +44,7 @@ Priority key: **P0** = must have for the demo · **P1** = makes it impressive ·
 - [ ] Loading indicator while terrain loads, plus an error message if data is missing
 - [ ] Earth phase readable (lit crescent and gibbous visible in the eye view)
 - [ ] Projector check: text size and contrast at 1280×720, focus mode (`F`)
-- [ ] Make the "+" compare button discoverable (tooltip or first-run hint)
+- [x] Make the "+" compare button discoverable (circle toggle with a ✓, plus an instruction line above the list)
 - [ ] Performance: 60 fps while playing at 3 days/s with 4 compared sites
 
 ### Challenge coverage (REQUIRED: owner wants every item done before submission)
@@ -61,6 +66,10 @@ Each item closes a gap against the official Objectives / Potential Consideration
 - [ ] Mobile layout polish
 
 ### Delivery
+**Videos (the presentation is recorded, not live).** Official rule: the project demo must be a video of **30 seconds or less** (or ≤ 7 slides), linked rather than uploaded, with English subtitles if it isn't in English, and with no one under 18 in it.
+- [ ] **30-second demo** (owner voice-over): 0:00 name and team · 0:02 challenge · 0:05 title and tagline · 0:10 how it works (floor goes red, ridge goes green, comparison, launch slip; NASA LOLA plus JPL) · 0:20 future (2D map, Artemis)
+- [ ] **3-minute walkthrough** (for the final-project link): hook · equator vs pole · shadow vs light · Earth link · launch slip and landing-date chart · 2D map and comparison · NASA data and accuracy · future
+- [ ] **Film mode:** timed automatic tours with large captions and no interface, for clean screen recording at 1920×1080 (build in the H17–21 block)
 - [ ] Deploy (Vercel or GitHub Pages) and put the URL in the README
 - [ ] Make the GitHub repo public
 - [ ] Screenshot → `docs/img/screenshot.png`
