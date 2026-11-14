@@ -26,8 +26,10 @@ export function createTimeline(canvas, onScrub) {
 
     rows.forEach((r, i) => {
       const top = i * rowH + 2, bh = (rowH - 6) / 2;
+      ctx.font = `${r.active ? 600 : 400} 12px ${css('--font')}`;
       ctx.fillStyle = r.active ? css('--ink-1') : css('--ink-2');
-      ctx.fillText(ellipsize(r.name, 20), 6, top + rowH / 2 + 2);
+      ctx.fillText(ellipsize(r.name, 19), 14, top + rowH / 2 + 2);
+      if (r.active) { ctx.fillStyle = css('--sun'); ctx.beginPath(); ctx.arc(6, top + rowH / 2 - 2, 3, 0, Math.PI * 2); ctx.fill(); }
       ctx.fillStyle = css('--track');
       ctx.fillRect(LABEL_W, top, W - LABEL_W - 8, bh);
       ctx.fillRect(LABEL_W, top + bh + 1, W - LABEL_W - 8, bh);

@@ -60,5 +60,22 @@ for (const [id, k, lo, hi, why] of EXPECT) {
   console.log(`${ok ? 'PASS' : 'FAIL'}  planner apollo11 gap between best windows = ${gap.toFixed(1)} d  (expected ~29.5: one lunar day)`);
 }
 
+// Season view (core/seasons.js): the 12 monthly values must average to the yearly figure, and the
+// polar ridge must show real seasons (the Moon's 1.5° tilt matters at the pole).
+{
+  const { monthlyStats } = await import('../src/core/seasons.js');
+  const d = JSON.parse(readFileSync(new URL('../public/data/sites/shackleton-ridge.json', import.meta.url)));
+  const site = { lat: d.lat, lon: d.lon, heightM: d.heightM };
+  const months = monthlyStats(site, terrainHorizon(d), 2027, 60);
+  const days = months.map((m, i) => (Date.UTC(2027, i + 1, 1) - Date.UTC(2027, i, 1)) / 864e5);
+  const mean = months.reduce((s, m, i) => s + m.sunPct * days[i], 0) / days.reduce((a, b) => a + b, 0);
+  const year = results.get('shackleton-ridge').sunlitPct;
+  let ok = Math.abs(mean - year) <= 1; if (!ok) fail++;
+  console.log(`${ok ? 'PASS' : 'FAIL'}  seasons ridge monthly mean = ${mean.toFixed(1)}%  (expected ${year.toFixed(1)} ± 1, the yearly value)`);
+  const swing = Math.max(...months.map((m) => m.sunPct)) - Math.min(...months.map((m) => m.sunPct));
+  ok = swing >= 20; if (!ok) fail++;
+  console.log(`${ok ? 'PASS' : 'FAIL'}  seasons ridge best-minus-worst month = ${swing.toFixed(0)} points  (expected ≥ 20: polar seasons)`);
+}
+
 console.log(fail ? `\n${fail} science check(s) FAILED` : '\nAll science checks passed');
 process.exit(fail ? 1 : 0);

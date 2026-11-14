@@ -111,3 +111,14 @@ Any AI or human picking this up should read the **last entry** first.
 - `npm test`: 10 checks. New: the floor has 0 usable days, and Apollo 11's best windows are 29.6 days apart (one lunar day).
 
 **Next**: Season view.
+
+## Session 8: Sat 2026-11-14 (season view + readability), approved by owner and committed
+
+**Done**
+- `src/core/seasons.js` `monthlyStats()` (pure) and `src/seasons.js`, a Year strip in the dock behind a "30 days | Year" switch. It uses the timeline's row layout with 12 month cells shaded and labelled by %. Instant tooltip; click a month to jump. Lazily computed and cached per site and year. Deep link `?dock=year`.
+- The ridge shows real polar seasons: 100% in Jan, 62% in Apr, 100% from Aug to Dec.
+- Owner feedback fixes: the verdict heading names the site ("…touched down at X now"). The selected site has an amber dot and bold name in timeline and Year rows. While playing, the readout updates about 3×/s and countdowns show whole hours (exact again on pause).
+- Owner question answered: the app plans **touchdown** time, not launch. A direct trip is ~3–5 days; low-energy routes take weeks to months. A "launch by" hint was offered and not yet requested.
+- `npm test`: 12 checks. New: the ridge's monthly mean equals the yearly value (88.8), and its seasonal swing is 38 points.
+
+**Next**: side-by-side comparison in the right panel (owner request), then date vs date.

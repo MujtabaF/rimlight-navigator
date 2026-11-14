@@ -8,6 +8,8 @@ import { createPanorama } from './panorama.js';
 import { createTimeline } from './timeline.js';
 import { createStory } from './story.js';
 import { createDateChart } from './datechart.js';
+import { createSeasons } from './seasons.js';
+import { monthlyStats } from './core/seasons.js';
 import { landingDays, bestDays, classify, EARTH_DAYS } from './core/landing.js';
 
 const DAY = 86400e3, HOUR = 3600e3;
@@ -30,6 +32,12 @@ const dateChart = createDateChart($('#datechart'), {
   onPick: (d) => setDate(new Date(d.date)),
   onHover: (d) => set('#dates-info', d ? describeDay(d) : DATES_HINT),
 });
+const seasons = createSeasons($('#seasons'), (month) => {
+  const d = app.date, y = d.getUTCFullYear();
+  const dim = new Date(Date.UTC(y, month + 1, 0)).getUTCDate();
+  setDate(new Date(Date.UTC(y, month, Math.min(d.getUTCDate(), dim), d.getUTCHours(), d.getUTCMinutes())));
+}, $('#seasons-tip'));
+app.dockView = '30d';
 const DATES_HINT = 'Tall green bars mean long sunlight and Earth contact. Click a day to land then.';
 
 // ---------------- analysis cache ----------------
@@ -81,9 +89,15 @@ function renderAll() {
   panorama.setState(st);
   timeline.setNow(app.date);
   dateChart.setNow(+app.date);
-  renderReadout(site, a, st);
+  if (app.dockView === 'year') seasons.setNow(app.date);
+  // While playing, the right panel ticks ~3 times a second so the numbers stay readable;
+  // the 3D view, timeline and charts still update every frame.
+  const t = performance.now();
+  if (!app.playing || t - lastReadout > 330) { lastReadout = t; renderReadout(site, a, st); }
   $('#date').value = app.date.toISOString().slice(0, 16);
 }
+
+let lastReadout = 0;
 
 function renderAnalyses() {
   const a = analysisFor(app.active);
@@ -93,6 +107,7 @@ function renderAnalyses() {
     .map((s) => ({ name: s.name, analysis: analysisFor(s), active: s === app.active }));
   timeline.setRows(rows);
   renderCompare(rows);
+  if (app.dockView === 'year') renderSeasons();
 }
 
 function renderReadout(site, a, st) {
@@ -148,6 +163,8 @@ function renderVerdict(m, sun, earth, a) {
 
 function renderSiteHeader(site) {
   set('#site-name', site.name);
+  // The right panel always describes the selected site (amber dot), even when others are compared.
+  set('#verdict-title', `If a solar lander touched down at ${site.name.replace(/ \(.*\)$/, '')} now`);
   set('#site-coords', `${fmtLat(site.lat)}, ${fmtLon(site.lon)}${site.hasTerrain ? `, ${(site.heightM / 1000).toFixed(2)} km elevation` : ''}`);
   set('#site-source', site.hasTerrain ? 'Horizon from NASA LOLA terrain (240 m and 40 m maps)' : 'Smooth horizon: terrain not modelled here');
   set('#site-blurb', site.blurb || '');
@@ -181,6 +198,26 @@ function setDate(d) {
   renderAll();
 }
 
+// ---------------- year view (seasons) ----------------
+const seasonCache = new Map();
+function renderSeasons() {
+  const year = app.date.getUTCFullYear();
+  const list = [app.active, ...app.compare.filter((s) => s.id !== app.active.id)];
+  seasons.setRows(list.map((s) => {
+    const key = `${s.id}|${s.lat}|${s.lon}|${year}`;
+    if (!seasonCache.has(key)) seasonCache.set(key, monthlyStats(s, s.horizon, year));
+    return { name: s.name, active: s === app.active, months: seasonCache.get(key) };
+  }));
+  seasons.setNow(app.date);
+}
+function setDockView(v) {
+  app.dockView = v;
+  $('#timeline').hidden = v !== '30d';
+  $('#seasons').hidden = v !== 'year';
+  document.querySelectorAll('.dock-tab').forEach((b) => b.setAttribute('aria-pressed', b.dataset.dock === v));
+  if (v === 'year') renderSeasons();
+}
+
 // ---------------- landing-date chart ----------------
 // Covers exactly the same 30 days as the timeline below, so both move in step.
 function renderDates() {
@@ -211,6 +248,7 @@ function setPlaying(p) {
   app.playing = p;
   $('#play').setAttribute('aria-pressed', p);
   $('#play').textContent = p ? 'Pause' : 'Play';
+  if (!p && app.active) renderAll(); // show exact numbers as soon as playback stops
 }
 
 // Story-mode helpers
@@ -276,6 +314,7 @@ function syncEye() {
 
 function wire() {
   $('#play').addEventListener('click', () => setPlaying(!app.playing));
+  document.querySelectorAll('.dock-tab').forEach((b) => b.addEventListener('click', () => setDockView(b.dataset.dock)));
   $('#dates-best').addEventListener('click', (e) => { const b = e.target.closest('.day-chip'); if (b) setDate(new Date(+b.dataset.t)); });
   $('#speed').addEventListener('change', (e) => { app.speed = +e.target.value; });
   $('#back-day').addEventListener('click', () => setDate(new Date(app.date - DAY)));
@@ -348,6 +387,8 @@ function dismissHint() {
 // ---------------- helpers ----------------
 function set(sel, v) { const el = $(sel); if (el.textContent !== v) el.textContent = v; }
 function dur(ms) {
+  // While playing, whole hours only (no ticking minutes); exact again when paused.
+  if (app.playing && ms >= 3600e3) { const h = Math.round(ms / 3600e3); return h < 48 ? `${h}\u00a0h` : `${Math.floor(h / 24)}\u00a0d ${h % 24}\u00a0h`; }
   const min = Math.max(1, Math.round(ms / 60e3));
   const nb = '\u00a0'; // keep each number on the same line as its unit
   if (min < 60) return `${min}${nb}min`;
@@ -370,6 +411,7 @@ function groupBy(arr) { const m = new Map(); for (const s of arr) { if (!m.has(s
   await setSite(app.byId.get(q.get('site')) || app.byId.get('shackleton-ridge'));
   if (q.get('t')) setDate(new Date(q.get('t') + (q.get('t').endsWith('Z') ? '' : 'Z')));
   if (q.get('eye') === '1') { scene.setEyeLevel(true, stateAt(app.active, app.active.horizon, app.date).sun.az); syncEye(); }
+  if (q.get('dock') === 'year') setDockView('year');
   if (q.get('tour')) await story.goTo(+q.get('tour') - 1);
   else if (!q.toString()) showHintOnce();
   if (q.get('help') === '1') $('#help-btn').click(); // deep link straight to the help panel

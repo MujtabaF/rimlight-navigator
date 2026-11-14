@@ -58,7 +58,7 @@
 
     <aside id="readout" aria-label="Site conditions" data-sun="up">
       <section class="verdict" id="verdict" data-level="ok" aria-live="polite">
-        <h2>If a solar lander touched down now</h2>
+        <h2 id="verdict-title">If a solar lander touched down now</h2>
         <p class="verdict-chip" id="verdict-chip">–</p>
         <p class="verdict-text" id="verdict-text"></p>
       </section>
@@ -124,10 +124,16 @@
         </label>
         <label class="date">UTC <input id="date" type="datetime-local" /></label>
         <button id="today" class="btn ghost">Now</button>
+        <div class="dock-tabs" role="group" aria-label="Timeline range">
+          <button class="dock-tab" data-dock="30d" aria-pressed="true" title="Hour by hour over 30 days">30 days</button>
+          <button class="dock-tab" data-dock="year" aria-pressed="false" title="Each month of the year: the seasons">Year</button>
+        </div>
         <span class="legend"><i class="sw sun"></i>Sun up (power) <i class="sw earth"></i>Earth up (direct link)</span>
       </div>
       <canvas id="panorama" aria-label="360 degree horizon with Sun and Earth tracks"></canvas>
       <canvas id="timeline" aria-label="30-day sunlight and Earth visibility timeline. Click to change time."></canvas>
+      <div class="chart-tip" id="seasons-tip" hidden></div>
+      <canvas id="seasons" hidden title="Share of each month with the Sun up (top) and Earth up (bottom). Click a month to jump there." aria-label="Sunlight and Earth visibility for each month of the year. Click a month to jump there."></canvas>
     </section>
   </div>
 
@@ -161,6 +167,7 @@
           <tr><th>Step 1 hour</th><td><kbd>←</kbd> <kbd>→</kbd></td></tr>
           <tr><th>Step 1 day</th><td><kbd>Shift</kbd> + <kbd>←</kbd> <kbd>→</kbd>, or −1 day / +1 day</td></tr>
           <tr><th>Jump to a date</th><td>Click or drag the timeline, or type in the UTC box</td></tr>
+          <tr><th>See the seasons</th><td><b>Year</b> button next to the timeline, then click a month</td></tr>
           <tr><th>Speed</th><td>Speed menu (a Moon day lasts about 29.5 Earth days)</td></tr>
           <tr><th>Rotate / move / zoom</th><td>Drag / right-drag / scroll (orbit view)</td></tr>
           <tr><th>Look around</th><td>Drag (surface view)</td></tr>

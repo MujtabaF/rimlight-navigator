@@ -151,6 +151,18 @@ h1, h2, h3, p { margin: 0; }
 .sw.earth { background: var(--earth); }
 #panorama { width: 100%; height: 120px; display: block; }
 #timeline { width: 100%; height: 92px; display: block; cursor: ew-resize; touch-action: none; }
+#seasons { width: 100%; height: 92px; display: block; cursor: pointer; }
+.chart-tip { position: absolute; z-index: 5; pointer-events: none; display: grid; gap: 1px; padding: 7px 10px; font-size: 13px; color: var(--ink-2); background: rgba(10, 12, 14, 0.94); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5); white-space: nowrap; }
+.chart-tip[hidden] { display: none; }
+.chart-tip b { color: var(--ink-1); font-weight: 600; }
+.chart-tip .t-sun { color: var(--sun); }
+.chart-tip .t-earth { color: var(--earth); }
+.chart-tip .t-hint { color: var(--ink-3); font-size: 12px; margin-top: 2px; }
+#seasons[hidden], #timeline[hidden] { display: none; }
+.dock-tabs { display: flex; padding: 2px; gap: 2px; margin-left: 8px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; }
+.dock-tab { background: none; border: 0; border-radius: 999px; padding: 3px 12px; cursor: pointer; color: var(--ink-2); font-size: 13px; font-weight: 600; }
+.dock-tab:hover { color: var(--ink-1); }
+.dock-tab[aria-pressed="true"] { background: var(--ink-1); color: #111; }
 
 /* ---------- guided tour card ---------- */
 .story { position: absolute; z-index: 2; left: var(--gap); bottom: calc(var(--dock-h) + 2 * var(--gap)); max-width: 480px; padding: 18px 20px; background: var(--glass); border: 1px solid var(--glass-edge); border-radius: 10px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
