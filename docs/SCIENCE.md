@@ -42,6 +42,15 @@ There's no atmosphere, so **there is no refraction**. Earth's apparent radius is
 | Equatorial sites, % sunlit | ~50% | 48.6–49% |
 | Max Sun elevation at the pole | ≈ 1.5° + terrain/libration effects | 1.9–2.1° |
 
+## 5. How the 3D view is drawn (`src/scene.js`)
+* **Terrain:** NASA LOLA heights on a 513 × 513 grid over 60 km. It's dense at the landing spot (~29 m, close to the 40 m source data) and coarser at the edges (~290 m), and includes lunar curvature.
+* **Surface detail:** a procedurally generated regolith texture (albedo mottling plus small craters and dust ripples, tiled every ~40 m) is used only for shading detail. It doesn't change any number.
+* **Lighting:** the Sun is the only strong light, and shadows come from the terrain itself. Earthshine comes from Earth's real direction and scales with Earth's phase. A faint scattered-light floor keeps shadows readable.
+* **Visual aids at eye level when you stand in shadow:** the "camera" raises its exposure (like a phone in a dark room), and a soft bounce light from the Sun's side stands in for sunlight reflected off sunlit crater walls. These only make dark scenes visible. The readouts still say "In shadow" and 0% power.
+* **Distant mountains** (eye level) are drawn as a wall whose top follows the real horizon mask, so the Sun and Earth are hidden exactly where the numbers say they are.
+* **Earth:** NASA Scientific Visualization Studio Blue Marble map (SVS 3615). It's lit by the true Sun direction, so its phase is correct, and turned so the hemisphere that really faces the Moon is the one shown. Earth's axial tilt isn't modelled.
+* **Sizes:** the Sun is drawn 6× and Earth 3× larger than true, so they're visible on screen.
+
 ## Limitations (say these honestly if asked)
 
 * The 3D view draws 60 km of terrain. The horizon numbers use terrain out to 300 km.

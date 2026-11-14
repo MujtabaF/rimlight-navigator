@@ -27,7 +27,8 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "public" / "data" / "sites"
 OBSERVER_HEIGHT_M = 2.0  # roughly a lander deck / solar panel height
 AZ_STEP = 0.5
-PATCH_N = 257  # grid points per side
+PATCH_N = 513  # grid points per side
+PATCH_WARP = 0.25  # grid spacing: ~29 m at the centre (matches the 40 m DEM), ~290 m at the edges
 PATCH_HALF_M = 30000  # 60 km x 60 km terrain patch
 
 
@@ -66,7 +67,10 @@ def horizon_mask(dem, lat, lon, h0):
 
 
 def terrain_patch(dem, lat, lon, h0):
-    xs = np.linspace(-PATCH_HALF_M, PATCH_HALF_M, PATCH_N)
+    # Non-uniform grid: x = half * (a*u + (1-a)*u^3), u in [-1, 1]. Dense where the camera
+    # looks (the landing spot), coarse at the edges. src/scene.js applies the same warp.
+    u = np.linspace(-1, 1, PATCH_N)
+    xs = PATCH_HALF_M * (PATCH_WARP * u + (1 - PATCH_WARP) * u ** 3)
     X, Y = np.meshgrid(xs, xs[::-1])  # row 0 = north
     az = np.degrees(np.arctan2(X, Y))
     d = np.hypot(X, Y)
@@ -94,7 +98,7 @@ def main():
             "id": s["id"], "lat": round(lat, 5), "lon": round(lon, 5), "heightM": round(h0, 1),
             "azStep": AZ_STEP, "horizonEl": [round(float(v), 3) for v in el],
             "horizonDistKm": [round(float(v) / 1000, 2) for v in dist],
-            "patch": {"n": PATCH_N, "halfSizeM": PATCH_HALF_M, "file": f"{s['id']}.bin"},
+            "patch": {"n": PATCH_N, "halfSizeM": PATCH_HALF_M, "warp": PATCH_WARP, "file": f"{s['id']}.bin"},
             "source": "NASA LRO LOLA LDEM_85S_40M + LDEM_60S_240M (PDS Geosciences / MIT imbrium)",
         }))
         print(f"{s['id']:18s} lat {lat:9.4f} lon {lon:9.4f}  h {h0:7.0f} m  "

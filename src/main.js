@@ -70,7 +70,7 @@ function renderAll() {
   const site = app.active;
   const a = analysisFor(site);
   const st = stateAt(site, site.horizon, app.date);
-  scene.setState(st);
+  scene.setState(st, app.date);
   panorama.setState(st);
   timeline.setNow(app.date);
   renderReadout(site, a, st);
@@ -199,7 +199,10 @@ app.applyChapter = async (c) => {
   await setSite(app.byId.get(c.site));
   const at = c.at({ ...app, windowStart: () => app.windowStart });
   setDate(at);
-  if (c.eye !== scene.eye) { scene.setEyeLevel(c.eye, stateAt(app.active, app.active.horizon, app.date).sun.az); syncEye(); }
+  // faceAway: look at the far side, lit by the Sun behind you (e.g. a crater wall towering above).
+  const sunAz = stateAt(app.active, app.active.horizon, app.date).sun.az + (c.faceAway ? 180 : 0);
+  if (c.eye && scene.eye) scene.setEyeLevel(false);
+  if (c.eye !== scene.eye) { scene.setEyeLevel(c.eye, sunAz); syncEye(); }
   if (c.speed) { app.speed = c.speed; $('#speed').value = String(c.speed); }
   setPlaying(!!c.play);
 };

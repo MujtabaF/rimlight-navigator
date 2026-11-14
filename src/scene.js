@@ -4,12 +4,18 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+import * as Astronomy from 'astronomy-engine';
 
 const DOME = 38;
 const MOON_R_KM = 1737.4;
 const SUN_EXAG = 6;
 const EARTH_EXAG = 3;
-const COLORS = { sun: 0xffb547, earth: 0x4fa3ff, terrain: 0x8f8b84 };
+const COLORS = { sun: 0xffb547, earth: 0x4fa3ff, terrain: 0x75716a };
+const SUN_INTENSITY = 4.2;
 
 export function azElToVec(az, el, r = DOME) {
   const a = (az * Math.PI) / 180, e = (el * Math.PI) / 180;
@@ -22,6 +28,7 @@ export function createScene(container) {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
   container.appendChild(renderer.domElement);
 
   const labels = new CSS2DRenderer();
@@ -38,33 +45,40 @@ export function createScene(container) {
   controls.minDistance = 3;
   controls.maxDistance = 120;
 
-  // Lighting: the Sun is the only real light. A faint fill stands in for earthshine so the
-  // shadowed terrain stays readable on a projector.
-  const sunLight = new THREE.DirectionalLight(0xfff4e0, 3.2);
+  // Lighting, as on the real Moon: no air, so no sky light. The Sun is the main light and shadows
+  // are near-black. Earthshine (sunlight bounced off Earth, bluish) comes from Earth's actual
+  // direction and grows with Earth's phase. A faint floor keeps shadowed ground readable on video.
+  const sunLight = new THREE.DirectionalLight(0xfff6ea, SUN_INTENSITY);
   sunLight.castShadow = true;
   sunLight.shadow.mapSize.set(4096, 4096);
   Object.assign(sunLight.shadow.camera, { left: -34, right: 34, top: 34, bottom: -34, near: 1, far: 200 });
   sunLight.shadow.bias = -0.0004;
   sunLight.shadow.normalBias = 0.04;
   scene.add(sunLight, sunLight.target);
-  const fill = new THREE.HemisphereLight(0x8fa6c8, 0x1a1c20, 0.55);
-  scene.add(fill);
+  const earthshine = new THREE.DirectionalLight(0xa9c4ff, 0);
+  scene.add(earthshine, earthshine.target);
+  // Faint scattered light. Stronger when you stand in shadow at eye level: there the ground is lit
+  // by sunlight bouncing off sunlit crater walls (how NASA's ShadowCam images shadowed craters).
+  const scattered = new THREE.AmbientLight(0x9aa3b2, 0.11);
+  const bounce = new THREE.DirectionalLight(0xc2cad8, 0); // from the sunlit rim, no shadows
+  scene.add(scattered, bounce, bounce.target);
 
   scene.add(makeStars());
   const compass = makeCompass();
   scene.add(compass);
 
   // Sun & Earth bodies
-  const sun = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture(), color: COLORS.sun, depthWrite: false, fog: false }));
+  // The Sun sprite is brighter than white (HDR) so only it triggers the bloom glow.
+  const sun = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture(), depthWrite: false, fog: false }));
+  sun.material.color.setRGB(7, 5.6, 3.8);
   scene.add(sun);
-  const earth = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32),
-    new THREE.MeshStandardMaterial({ color: COLORS.earth, roughness: 0.6, emissive: 0x061a33, emissiveIntensity: 0.4, transparent: true }));
+  const earth = makeEarth();
   scene.add(earth);
   const sunLabel = label('', 'body-label sun');
   const earthLabel = label('', 'body-label earth');
   scene.add(sunLabel, earthLabel);
 
-  let terrain = null, siteMarker = null, skyline = null;
+  let terrain = null, siteMarker = null, skyline = null, wall = null;
   const tracks = new THREE.Group();
   scene.add(tracks);
 
@@ -75,12 +89,17 @@ export function createScene(container) {
       siteMarker.traverse((o) => o.element?.remove()); // CSS2D labels live in the DOM, not the scene
     }
     if (skyline) scene.remove(skyline);
+    if (wall) { scene.remove(wall); wall.geometry.dispose(); }
     terrain = makeTerrain(site, patch);
     scene.add(terrain);
     siteMarker = makeMarker(site.name);
+    siteMarker.visible = !eye;
     scene.add(siteMarker);
     skyline = makeSkyline(site.horizon);
     scene.add(skyline);
+    wall = makeHorizonWall(site.horizon);
+    wall.visible = eye;
+    scene.add(wall);
   }
 
   function setTracks(analysis) {
@@ -89,7 +108,7 @@ export function createScene(container) {
     tracks.add(trackLine(analysis.series, 'sun', COLORS.sun), trackLine(analysis.series, 'earth', COLORS.earth));
   }
 
-  function setState(state) {
+  function setState(state, date) {
     const { sun: s, earth: e } = state;
     const sp = azElToVec(s.az, s.el);
     sun.position.copy(sp);
@@ -97,11 +116,25 @@ export function createScene(container) {
     sun.scale.set(sr, sr, 1);
     sun.material.opacity = 0.35 + 0.65 * s.visible;
     sunLight.position.copy(azElToVec(s.az, s.el, 120));
-    sunLight.intensity = 3.2 * s.visible;
+    // The Sun keeps lighting the landscape whenever it's above the flat horizon; terrain shadows
+    // (and the horizon wall) decide what's dark. Hiding it from the landing spot alone would
+    // also wrongly black out the sunlit crater walls and peaks around it.
+    sunLight.intensity = SUN_INTENSITY * THREE.MathUtils.smoothstep(s.el, -1.5, 0.5);
+    siteLit = s.visible;
+    bounce.position.copy(azElToVec(s.az, 16, 120));
     const ep = azElToVec(e.az, e.el, DOME * 0.98);
     earth.position.copy(ep);
     earth.scale.setScalar(DOME * Math.tan((e.radiusDeg * EARTH_EXAG * Math.PI) / 180));
-    earth.material.opacity = e.visible;
+    // Earth's day side faces the real Sun direction, so its phase is correct automatically.
+    const sunDir = azElToVec(s.az, s.el, 1).normalize();
+    earth.material.uniforms.sunDir.value.copy(sunDir);
+    earth.material.uniforms.opacity.value = 0.25 + 0.75 * e.visible;
+    if (date) earth.rotation.y = earthSpin(date, ep);
+    // Earthshine: brightest at "full Earth" (Sun and Earth on opposite sides of the sky).
+    const earthDir = ep.clone().normalize();
+    const fullness = (1 - sunDir.dot(earthDir)) / 2;
+    earthshine.position.copy(earthDir).multiplyScalar(120);
+    earthshine.intensity = 0.55 * fullness * e.visible;
     sunLabel.position.copy(sp).multiplyScalar(1.04);
     earthLabel.position.copy(ep).multiplyScalar(1.06);
     sunLabel.element.textContent = `Sun ${s.el.toFixed(1)}°`;
@@ -122,10 +155,12 @@ export function createScene(container) {
       camera.position.set(-dir.x * 0.001, h, -dir.z * 0.001);
       Object.assign(controls, { minDistance: 0.0005, maxDistance: 0.02, enablePan: false, enableZoom: false, maxPolarAngle: Math.PI * 0.75 });
       camera.fov = 70;
+      if (wall) wall.visible = true;
     } else {
       camera.position.copy(saved.pos); controls.target.copy(saved.target);
       Object.assign(controls, { minDistance: 3, maxDistance: 120, enablePan: true, enableZoom: true, maxPolarAngle: Math.PI * 0.495 });
       camera.fov = 50;
+      if (wall) wall.visible = false;
     }
     camera.updateProjectionMatrix();
     siteMarker.visible = !on;
@@ -133,10 +168,20 @@ export function createScene(container) {
 
   // The interface floats over the bottom of the view. Shift the picture up by half that
   // height so the scene is centred in the part you can actually see.
+  // Post-processing: multisampled HDR render, a gentle bloom that only the Sun is bright enough
+  // to trigger, then tone mapping in OutputPass.
+  const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 }));
+  composer.addPass(new RenderPass(scene, camera));
+  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.8, 0.6, 1.8);
+  composer.addPass(bloom);
+  composer.addPass(new OutputPass());
+
   let insetBottom = 0;
   function resize() {
     const w = container.clientWidth, h = container.clientHeight;
     renderer.setSize(w, h);
+    composer.setPixelRatio(renderer.getPixelRatio());
+    composer.setSize(w, h);
     labels.setSize(w, h);
     camera.aspect = w / h;
     if (insetBottom > 0 && insetBottom < h) camera.setViewOffset(w, h, 0, insetBottom / 2, w, h);
@@ -147,9 +192,18 @@ export function createScene(container) {
   new ResizeObserver(resize).observe(container);
   resize();
 
+  // Auto-exposure, like a real camera: standing in shadow at eye level, open up so the dark
+  // surroundings (lit only by faint scattered light) stay visible. Eased so it never pops.
+  let siteLit = 1;
+  const BASE_EXPOSURE = renderer.toneMappingExposure;
   renderer.setAnimationLoop(() => {
+    const dark = eye && siteLit < 0.5;
+    const target = dark ? BASE_EXPOSURE * 2.6 : BASE_EXPOSURE;
+    renderer.toneMappingExposure += (target - renderer.toneMappingExposure) * 0.12;
+    scattered.intensity += ((dark ? 0.22 : 0.11) - scattered.intensity) * 0.12;
+    bounce.intensity += ((dark ? 1.1 : 0) - bounce.intensity) * 0.12;
     controls.update();
-    renderer.render(scene, camera);
+    composer.render();
     labels.render(scene, camera);
   });
 
@@ -159,11 +213,23 @@ export function createScene(container) {
 // ---------- builders ----------
 
 function makeTerrain(site, patch) {
-  const n = patch ? patch.n : 129;
+  const n = patch ? patch.n : 257;
   const size = patch ? (patch.halfSizeM * 2) / 1000 : 60;
   const geo = new THREE.PlaneGeometry(size, size, n - 1, n - 1);
   geo.rotateX(-Math.PI / 2); // row 0 -> north (-Z), col 0 -> west (-X)
   const pos = geo.attributes.position;
+  // Precomputed patches use a non-uniform grid, dense at the landing spot (scripts/build_horizons.py).
+  const warp = patch?.warp;
+  if (warp) {
+    const half = size / 2, w = (u) => half * (warp * u + (1 - warp) * u ** 3);
+    for (let i = 0; i < pos.count; i++) {
+      pos.setX(i, w(-1 + (2 * (i % n)) / (n - 1)));
+      pos.setZ(i, w(-1 + (2 * Math.floor(i / n)) / (n - 1)));
+    }
+  }
+  // Texture coordinates in kilometres, so surface detail has a true size wherever the grid is dense.
+  const uv = geo.attributes.uv;
+  for (let i = 0; i < pos.count; i++) uv.setXY(i, pos.getX(i), -pos.getZ(i));
   const rand = mulberry(hash(site.id + site.lat + site.lon));
   const craters = patch ? [] : Array.from({ length: 140 }, () => ({
     x: (rand() - 0.5) * size, z: (rand() - 0.5) * size, r: 0.3 + rand() ** 4 * 7,
@@ -175,7 +241,8 @@ function makeTerrain(site, patch) {
     pos.setY(i, h);
   }
   geo.computeVertexNormals();
-  const mat = new THREE.MeshStandardMaterial({ color: COLORS.terrain, roughness: 1, metalness: 0 });
+  const { albedo, bump } = regolithTextures();
+  const mat = new THREE.MeshStandardMaterial({ color: COLORS.terrain, roughness: 1, metalness: 0, map: albedo, bumpMap: bump, bumpScale: 0.9 });
   const mesh = new THREE.Mesh(geo, mat);
   mesh.castShadow = mesh.receiveShadow = true;
   const mid = Math.floor(n / 2) * n + Math.floor(n / 2);
@@ -212,7 +279,7 @@ function makeMarker(name) {
 
 function makeSkyline(horizon) {
   const pts = [];
-  for (let az = 0; az <= 360; az += 0.5) pts.push(azElToVec(az, horizon.elAt(az), DOME * 0.995));
+  for (let az = 0; az <= 360; az += 0.5) pts.push(azElToVec(az, horizon.elAt(az), DOME * 0.96));
   const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
     new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 }));
   return line;
@@ -269,6 +336,135 @@ function glowTexture() {
   g.fillStyle = grd;
   g.fillRect(0, 0, 128, 128);
   return new THREE.CanvasTexture(c);
+}
+
+// Distant mountains for the surface view: a wall whose top follows the real horizon mask, just
+// inside the sky dome. The Sun and Earth sit behind it, so they're clipped exactly where the
+// numbers say they are. Lit by the Sun like terrain; never casts shadows.
+function makeHorizonWall(horizon) {
+  const pos = [], idx = [], R = DOME * 0.965;
+  for (let k = 0; k <= 720; k++) {
+    const az = k * 0.5;
+    const top = azElToVec(az, horizon.elAt(az), R), bottom = azElToVec(az, -12, R);
+    pos.push(bottom.x, bottom.y, bottom.z, top.x, top.y, top.z);
+    if (k < 720) { const a = 2 * k; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0x5f5b55, roughness: 1, side: THREE.DoubleSide }));
+  mesh.castShadow = mesh.receiveShadow = false;
+  return mesh;
+}
+
+// Earth from NASA's SVS Blue Marble map (with clouds). Custom shader: day side lit by the true
+// Sun direction (so the phase is right), dark night side, thin blue atmosphere at the rim.
+function makeEarth() {
+  const tex = new THREE.TextureLoader().load(`${import.meta.env.BASE_URL}textures/earth-nasa-svs-2k.jpg`);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { map: { value: tex }, sunDir: { value: new THREE.Vector3(1, 0, 0) }, opacity: { value: 1 } },
+    transparent: true,
+    vertexShader: `
+      #include <common>
+      #include <logdepthbuf_pars_vertex>
+      varying vec2 vUv; varying vec3 vN; varying vec3 vView;
+      void main() {
+        vUv = uv;
+        vN = normalize(mat3(modelMatrix) * normal);
+        vec4 wp = modelMatrix * vec4(position, 1.0);
+        vView = normalize(cameraPosition - wp.xyz);
+        gl_Position = projectionMatrix * viewMatrix * wp;
+        #include <logdepthbuf_vertex>
+      }`,
+    fragmentShader: `
+      #include <common>
+      #include <logdepthbuf_pars_fragment>
+      uniform sampler2D map; uniform vec3 sunDir; uniform float opacity;
+      varying vec2 vUv; varying vec3 vN; varying vec3 vView;
+      void main() {
+        #include <logdepthbuf_fragment>
+        vec3 n = normalize(vN);
+        float day = smoothstep(-0.06, 0.18, dot(n, sunDir));
+        vec3 c = texture2D(map, vUv).rgb * day * 1.5;
+        float rim = pow(1.0 - max(dot(n, normalize(vView)), 0.0), 2.5);
+        c += vec3(0.3, 0.55, 1.0) * rim * (0.08 + 0.9 * day);
+        gl_FragColor = vec4(c, opacity);
+        #include <tonemapping_fragment>
+        #include <colorspace_fragment>
+      }`,
+  });
+  return new THREE.Mesh(new THREE.SphereGeometry(1, 64, 48), mat);
+}
+
+// Turn Earth so the hemisphere that really faces the Moon at this moment faces the viewer:
+// the sub-lunar longitude is the Moon's right ascension minus Greenwich sidereal time.
+// (Earth's axis is drawn upright; tilt is not modelled.)
+function earthSpin(date, earthPos) {
+  const t = Astronomy.MakeTime(date);
+  const ra = Astronomy.EquatorFromVector(Astronomy.GeoMoon(t)).ra;
+  const subLon = (ra - Astronomy.SiderealTime(t)) * 15;
+  const phi = ((subLon + 180) * Math.PI) / 180; // SphereGeometry: u = phi / 2pi, u = 0 at lon -180
+  const facing = Math.atan2(-earthPos.x, -earthPos.z);
+  return facing - Math.atan2(-Math.cos(phi), Math.sin(phi));
+}
+
+// Procedural regolith (generated once): a gentle albedo mottle tiled every 3 km, and a fine
+// bump map of dust ripples and small craters tiled every ~40 m. Both respond to the moving Sun.
+let regolith = null;
+function regolithTextures() {
+  if (regolith) return regolith;
+  const make = (n, fn) => {
+    const c = document.createElement('canvas'); c.width = c.height = n;
+    const g = c.getContext('2d'), im = g.createImageData(n, n);
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+      const v = Math.max(0, Math.min(255, fn(x, y)));
+      const i = (y * n + x) * 4; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255;
+    }
+    g.putImageData(im, 0, 0);
+    const t = new THREE.CanvasTexture(c);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.anisotropy = 8;
+    return t;
+  };
+  const rand = mulberry(42);
+  const lattice = (L) => { const a = new Float32Array(L * L); for (let i = 0; i < a.length; i++) a[i] = rand(); return a; };
+  const tileNoise = (n, octaves) => { // tileable value noise, fBm
+    const layers = octaves.map((L) => ({ L, a: lattice(L) }));
+    return (x, y) => {
+      let v = 0, amp = 0.5, sum = 0;
+      for (const { L, a } of layers) {
+        const fx = (x / n) * L, fy = (y / n) * L, x0 = Math.floor(fx), y0 = Math.floor(fy);
+        const tx = fx - x0, ty = fy - y0, sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty);
+        const at = (i, j) => a[((j % L + L) % L) * L + ((i % L + L) % L)];
+        v += amp * ((at(x0, y0) * (1 - sx) + at(x0 + 1, y0) * sx) * (1 - sy) + (at(x0, y0 + 1) * (1 - sx) + at(x0 + 1, y0 + 1) * sx) * sy);
+        sum += amp; amp *= 0.5;
+      }
+      return v / sum;
+    };
+  };
+  const mottle = tileNoise(256, [4, 8, 16, 32]);
+  const albedo = make(256, (x, y) => 200 + (mottle(x, y) - 0.5) * 60);
+  albedo.colorSpace = THREE.SRGBColorSpace;
+  albedo.repeat.set(1 / 3, 1 / 3);
+
+  const N = 512, ripple = tileNoise(N, [8, 16, 32, 64, 128]);
+  const craters = Array.from({ length: 320 }, () => ({ x: rand() * N, y: rand() * N, r: 1.5 + rand() ** 4 * 16 }));
+  const bump = make(N, (x, y) => {
+    let h = ripple(x, y) * 1.1;
+    for (const c of craters) {
+      let dx = Math.abs(x - c.x), dy = Math.abs(y - c.y);
+      dx = Math.min(dx, N - dx); dy = Math.min(dy, N - dy); // wrap so the tile repeats seamlessly
+      const d = Math.hypot(dx, dy) / c.r;
+      if (d < 1) h -= 0.32 * (1 - d * d); else if (d < 1.4) h += 0.08 * (1 - (d - 1) / 0.4) ** 2;
+    }
+    return 128 + h * 90;
+  });
+  bump.repeat.set(24, 24);
+  regolith = { albedo, bump };
+  return regolith;
 }
 
 function label(text, cls) {

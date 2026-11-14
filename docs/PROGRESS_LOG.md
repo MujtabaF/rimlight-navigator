@@ -86,3 +86,17 @@ Any AI or human picking this up should read the **last entry** first.
 **Known:** at 720p the dock takes nearly half the height, and scene 8's comparison table is scrolled out of view. This goes to the 1080p/720p check.
 
 **Next**: the owner wants to find *where* to land (and where the water is), not only when. A proposed site-finder map is under discussion.
+
+## Session 6: Sat 2026-11-14 (realistic 3D), approved by owner and committed
+
+**Context:** the owner asked why the NASA tools look realistic and ours didn't. Their tools drape LRO photographs over terrain, but those have frozen shadows that would clash with our moving Sun. So we made the 3D realistic in ways that stay correct as the Sun moves. Earlier this session a site-finder map (NASA sunlight, Earth, ice and slope layers) was built, but the owner preferred the existing design. It's parked on local branch `parked/site-finder-map` (not pushed), and extras were cut from scope. `docs/TODO.md` is now the single to-do list.
+
+**Done**
+- `build_horizons.py`: terrain patches are now 513² on a warped grid (`warp` = 0.25 in the patch metadata), ~29 m at the centre and ~290 m at the edges. Horizons are byte-identical to before.
+- `scene.js`: warped grid plus km-based UVs. Procedural regolith albedo (3 km tile) and bump map (~40 m tile). Hemisphere fill removed. Earthshine from Earth's direction × phase, plus faint ambient. The Sun lights the landscape whenever it's above the flat horizon (shadows decide the rest). HDR Sun sprite with bloom (EffectComposer, MSAA, UnrealBloom, OutputPass). NASA SVS 3615 Earth texture in a custom shader (true-Sun phase, atmosphere rim, sub-lunar longitude facing the viewer). Horizon wall from the mask at eye level, so the Sun and Earth are clipped where the numbers say. Eye-level auto-exposure and bounce light when the site is in shadow (visual only).
+- Tour scene 3 faces the sunlit crater wall (`faceAway`).
+- Docs: SCIENCE.md §5 (how the 3D is drawn, including visual aids), DECISIONS #13–14.
+
+**Verified:** `npm test` passes (8/8 plus the build). Screenshots of all tour scenes plus ridge, Malapert and floor close-ups. Owner approved.
+
+**Next**: `docs/TODO.md` → Core features, starting with the landing-date chart.

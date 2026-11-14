@@ -16,7 +16,7 @@ export const chapters = [
   {
     title: 'Some craters never see the Sun',
     text: 'Shackleton crater floor, 2.8 km below the rim. The Sun never gets more than about 2° above the horizon here, and the crater wall stands 20° high. That means 0% sunlight all year, which keeps it cold enough to trap water ice.',
-    site: 'shackleton-floor', compare: [], at: (app) => app.peakSun('shackleton-ridge'), eye: true, speed: 24, play: true,
+    site: 'shackleton-floor', compare: [], at: (app) => app.peakSun('shackleton-ridge'), eye: true, faceAway: true, speed: 24, play: true,
   },
   {
     title: '…and a few ridges almost never go dark',
