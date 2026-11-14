@@ -40,5 +40,25 @@ for (const [id, k, lo, hi, why] of EXPECT) {
   if (!ok) fail++;
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${id} ${k} = ${v?.toFixed(2)}  (expected ${lo}–${hi}: ${why})`);
 }
+// Landing-date planner (core/landing.js): no usable day on a permanently shadowed floor, and at the
+// equator good landing windows come once per lunar day (synodic month, ~29.5 days).
+{
+  const { landingDays, bestDays } = await import('../src/core/landing.js');
+  const load = (id) => {
+    const s = sites.find((x) => x.id === id), f = new URL(`../public/data/sites/${id}.json`, import.meta.url);
+    if (!existsSync(f)) return [s, smoothHorizon()];
+    const d = JSON.parse(readFileSync(f));
+    return [{ ...s, lat: d.lat, lon: d.lon, heightM: d.heightM }, terrainHorizon(d)];
+  };
+  const floor = landingDays(...load('shackleton-floor'), start, 60);
+  const usable = floor.filter((d) => d.level !== 'poor').length;
+  let ok = usable === 0; if (!ok) fail++;
+  console.log(`${ok ? 'PASS' : 'FAIL'}  planner shackleton-floor usable days = ${usable}  (expected 0: never sunlit)`);
+  const picks = bestDays(landingDays(...load('apollo11'), start, 60), 2, 10).sort((a, b) => a.date - b.date);
+  const gap = picks.length === 2 ? (picks[1].date - picks[0].date) / 864e5 : NaN;
+  ok = gap >= 27 && gap <= 32; if (!ok) fail++;
+  console.log(`${ok ? 'PASS' : 'FAIL'}  planner apollo11 gap between best windows = ${gap.toFixed(1)} d  (expected ~29.5: one lunar day)`);
+}
+
 console.log(fail ? `\n${fail} science check(s) FAILED` : '\nAll science checks passed');
 process.exit(fail ? 1 : 0);

@@ -128,6 +128,16 @@ h1, h2, h3, p { margin: 0; }
 .verdict[data-level="poor"] .verdict-chip { color: var(--poor); }
 .verdict-text { font-size: 14px; color: var(--ink-1); font-variant-numeric: tabular-nums; }
 
+/* landing-date chart */
+.dates { display: grid; gap: 6px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+#datechart { width: 100%; height: 86px; display: block; cursor: pointer; touch-action: none; }
+.dates-info { font-size: 13px; color: var(--ink-2); min-height: 3.6em; font-variant-numeric: tabular-nums; }
+.dates-best { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-3); }
+.day-chip { font: 600 12px/1 var(--font); padding: 5px 10px; border-radius: 999px; cursor: pointer; background: var(--panel-2); border: 1px solid var(--line); color: var(--ink-1); }
+.day-chip.lvl-good { border-color: var(--good); color: var(--good); }
+.day-chip.lvl-ok { border-color: var(--sun); color: var(--sun); }
+.day-chip:hover { background: rgba(233, 228, 218, 0.12); }
+
 /* ---------- time dock ---------- */
 #bottom { position: absolute; z-index: 2; left: var(--gap); right: var(--gap); bottom: var(--gap); padding: 10px 14px 8px; display: grid; gap: 4px; background: var(--glass); border: 1px solid var(--glass-edge); border-radius: 14px; backdrop-filter: blur(16px) saturate(1.15); -webkit-backdrop-filter: blur(16px) saturate(1.15); }
 .transport { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; }

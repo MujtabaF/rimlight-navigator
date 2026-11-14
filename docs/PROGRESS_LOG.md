@@ -100,3 +100,14 @@ Any AI or human picking this up should read the **last entry** first.
 **Verified:** `npm test` passes (8/8 plus the build). Screenshots of all tour scenes plus ridge, Malapert and floor close-ups. Owner approved.
 
 **Next**: `docs/TODO.md` → Core features, starting with the landing-date chart.
+
+## Session 7: Sat 2026-11-14 (landing-date chart), approved by owner and committed
+
+**Done**
+- `src/core/landing.js` (pure): `landingDays()` samples hourly with `analyse()` and gives, for each day, the best touchdown hour: hours of light until the first sunset, Earth fraction over the first 14 days, and good/ok/poor (`classify`, shared with the verdict). `bestDays()` returns the top picks, kept a few days apart. Ranking within a level: min(light, 20 d) + 10 × Earth.
+- `src/datechart.js`: bar chart in the readout under the verdict. Height = light days (capped at 20, dotted 10-day line), colour = level, blue strip = Earth. Hover gives a plain-English description; click jumps there. Three "Best" day buttons.
+- The owner asked for the chart to match the main timeline's rhythm, so it covers **the same 30-day window as the timeline** and recomputes when the window moves.
+- Verdict now uses the same rule (Earth over the next 14 days), so a green day always gives a green verdict.
+- `npm test`: 10 checks. New: the floor has 0 usable days, and Apollo 11's best windows are 29.6 days apart (one lunar day).
+
+**Next**: Season view.

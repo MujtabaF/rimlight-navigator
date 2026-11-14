@@ -62,6 +62,12 @@
         <p class="verdict-chip" id="verdict-chip">–</p>
         <p class="verdict-text" id="verdict-text"></p>
       </section>
+      <section class="dates" aria-labelledby="dates-title">
+        <h2 id="dates-title">Best days to land (same 30 days as the timeline)</h2>
+        <canvas id="datechart" aria-label="Landing quality for each day of the 30-day window. Click a day to land then."></canvas>
+        <p class="dates-info" id="dates-info">Tall green bars mean long sunlight and Earth contact. Click a day to land then.</p>
+        <div class="dates-best" id="dates-best"></div>
+      </section>
 
       <section class="now sun">
         <h2>Sun</h2>
@@ -143,7 +149,7 @@
         <ol>
           <li>Pick a site on the left, or type in your own coordinates.</li>
           <li>Set your landing date in the <b>UTC</b> box, or click the timeline.</li>
-          <li>Read the verdict under the site name on the right.</li>
+          <li>Read the verdict on the right. Below it, <b>Best days to land</b> shows the same 30 days as the timeline: tall green bars are the best days. Click one to jump there.</li>
           <li>Click <b>+</b> next to other sites (up to 4) to compare them side by side.</li>
           <li>Launch slipped? Press <kbd>Shift</kbd> + <kbd>→</kbd> to move a day later and watch the numbers change.</li>
         </ol>

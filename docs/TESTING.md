@@ -13,7 +13,7 @@ Each feature goes through the same loop. Nothing moves forward until the owner a
 
 | Test | Command | What it proves | When |
 |---|---|---|---|
-| **Science test** | `npm test` | A year of results for every site still matches physics and published studies: ridge ~89% sunlit, crater floor 0%, far side never sees Earth, equator ~50% sunlit, and so on. **8 pass/fail checks.** Also confirms the app builds. | Every step |
+| **Science test** | `npm test` | A year of results for every site still matches physics and published studies: ridge ~89% sunlit, crater floor 0%, far side never sees Earth, equator ~50% sunlit, and so on. **10 pass/fail checks** (8 site checks + 2 landing-planner checks). Also confirms the app builds. | Every step |
 | **JPL validation** | `npm run validate` | Our Sun and Earth positions agree with NASA JPL Horizons to within 0.1° (currently **0.004°**). Needs internet. | Whenever `src/core/` changes |
 | **Visual check** | `npm run screenshots` | Captures all 8 tour scenes, the default view and a 720p projector-size view into `review/`, so you can see glitches without clicking through. | Every step |
 | **Manual review** | `npm run dev` → browser | What only a human can judge: does it feel right, is it clear, would it impress a judge? | Every step (by the owner) |
@@ -29,7 +29,7 @@ Each feature goes through the same loop. Nothing moves forward until the owner a
 - [ ] Plus the **feature-specific checklist** the AI gives you for that step.
 
 ## What "done" means for any item
-* `npm test` passes, with all 8 science checks and the build.
+* `npm test` passes, with all 10 science checks and the build.
 * Screenshots look right.
 * The owner has reviewed and approved it.
 * It's committed and pushed, with the log and plan updated.

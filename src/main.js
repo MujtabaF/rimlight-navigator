@@ -7,6 +7,8 @@ import { createScene } from './scene.js';
 import { createPanorama } from './panorama.js';
 import { createTimeline } from './timeline.js';
 import { createStory } from './story.js';
+import { createDateChart } from './datechart.js';
+import { landingDays, bestDays, classify, EARTH_DAYS } from './core/landing.js';
 
 const DAY = 86400e3, HOUR = 3600e3;
 const WINDOW_DAYS = 30;
@@ -24,6 +26,11 @@ const scene = createScene($('#viewport'));
 const panorama = createPanorama($('#panorama'));
 const timeline = createTimeline($('#timeline'), (d) => { setDate(d); });
 const story = createStory(app, $('#story'));
+const dateChart = createDateChart($('#datechart'), {
+  onPick: (d) => setDate(new Date(d.date)),
+  onHover: (d) => set('#dates-info', d ? describeDay(d) : DATES_HINT),
+});
+const DATES_HINT = 'Tall green bars mean long sunlight and Earth contact. Click a day to land then.';
 
 // ---------------- analysis cache ----------------
 function ensureWindow() {
@@ -73,6 +80,7 @@ function renderAll() {
   scene.setState(st, app.date);
   panorama.setState(st);
   timeline.setNow(app.date);
+  dateChart.setNow(+app.date);
   renderReadout(site, a, st);
   $('#date').value = app.date.toISOString().slice(0, 16);
 }
@@ -108,14 +116,19 @@ function renderReadout(site, a, st) {
   set('#m-dark', hours(m.longestDarkHours));
   set('#m-noearth', hours(m.longestNoEarthHours));
   $('#readout').dataset.sun = st.sun.visible > 0.5 ? 'up' : 'down';
-  renderVerdict(m, sun, earth);
+  renderVerdict(m, sun, earth, a);
 }
 
-// Plain-English verdict for a solar lander touching down at the current time.
-// Thresholds are recorded in docs/DECISIONS.md: "good" needs 10+ days of light before the
-// first sunset (about one lunar day of operations) and Earth in view at least half the window.
-const GOOD_LIGHT_DAYS = 10, POOR_LIGHT_DAYS = 2, GOOD_EARTH_PCT = 50;
-function renderVerdict(m, sun, earth) {
+// Plain-English verdict for a solar lander touching down at the current time. Same rule as the
+// landing-date chart (core/landing.js classify; docs/DECISIONS.md #12): "good" needs 10+ days of
+// light before the first sunset and Earth in view at least half of the first two weeks.
+function earthNextDays(a, days) {
+  const t0 = +app.date, t1 = t0 + days * DAY;
+  let n = 0, up = 0;
+  for (const p of a.series) if (p.t >= t0 && p.t < t1) { n++; if (p.earthVis > 0.5) up++; }
+  return n ? up / n : a.summary.earthVisiblePct / 100;
+}
+function renderVerdict(m, sun, earth, a) {
   const lightMs = sun.now ? (sun.at ? sun.at - app.date : Infinity) : 0;
   let power;
   if (m.sunlitPct < 0.5) power = 'No sunlight at all this month: solar power will not work here.';
@@ -127,8 +140,7 @@ function renderVerdict(m, sun, earth) {
   else if (earth.now) link = earth.at ? `Earth in view for ${dur(earth.at - app.date)} more.` : 'Earth stays in view.';
   else link = earth.at ? `No direct link to Earth for ${dur(earth.at - app.date)}.` : 'Earth stays below the horizon for 60+ days.';
 
-  const level = lightMs < POOR_LIGHT_DAYS * DAY ? 'poor'
-    : lightMs >= GOOD_LIGHT_DAYS * DAY && m.earthVisiblePct >= GOOD_EARTH_PCT ? 'good' : 'ok';
+  const level = classify(lightMs / DAY, earthNextDays(a, EARTH_DAYS));
   $('#verdict').dataset.level = level;
   set('#verdict-chip', { good: 'Good time to land', ok: 'Workable, with limits', poor: 'Poor time to land' }[level]);
   set('#verdict-text', `${power} ${link}`);
@@ -158,14 +170,36 @@ async function setSite(site) {
   scene.setSite(site, patch);
   panorama.setSite(site);
   renderAnalyses();
+  renderDates();
   renderAll();
 }
 function setDate(d) {
   const before = app.windowStart?.getTime();
   app.date = d;
   ensureWindow();
-  if (app.windowStart.getTime() !== before) renderAnalyses();
+  if (app.windowStart.getTime() !== before) { renderAnalyses(); renderDates(); }
   renderAll();
+}
+
+// ---------------- landing-date chart ----------------
+// Covers exactly the same 30 days as the timeline below, so both move in step.
+function renderDates() {
+  const site = app.active;
+  if (!site) return;
+  ensureWindow();
+  const days = landingDays(site, site.horizon, app.windowStart, WINDOW_DAYS);
+  dateChart.setDays(days);
+  const picks = bestDays(days, 3);
+  $('#dates-best').innerHTML = picks.length
+    ? `<span>Best:</span>${picks.map((p) => `<button class="day-chip lvl-${p.level}" data-t="${+p.date}" title="${describeDay(p)}">${fmtDay(p.date)}</button>`).join('')}`
+    : '<span>No day in this window gives a solar lander more than 2 days of light here.</span>';
+  set('#dates-info', DATES_HINT);
+}
+function fmtDay(d) { return new Date(d).toLocaleDateString('en', { month: 'short', day: 'numeric', timeZone: 'UTC' }); }
+function describeDay(d) {
+  const light = d.lightHours < 1 ? 'no sunlight at touchdown' : `${d.capped ? 'over ' : ''}${hours(d.lightHours)} of sunlight before the first sunset`;
+  const lvl = { good: 'Good', ok: 'Workable', poor: 'Poor' }[d.level];
+  return `${fmtDay(d.date)}: ${lvl}. ${light[0].toUpperCase() + light.slice(1)}, Earth in view ${Math.round(d.earthFrac * 100)}% of the first two weeks.`;
 }
 function toggleCompare(id) {
   const s = app.byId.get(id);
@@ -242,6 +276,7 @@ function syncEye() {
 
 function wire() {
   $('#play').addEventListener('click', () => setPlaying(!app.playing));
+  $('#dates-best').addEventListener('click', (e) => { const b = e.target.closest('.day-chip'); if (b) setDate(new Date(+b.dataset.t)); });
   $('#speed').addEventListener('change', (e) => { app.speed = +e.target.value; });
   $('#back-day').addEventListener('click', () => setDate(new Date(app.date - DAY)));
   $('#fwd-day').addEventListener('click', () => setDate(new Date(+app.date + DAY)));

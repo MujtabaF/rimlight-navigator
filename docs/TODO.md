@@ -4,7 +4,6 @@ The one list to work from. Tick each box when the owner approves the item and it
 One item at a time: build → checks → owner reviews in the browser → commit.
 
 ## 1. Core features (what the challenge asks for)
-- [ ] **Landing-date chart:** the next 60 days for the selected site, coloured good to bad (hours of sunlight before the first sunset, and Earth contact). Click a day to jump there.
 - [ ] **Season view:** % sunlit and % Earth in view for each of the 12 months (active site plus compared sites)
 - [ ] **Date vs date:** the same site on two landing dates, side by side
 - [ ] **Earth vs Moon panel:** day length, night length, Sun height, temperature swing, side by side
@@ -35,3 +34,4 @@ One item at a time: build → checks → owner reviews in the browser → commit
 - [x] Help panel (`?`), plain-English landing verdict, speed labels
 - [x] "Mission control" redesign: full-window 3D, floating panels, serif titles, clear compare toggle
 - [x] Realistic 3D: 40 m terrain near the landing spot, regolith texture, lunar lighting with earthshine, NASA Earth with correct phase, Sun hidden by real mountains
+- [x] Landing-date chart: one bar per day of the 30-day window (sunlight before first sunset, Earth contact), best-day buttons, click to jump; verdict uses the same rule
