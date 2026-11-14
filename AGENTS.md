@@ -15,7 +15,7 @@ The deadline is about **Sun 2026-11-15, 15:30 local time** (the project started 
 ## Current status (update this block every session)
 
 * **Phase:** v0 working end-to-end; pushed to GitHub (private), not deployed. Working copy: iCloud Mujtaba/Rimlight Navigator. Owner requires ALL "Challenge coverage" items in PLAN.md before submission.
-* **Works:** ephemeris (JPL-validated, 0.004°), LOLA horizons for 7 polar sites, 3D terrain view, eye-level view, panorama, 30-day timeline, comparison, countdowns, power, 8-scene guided tour, custom coordinates, deep links.
+* **Works:** ephemeris (JPL-validated, 0.004°), LOLA horizons for 7 polar sites, 3D terrain view, eye-level view, panorama, 30-day timeline, comparison, countdowns, power, 8-scene guided tour, custom coordinates, deep links, "How to use" help panel (`?`), plain-English landing verdict.
 * **Next up:** see the top unchecked items in `docs/PLAN.md` → *Checklist*.
 
 ## Rules of the road

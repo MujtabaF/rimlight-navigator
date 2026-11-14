@@ -30,6 +30,9 @@ Priority key: **P0** = must have for the demo · **P1** = makes it impressive ·
 - [x] Year-long sanity check matches literature (ridge 88.8% sunlit)
 
 ### P0: simulation polish (next)
+- [x] **Help and legend:** a "How to use" button and the `?` key open the controls and a "how to read the screen" panel. A one-time tip on first visit points to it.
+- [x] **Verdict line:** a plain-English "Good / Workable / Poor time to land" summary for the current site and moment
+- [x] **Speed labels:** each speed option says how long a Moon day takes; rationale in DECISIONS.md #11
 - [ ] Click through all 8 tour scenes in a real browser, fix anything ugly or wrong
 - [ ] Smooth camera fly-to when the site changes (instead of a hard cut)
 - [ ] Sun disc visibly clipped by terrain when partially set (matches the % shown)

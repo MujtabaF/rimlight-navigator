@@ -107,6 +107,30 @@ function renderReadout(site, a, st) {
   set('#m-dark', hours(m.longestDarkHours));
   set('#m-noearth', hours(m.longestNoEarthHours));
   $('#readout').dataset.sun = st.sun.visible > 0.5 ? 'up' : 'down';
+  renderVerdict(m, sun, earth);
+}
+
+// Plain-English verdict for a solar lander touching down at the current time.
+// Thresholds are recorded in docs/DECISIONS.md: "good" needs 10+ days of light before the
+// first sunset (about one lunar day of operations) and Earth in view at least half the window.
+const GOOD_LIGHT_DAYS = 10, POOR_LIGHT_DAYS = 2, GOOD_EARTH_PCT = 50;
+function renderVerdict(m, sun, earth) {
+  const lightMs = sun.now ? (sun.at ? sun.at - app.date : Infinity) : 0;
+  let power;
+  if (m.sunlitPct < 0.5) power = 'No sunlight at all this month: solar power will not work here.';
+  else if (!sun.now) power = sun.at ? `In shadow now. The Sun rises in ${dur(sun.at - app.date)}.` : 'In shadow for at least 60 days.';
+  else power = sun.at ? `${dur(lightMs)} of sunlight before the first sunset.` : 'Sunlight for 60+ days without a sunset.';
+
+  let link;
+  if (m.earthVisiblePct < 0.5) link = 'Earth never rises this month, so a relay satellite is needed.';
+  else if (earth.now) link = earth.at ? `Earth in view for ${dur(earth.at - app.date)} more.` : 'Earth stays in view.';
+  else link = earth.at ? `No direct link to Earth for ${dur(earth.at - app.date)}.` : 'Earth stays below the horizon for 60+ days.';
+
+  const level = lightMs < POOR_LIGHT_DAYS * DAY ? 'poor'
+    : lightMs >= GOOD_LIGHT_DAYS * DAY && m.earthVisiblePct >= GOOD_EARTH_PCT ? 'good' : 'ok';
+  $('#verdict').dataset.level = level;
+  set('#verdict-chip', { good: 'Good time to land', ok: 'Workable, with limits', poor: 'Poor time to land' }[level]);
+  set('#verdict-text', `${power} ${link}`);
 }
 
 function renderSiteHeader(site) {
@@ -224,9 +248,18 @@ function wire() {
     app.byId.set('custom', s);
     setSite(s);
   });
+  const help = $('#help');
+  const openHelp = () => { dismissHint(); if (!help.open) help.showModal(); };
+  $('#help-btn').addEventListener('click', openHelp);
+  $('#help-close').addEventListener('click', () => help.close());
+  help.addEventListener('click', (e) => { if (e.target === help) help.close(); }); // click outside the panel
+  $('#hint-close').addEventListener('click', dismissHint);
+
   window.addEventListener('keydown', (e) => {
+    if (help.open) return; // the dialog handles its own Esc
     if (e.target.matches('input, select, textarea')) return;
-    if (e.key === ' ') { e.preventDefault(); setPlaying(!app.playing); }
+    if (e.key === '?' || e.key === 'h') openHelp();
+    else if (e.key === ' ') { e.preventDefault(); setPlaying(!app.playing); }
     else if (e.key === 'ArrowRight') setDate(new Date(+app.date + (e.shiftKey ? DAY : HOUR)));
     else if (e.key === 'ArrowLeft') setDate(new Date(app.date - (e.shiftKey ? DAY : HOUR)));
     else if (e.key === 'PageDown' || (e.key === 'n' && story.active)) story.next();
@@ -242,6 +275,19 @@ function tick(now) {
   last = now;
   if (app.playing && app.speed) setDate(new Date(+app.date + dt * app.speed * HOUR));
   requestAnimationFrame(tick);
+}
+
+// First-visit tip pointing at the help. Shown once per browser; skipped in tour/deep-link mode
+// so it never pops up during a presentation.
+const HINT_KEY = 'rimlight.hintSeen';
+function showHintOnce() {
+  try { if (localStorage.getItem(HINT_KEY)) return; } catch { /* storage blocked: still show */ }
+  $('#hint').hidden = false;
+  setTimeout(dismissHint, 12000);
+}
+function dismissHint() {
+  $('#hint').hidden = true;
+  try { localStorage.setItem(HINT_KEY, '1'); } catch { /* ignore */ }
 }
 
 // ---------------- helpers ----------------
@@ -269,6 +315,8 @@ function groupBy(arr) { const m = new Map(); for (const s of arr) { if (!m.has(s
   if (q.get('t')) setDate(new Date(q.get('t') + (q.get('t').endsWith('Z') ? '' : 'Z')));
   if (q.get('eye') === '1') { scene.setEyeLevel(true, stateAt(app.active, app.active.horizon, app.date).sun.az); syncEye(); }
   if (q.get('tour')) await story.goTo(+q.get('tour') - 1);
+  else if (!q.toString()) showHintOnce();
+  if (q.get('help') === '1') $('#help-btn').click(); // deep link straight to the help panel
   document.body.classList.add('ready');
   requestAnimationFrame(tick);
 })();

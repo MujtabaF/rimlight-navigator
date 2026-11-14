@@ -11,6 +11,8 @@
   --ink-3: #6f6b65;
   --sun: #ffb547;          /* low-angle sunlight = power */
   --earth: #4fa3ff;        /* Earth = comms */
+  --good: #6fd08c;         /* verdict: good time to land */
+  --poor: #ff6b5e;         /* verdict: poor time to land */
   --radius-s: 4px;
   --radius-m: 8px;
   color-scheme: dark;
@@ -123,6 +125,42 @@ h1, h2, h3, p { margin: 0; }
 .sw.earth { background: var(--earth); }
 #panorama { width: 100%; height: 130px; display: block; }
 #timeline { width: 100%; height: 96px; display: block; cursor: ew-resize; touch-action: none; }
+
+/* ---------- verdict ---------- */
+.verdict { padding: 10px 12px; border-radius: var(--radius-m); background: var(--panel-2); border: 1px solid var(--line); border-left: 3px solid var(--ink-3); }
+.verdict[data-level="good"] { border-left-color: var(--good); }
+.verdict[data-level="ok"] { border-left-color: var(--sun); }
+.verdict[data-level="poor"] { border-left-color: var(--poor); }
+.verdict-chip { font-size: 17px; font-weight: 700; margin: 2px 0 4px; }
+.verdict[data-level="good"] .verdict-chip { color: var(--good); }
+.verdict[data-level="ok"] .verdict-chip { color: var(--sun); }
+.verdict[data-level="poor"] .verdict-chip { color: var(--poor); }
+.verdict-text { font-size: 14px; color: var(--ink-1); font-variant-numeric: tabular-nums; }
+
+/* ---------- first-visit tip ---------- */
+.hint { position: fixed; top: 80px; left: 266px; /* top-left of the 3D view, clear of both panels */ z-index: 20; display: flex; align-items: center; gap: 10px; max-width: 360px; padding: 10px 12px; font-size: 14px; background: var(--panel-2); border: 1px solid var(--earth); border-radius: var(--radius-m); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5); }
+.hint[hidden] { display: none; }
+
+/* ---------- help dialog ---------- */
+kbd { display: inline-block; min-width: 1.6em; padding: 0 5px; font: 600 12px/1.6 var(--font); text-align: center; color: var(--ink-1); background: var(--panel); border: 1px solid var(--ink-3); border-bottom-width: 2px; border-radius: var(--radius-s); }
+#help { width: min(980px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 0; color: var(--ink-1); background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-m); }
+#help::backdrop { background: rgba(0, 0, 0, 0.6); }
+.help-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--panel); }
+.help-head h2 { font-size: 20px; font-stretch: 92%; font-weight: 700; }
+.help-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px 28px; padding: 16px 20px 22px; font-size: 14px; }
+.help-body h3 { font-size: 12px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 6px; }
+.help-body section > h3 ~ h3 { margin-top: 16px; }
+.help-body p, .help-body li { color: var(--ink-2); }
+.help-body b { color: var(--ink-1); }
+.help-body ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.c-sun { color: var(--sun) !important; }
+.c-earth { color: var(--earth) !important; }
+.keys { width: 100%; border-collapse: collapse; }
+.keys th, .keys td { text-align: left; padding: 5px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.keys th { font-weight: 500; color: var(--ink-1); padding-right: 12px; white-space: nowrap; }
+.keys td { color: var(--ink-2); }
+.legend-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.legend-list .sw { margin: 0 4px 0 0; }
 
 /* presenter focus mode (press F): hide rails, keep the sky */
 body.focus #app { grid-template-columns: 0 1fr 0; }

@@ -50,3 +50,22 @@ Any AI or human picking this up should read the **last entry** first.
 - On review: restored the literal "—" in `package.json`, and made the 720p screenshot a single 1280×720 capture (it was being taken twice).
 
 **Next**: PLAN.md → *P0: simulation polish*, one item at a time, starting with the tour-scene click-through.
+
+## Session 4: Sat 2026-11-14 (help, verdict, speed labels), approved by owner and committed
+
+**Context:** the owner tried the app and found it hard to tell what to do or how to control it. We agreed the goal is to help planners find the best **place and time** to land (the best spot changes with the date), not to have the app pick one spot.
+
+**Done**
+- **Help panel:** a "How to use" button, or `?` / `H`. It covers what the app tells you, 5 steps for making a decision, every control, and a legend for the 3D view, skyline strip, timeline and right panel. It's a native `<dialog>`: Esc or a click outside closes it. Deep link: `?help=1`.
+- **First-visit tip** at the top-left of the 3D view. It's shown once per browser (localStorage, try/catch) and never in tour or deep-link mode.
+- **Verdict box** under the site name: Good, Workable or Poor for a solar lander touching down now, plus one plain sentence on light and Earth link. Thresholds are in DECISIONS.md #12 and in constants in `renderVerdict` (`src/main.js`).
+- **Speed labels:** each option says how long a Moon day takes. Rationale in DECISIONS.md #11.
+- `npm run screenshots` now also captures `review/help.png`.
+
+**Verified:** `npm test` passes (8/8 science checks plus the build). Screenshots reviewed. Green verdicts confirmed for Malapert (2027-01-14), IM-2 (01-15), IM-1 (01-18) and the ridge (01-11). Red on Shackleton floor.
+
+**Known:** at 1280×720 the verdict box pushes the Earth readout below the fold. This goes to the projector-check item.
+
+**Ideas parked:** a "best spots" heatmap on the 2D map (stretch, ~2–3 h). The owner has Easter-egg ideas to add at the end.
+
+**Next**: the tour click-through (P0), then the projector check, then the loading indicator, then Challenge coverage starting with the landing-date chart.
