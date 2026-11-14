@@ -3,6 +3,7 @@
 This is a **28-hour solo hackathon project** for NASA Space Apps 2026, challenge *Lunar Landing Site Navigator*.
 The deadline is about **Sun 2026-11-15, 15:30 local time** (the project started Sat 2026-11-14 11:20). If you're picking this up mid-way, read these in order:
 
+0. `docs/TODO.md`: **the to-do list. Work top to bottom, tick boxes as items are approved.**
 1. `docs/PROJECT_BRIEF.md`: what the challenge asks for and what we're building (5 min)
 2. `docs/PLAN.md`: the hour-by-hour plan and the **task checklist with status**
 3. `docs/PROGRESS_LOG.md`: what has happened so far, newest at the bottom. **Read the last entry.**
@@ -16,7 +17,7 @@ The deadline is about **Sun 2026-11-15, 15:30 local time** (the project started 
 
 * **Phase:** v0 working end-to-end; pushed to GitHub (private), not deployed. Working copy: iCloud Mujtaba/Rimlight Navigator. Owner requires ALL "Challenge coverage" items in PLAN.md before submission.
 * **Works:** ephemeris (JPL-validated, 0.004°), LOLA horizons for 7 polar sites, 3D terrain view, eye-level view, panorama, 30-day timeline, comparison, countdowns, power, 8-scene guided tour, custom coordinates, deep links, "How to use" help panel (`?`), plain-English landing verdict.
-* **Next up:** see the top unchecked items in `docs/PLAN.md` → *Checklist*.
+* **Next up:** the first unchecked box in **`docs/TODO.md`**, the single to-do list.
 
 ## Rules of the road
 
