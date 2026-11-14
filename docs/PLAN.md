@@ -9,10 +9,10 @@ Priority key: **P0** = must have for the demo · **P1** = makes it impressive ·
 |---|---|---|
 | H0–H1 | Setup + core ✅ | Repo, docs, physics core validated vs JPL, LOLA horizons, v0 app |
 | H1–H5 | Simulation polish (P0) | Every tour scene looks great and is correct, no visual glitches, smooth transitions |
-| H5–H9 | Planner features (P1) | Landing-date explorer, share links, custom polar points get a real horizon |
-| H9–H10 | Deploy | Public URL live, repo public, README screenshot |
-| **H10–H17** | **Sleep** | Non-negotiable. A tired solo presenter loses more than any feature gains. |
-| H17–H21 | Fix + content | Bugs found after sleep, copy pass, submission text, 30-s demo video |
+| H5–H10 | Challenge coverage | Landing-date chart, 2D map + custom horizons, future targets, season view |
+| H10–H11 | Deploy | Public URL live, README screenshot |
+| **H11–H17** | **Sleep** | Non-negotiable. A tired solo presenter loses more than any feature gains. |
+| H17–H21 | Finish coverage + content | Date-vs-date, libration, Earth vs Moon, share/export, global terrain, bug fixes, submission text, 30-s video |
 | H21–H24 | Rehearse | Run `DEMO_SCRIPT.md` 3× out loud with a timer, fix whatever trips you up |
 | H24–H26 | Freeze + submit | Code freeze, final deploy, submit on the Space Apps site |
 | H26–H28 | Buffer | Only emergencies |
@@ -39,17 +39,22 @@ Priority key: **P0** = must have for the demo · **P1** = makes it impressive ·
 - [ ] Make the "+" compare button discoverable (tooltip or first-run hint)
 - [ ] Performance: 60 fps while playing at 3 days/s with 4 compared sites
 
-### P1: planner power features
-- [ ] **Landing-date explorer:** for the active site, a strip of the next 60 landing days coloured by "hours of sunlight until first sunset" (answers "the launch slipped, what now?")
-- [ ] Share link: URL updates with site, time and compare set
-- [ ] Custom polar coordinates get a real horizon: ship a ~1 km downsampled DEM and compute the mask in the browser
+### Challenge coverage (REQUIRED: owner wants every item done before submission)
+Each item closes a gap against the official Objectives / Potential Considerations. Estimates are in hours.
+- [ ] **Landing-date chart** (~1.5 h): next 60 landing days for the active site, coloured by hours of sunlight before the first sunset, plus Earth hours. Click a day to jump there. *Covers: date flexibility, schedule changes.*
+- [ ] **2D south-pole map** (~2 h): top-down LOLA hillshade (60°S–90°S) with all sites marked; click anywhere to make a custom site. *Covers: 2D maps, custom coordinates.*
+- [ ] **Real horizon for custom polar points** (~1 h, with the map): ship a downsampled DEM (~1 km/px) and compute the 720-direction horizon in the browser. *Covers: LOLA topography for custom sites.*
+- [ ] **More future targets** (~0.5 h): Artemis III candidate regions, Chang'e-7 target. *Covers: curated future targets.*
+- [ ] **Season view** (~1 h): % sunlit / % Earth for each of 12 months at the active site (and compared sites). *Covers: lunar days and seasons.*
+- [ ] **Date-vs-date comparison** (~1 h): compare the same site on two landing dates side by side. *Covers: site-date combinations.*
+- [ ] **Libration explainer** (~0.5 h): an overlay that explains Earth's loop in the sky. *Covers: libration consideration.*
+- [ ] **Earth vs Moon panel** (~0.5 h): day length, night length, Sun height, temperature swing, side by side. *Covers: extreme differences.*
+- [ ] **Share link + export** (~0.5 h): URL keeps site, date and compare set; a "Copy link" button and a CSV export of the window metrics. *Covers: team coordination.*
+- [ ] **Global terrain for non-polar sites** (~1.5 h, do last): LOLA global DEM so Apollo and others get real horizons. *Covers: actual topography everywhere.*
+
+### Nice to have (only after everything above)
 - [ ] "True scale" toggle for Sun and Earth sizes
 - [ ] Hover tooltips on the timeline (time, Sun el, Earth el)
-
-### P2: stretch
-- [ ] Global LOLA DEM so Apollo and mid-latitude sites get real horizons
-- [ ] Click on the terrain to pick a custom site
-- [ ] Earth libration explainer overlay
 - [ ] Mobile layout polish
 
 ### Delivery

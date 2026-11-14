@@ -27,3 +27,12 @@ Any AI or human picking this up should read the **last entry** first.
 - Polar site coordinates marked `approx` in sites.json are region centres, not exact points.
 
 **Next**: the P0 list in `docs/PLAN.md`, starting with clicking through all tour scenes in a real browser.
+
+## Session 2: Sat 2026-11-14, ~12:30–13:00
+
+**Done**
+- Created the private GitHub repo **https://github.com/MujtabaF/rimlight-navigator** and pushed v0.
+- The main working copy is now **iCloud Drive → Mujtaba → Rimlight Navigator** (cloned from GitHub, NASA DEMs copied into `data/raw/`, `npm install` done). The old `~/Nasa Space App` folder is obsolete.
+- Audited the app against the official Objectives and Potential Considerations. The owner decided that **every gap must be closed before submission**, so they are now listed as required in `docs/PLAN.md` → *Challenge coverage*.
+
+**Next**: Landing-date chart, then the 2D south-pole map with real custom horizons, then future targets.

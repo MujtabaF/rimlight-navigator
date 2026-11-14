@@ -12,7 +12,7 @@ The deadline is about **Sun 2026-11-15, 15:30 local time** (the project started 
 
 ## Current status (update this block every session)
 
-* **Phase:** v0 simulation working end-to-end, locally only, nothing deployed.
+* **Phase:** v0 working end-to-end; pushed to GitHub (private), not deployed. Working copy: iCloud Mujtaba/Rimlight Navigator. Owner requires ALL "Challenge coverage" items in PLAN.md before submission.
 * **Works:** ephemeris (JPL-validated, 0.004°), LOLA horizons for 7 polar sites, 3D terrain view, eye-level view, panorama, 30-day timeline, comparison, countdowns, power, 8-scene guided tour, custom coordinates, deep links.
 * **Next up:** see the top unchecked items in `docs/PLAN.md` → *Checklist*.
 
