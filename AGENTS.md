@@ -9,6 +9,7 @@ The deadline is about **Sun 2026-11-15, 15:30 local time** (the project started 
 4. `docs/DECISIONS.md`: choices that were already made and why (don't re-argue them)
 5. `docs/SCIENCE.md`: how the physics works, only needed if you touch `src/core/` or `scripts/`
 6. `docs/DEMO_SCRIPT.md`: the live presentation, which runs on the app's guided tour
+7. `docs/PRESENTATION.md`: presenter cheat sheet (why the name "Rimlight", pitches, key numbers)
 
 ## Current status (update this block every session)
 
