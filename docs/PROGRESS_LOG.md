@@ -36,3 +36,17 @@ Any AI or human picking this up should read the **last entry** first.
 - Audited the app against the official Objectives and Potential Considerations. The owner decided that **every gap must be closed before submission**, so they are now listed as required in `docs/PLAN.md` → *Challenge coverage*.
 
 **Next**: Landing-date chart, then the 2D south-pole map with real custom horizons, then future targets.
+
+## Session 3: Sat 2026-11-14 (testing setup), approved by owner and committed
+
+**Done (owner approved, committed)**
+- `npm test` now runs 8 pass/fail science checks (`scripts/sanity-check.mjs`) and the build. All pass.
+- `npm run screenshots` (`scripts/screenshots.sh`) captures every tour scene into `review/` (gitignored).
+- `docs/TESTING.md` sets up the one-step-at-a-time review loop: build one item → auto-checks → show the owner → **owner approves** → commit and push.
+- Added a presenter cheat sheet (`docs/PRESENTATION.md`, already committed).
+
+**Process rule (owner's request):** one item at a time. Explain it, give a "how to test it" checklist, and wait for approval before committing or moving on.
+
+- On review: restored the literal "—" in `package.json`, and made the 720p screenshot a single 1280×720 capture (it was being taken twice).
+
+**Next**: PLAN.md → *P0: simulation polish*, one item at a time, starting with the tour-scene click-through.

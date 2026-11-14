@@ -10,6 +10,7 @@ The deadline is about **Sun 2026-11-15, 15:30 local time** (the project started 
 5. `docs/SCIENCE.md`: how the physics works, only needed if you touch `src/core/` or `scripts/`
 6. `docs/DEMO_SCRIPT.md`: the live presentation, which runs on the app's guided tour
 7. `docs/PRESENTATION.md`: presenter cheat sheet (why the name "Rimlight", pitches, key numbers)
+8. `docs/TESTING.md`: test commands and the one-step-at-a-time review loop (follow it)
 
 ## Current status (update this block every session)
 
@@ -32,7 +33,9 @@ The deadline is about **Sun 2026-11-15, 15:30 local time** (the project started 
 ```bash
 npm run dev                         # dev server
 npm run build                       # production build -> dist/
+npm test                            # science checks (8 pass/fail) + build
 npm run validate                    # JPL Horizons comparison (exit 1 if > 0.1°)
+npm run screenshots                 # all tour scenes -> review/*.png
 node scripts/sanity-check.mjs       # 1-year stats per site
 .venv/bin/python scripts/build_horizons.py   # regenerate public/data/sites/*
 bash scripts/fetch_dems.sh          # download raw NASA DEMs (gitignored)

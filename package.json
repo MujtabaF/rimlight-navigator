@@ -8,7 +8,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "validate": "node scripts/validate-horizons.mjs"
+    "test": "node scripts/sanity-check.mjs && vite build",
+    "validate": "node scripts/validate-horizons.mjs",
+    "screenshots": "bash scripts/screenshots.sh"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.1.0",
