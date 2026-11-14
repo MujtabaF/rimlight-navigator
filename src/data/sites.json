@@ -1,0 +1,33 @@
+{
+  "_note": "Single source of truth for curated sites. lat/lon in degrees, longitude East-positive. 'snap' = move to the highest LOLA terrain within N metres (rim crests / peaks). Coordinates marked approx are region centres, not exact landing points.",
+  "sites": [
+    { "id": "shackleton-ridge", "name": "Shackleton–de Gerlache Ridge", "group": "Artemis south pole", "lat": -89.45, "lon": -137.3, "snap": 1500, "approx": true,
+      "blurb": "The ridge connecting Shackleton and de Gerlache craters — one of the most persistently sunlit spots on the Moon." },
+    { "id": "shackleton-floor", "name": "Shackleton Crater Floor", "group": "Artemis south pole", "lat": -89.67, "lon": 129.78, "approx": true,
+      "blurb": "A permanently shadowed region ~2.8 km below the rim. Water ice may survive here because the Sun never rises above the crater wall." },
+    { "id": "malapert", "name": "Malapert Massif", "group": "Artemis south pole", "lat": -85.99, "lon": 2.93, "snap": 1500, "approx": true,
+      "blurb": "A 5 km-high mountain and Artemis III candidate region. Tall enough to see Earth more often than the lowlands around it." },
+    { "id": "im2", "name": "IM-2 Athena (Mons Mouton)", "group": "Commercial (CLPS)", "lat": -84.7906, "lon": 29.1957,
+      "blurb": "Intuitive Machines' 2025 lander on the Mons Mouton plateau — the southernmost landing attempt to date." },
+    { "id": "im1", "name": "IM-1 Odysseus (Malapert A)", "group": "Commercial (CLPS)", "lat": -80.13, "lon": 1.4376,
+      "blurb": "First US soft landing since Apollo (Feb 2024), near Malapert A crater." },
+    { "id": "chandrayaan3", "name": "Chandrayaan-3 Vikram", "group": "International", "lat": -69.3733, "lon": 32.3191,
+      "blurb": "India's 2023 lander — the first near the south polar region. It ran for one lunar day, then froze in the lunar night." },
+    { "id": "luna25", "name": "Luna-25 target (Boguslawsky)", "group": "International", "lat": -69.545, "lon": 43.544,
+      "blurb": "Russia's planned 2023 landing site. The spacecraft crashed before reaching it." },
+    { "id": "apollo11", "name": "Apollo 11 (Tranquility Base)", "group": "Apollo", "lat": 0.6741, "lon": 23.473,
+      "blurb": "Equatorial landing site: the Sun climbs high, and Earth sits almost still in the sky." },
+    { "id": "apollo15", "name": "Apollo 15 (Hadley–Apennine)", "group": "Apollo", "lat": 26.1322, "lon": 3.6339,
+      "blurb": "Mid-latitude site at the foot of the Apennine mountains." },
+    { "id": "apollo17", "name": "Apollo 17 (Taurus–Littrow)", "group": "Apollo", "lat": 20.1908, "lon": 30.7717,
+      "blurb": "The last crewed landing (1972)." },
+    { "id": "slim", "name": "SLIM (Shioli crater)", "group": "International", "lat": -13.316, "lon": 25.251,
+      "blurb": "JAXA's 2024 precision lander. It touched down upside-down, so its solar panels only worked when the Sun was in the west." },
+    { "id": "blueghost1", "name": "Blue Ghost M1 (Mare Crisium)", "group": "Commercial (CLPS)", "lat": 18.5622, "lon": 61.8103,
+      "blurb": "Firefly's 2025 lander. It operated a full lunar day and filmed sunset from the surface." },
+    { "id": "change4", "name": "Chang'e 4 (Von Kármán)", "group": "International", "lat": -45.4446, "lon": 177.5991,
+      "blurb": "The first far-side landing. Earth never rises here, so every bit of data goes through the Queqiao relay satellite." },
+    { "id": "change6", "name": "Chang'e 6 (Apollo basin)", "group": "International", "lat": -41.6385, "lon": -153.9852,
+      "blurb": "The first sample return from the far side (2024). It also had no direct-to-Earth link." }
+  ]
+}

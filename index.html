@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rimlight Navigator</title>
+  <meta name="description" content="Compare lunar landing sites and dates: Sun and Earth above the real LOLA horizon, power and direct-to-Earth windows. NASA Space Apps 2026." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%23222'/><path d='M2 20h28' stroke='%23ffb547' stroke-width='3'/></svg>" />
+</head>
+<body>
+  <div id="app">
+    <header class="bar">
+      <div class="brand">
+        <span class="mark" aria-hidden="true"></span>
+        <div>
+          <strong>Rimlight Navigator</strong>
+          <span class="sub">Lunar landing sites: light and link</span>
+        </div>
+      </div>
+      <nav class="bar-actions">
+        <button id="eye" class="btn" aria-pressed="false">Stand on the surface</button>
+        <button id="story-btn" class="btn primary">Guided tour</button>
+      </nav>
+    </header>
+
+    <aside id="sites" aria-label="Landing sites">
+      <ul id="site-list"></ul>
+      <form id="custom" class="custom">
+        <h3>Custom coordinates</h3>
+        <div class="row">
+          <label>Lat <input id="c-lat" type="number" step="0.0001" value="-87.5" required /></label>
+          <label>Lon <input id="c-lon" type="number" step="0.0001" value="45" required /></label>
+        </div>
+        <button class="btn" type="submit">Go to point</button>
+        <p id="c-msg" class="msg" role="alert"></p>
+      </form>
+    </aside>
+
+    <main id="viewport" aria-label="3D view of the landing site">
+      <section id="story" class="story" hidden aria-live="polite">
+        <p class="story-count"></p>
+        <h2 class="story-title"></h2>
+        <p class="story-text"></p>
+        <div class="story-nav">
+          <button class="btn story-prev">Back</button>
+          <button class="btn primary story-next">Next</button>
+          <button class="btn ghost story-close" aria-label="Close guided tour">Close</button>
+        </div>
+      </section>
+    </main>
+
+    <aside id="readout" aria-label="Site conditions" data-sun="up">
+      <header>
+        <h1 id="site-name">Loading…</h1>
+        <p id="site-coords" class="meta"></p>
+        <p id="site-source" class="meta source"></p>
+      </header>
+
+      <section class="now sun">
+        <h2>Sun</h2>
+        <p class="big" id="sun-el">–</p>
+        <p id="sun-state"></p>
+        <p id="sun-next" class="next"></p>
+      </section>
+      <section class="now earth">
+        <h2>Earth</h2>
+        <p class="big" id="earth-el">–</p>
+        <p id="earth-state"></p>
+        <p id="earth-next" class="next"></p>
+      </section>
+      <section class="power">
+        <h2>Solar power right now</h2>
+        <p class="pw-row"><span>Upright panel, turns to face the Sun</span><b id="power-v">–</b></p>
+        <div class="meter"><div id="power-bar-v"></div></div>
+        <p class="pw-row"><span>Flat panel on the deck</span><b id="power-h">–</b></p>
+        <div class="meter"><div id="power-bar-h"></div></div>
+      </section>
+      <section class="window">
+        <h2>Over this 30-day window</h2>
+        <dl>
+          <div><dt>Sunlit</dt><dd id="m-sun">–</dd></div>
+          <div><dt>Earth in view</dt><dd id="m-earth">–</dd></div>
+          <div><dt>Both at once</dt><dd id="m-both">–</dd></div>
+          <div><dt>Longest night</dt><dd id="m-dark">–</dd></div>
+          <div><dt>Longest Earth blackout</dt><dd id="m-noearth">–</dd></div>
+        </dl>
+      </section>
+      <section id="compare" hidden>
+        <h2>Side by side</h2>
+        <table>
+          <thead><tr><th scope="col">Site</th><th scope="col">Sun</th><th scope="col">Earth</th><th scope="col">Longest night</th></tr></thead>
+          <tbody id="compare-body"></tbody>
+        </table>
+      </section>
+      <p id="site-blurb" class="blurb"></p>
+    </aside>
+
+    <section id="bottom" aria-label="Time controls">
+      <div class="transport">
+        <button id="back-day" class="btn" title="Back one day (Shift + ←)">−1 day</button>
+        <button id="play" class="btn primary" aria-pressed="false">Play</button>
+        <button id="fwd-day" class="btn" title="Forward one day (Shift + →)">+1 day</button>
+        <label class="speed">Speed
+          <select id="speed">
+            <option value="1">1 hour / s</option>
+            <option value="6" selected>6 hours / s</option>
+            <option value="12">12 hours / s</option>
+            <option value="24">1 day / s</option>
+            <option value="72">3 days / s</option>
+          </select>
+        </label>
+        <label class="date">UTC <input id="date" type="datetime-local" /></label>
+        <button id="today" class="btn ghost">Now</button>
+        <span class="legend"><i class="sw sun"></i>Sun up (power) <i class="sw earth"></i>Earth up (direct link)</span>
+      </div>
+      <canvas id="panorama" aria-label="360 degree horizon with Sun and Earth tracks"></canvas>
+      <canvas id="timeline" aria-label="30-day sunlight and Earth visibility timeline. Click to change time."></canvas>
+    </section>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
