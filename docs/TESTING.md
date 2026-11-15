@@ -13,7 +13,8 @@ Each feature goes through the same loop. Nothing moves forward until the owner a
 
 | Test | Command | What it proves | When |
 |---|---|---|---|
-| **Science test** | `npm test` | A year of results for every site still matches physics and published studies: ridge ~89% sunlit, crater floor 0%, far side never sees Earth, equator ~50% sunlit, and so on. **13 pass/fail checks** (8 site checks, 2 landing-planner checks, 2 season checks, 1 global-terrain check). Also confirms the app builds. | Every step |
+| **Unit tests** | `npm run test:unit` (`npm run coverage` for the report) | **150 Vitest tests** in `tests/`: Sun/Earth positions against **66 saved NASA JPL Horizons answers** (within 0.01°), skyline geometry, mission metrics, the verdict rule, best days, date vs date, seasons, share links, CSV, explainers, and data integrity for every site. **100% line and branch coverage of `src/core/`** (the physics). | Every step |
+| **Science test** | `npm run test:science` (part of `npm test`) | A year of results for every site still matches physics and published studies: ridge ~89% sunlit, crater floor 0%, far side never sees Earth, equator ~50% sunlit, and so on. **15 pass/fail checks** (8 site checks, 2 landing-planner, 2 seasons, 1 global terrain, 2 for the Rimlight picks). Also confirms the app builds. | Every step |
 | **JPL validation** | `npm run validate` | Our Sun and Earth positions agree with NASA JPL Horizons to within 0.1° (currently **0.004°**). Needs internet. | Whenever `src/core/` changes |
 | **Visual check** | `npm run screenshots` | Captures all 8 tour scenes, the default view and a 720p projector-size view into `review/`, so you can see glitches without clicking through. | Every step |
 | **Manual review** | `npm run dev` → browser | What only a human can judge: does it feel right, is it clear, would it impress a judge? | Every step (by the owner) |
@@ -29,7 +30,7 @@ Each feature goes through the same loop. Nothing moves forward until the owner a
 - [ ] Plus the **feature-specific checklist** the AI gives you for that step.
 
 ## What "done" means for any item
-* `npm test` passes, with all 13 science checks and the build.
+* `npm test` passes: 150 unit tests, 15 science checks and the build. GitHub Actions (`.github/workflows/ci.yml`) runs the same on every push.
 * Screenshots look right.
 * The owner has reviewed and approved it.
 * It's committed and pushed, with the log and plan updated.

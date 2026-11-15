@@ -8,9 +8,13 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node scripts/sanity-check.mjs && vite build",
+    "test": "vitest run && node scripts/sanity-check.mjs && vite build",
     "validate": "node scripts/validate-horizons.mjs",
-    "screenshots": "bash scripts/screenshots.sh"
+    "screenshots": "bash scripts/screenshots.sh",
+    "test:unit": "vitest run",
+    "test:science": "node scripts/sanity-check.mjs",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.1.0",
@@ -19,7 +23,9 @@
     "three": "^0.170.0"
   },
   "devDependencies": {
-    "vite": "^5.4.11"
+    "@vitest/coverage-v8": "^2.1.9",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.9"
   },
   "license": "MIT"
 }

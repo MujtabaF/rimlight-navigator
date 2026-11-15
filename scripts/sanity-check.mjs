@@ -88,5 +88,16 @@ for (const [id, k, lo, hi, why] of EXPECT) {
   } else console.log('SKIP  global terrain check (run scripts/fetch_dems.sh + build_horizons.py)');
 }
 
+// Rimlight picks (scripts/find_picks.py): the balanced picks must beat every official candidate on
+// time with power AND Earth contact at once, and the polar pick must stay mostly sunlit.
+{
+  const both = (id) => results.get(id)?.bothPct;
+  const official = Math.max(both('shackleton-ridge'), both('malapert'), both('degerlache-rim'), both('haworth'));
+  let ok = both('pick-earthrise') > official && both('pick-nobile') > official; if (!ok) fail++;
+  console.log(`${ok ? 'PASS' : 'FAIL'}  picks power+Earth at once = ${both('pick-earthrise')?.toFixed(1)}% / ${both('pick-nobile')?.toFixed(1)}%  (expected > best official candidate, ${official?.toFixed(1)}%)`);
+  ok = results.get('pick-polar-ridge')?.sunlitPct >= 70; if (!ok) fail++;
+  console.log(`${ok ? 'PASS' : 'FAIL'}  pick-polar-ridge sunlitPct = ${results.get('pick-polar-ridge')?.sunlitPct.toFixed(1)}  (expected ≥ 70)`);
+}
+
 console.log(fail ? `\n${fail} science check(s) FAILED` : '\nAll science checks passed');
 process.exit(fail ? 1 : 0);

@@ -404,7 +404,13 @@ function buildSiteList() {
   $('#site-list').addEventListener('click', (e) => {
     const b = e.target.closest('button');
     if (!b) return;
-    if (b.classList.contains('site-btn')) setSite(app.byId.get(b.dataset.id));
+    if (b.classList.contains('site-btn')) {
+      const s = app.byId.get(b.dataset.id);
+      setSite(s).then(() => {
+        // Rimlight picks jump to their best landing date so you can see it straight away.
+        if (s.tryDate) { setDate(new Date(s.tryDate + 'Z')); notify(`Rimlight pick: jumped to its best landing date, ${fmtDay(s.tryDate + 'Z')}, ${new Date(s.tryDate + 'Z').getUTCFullYear()}. Press Play to watch it.`); }
+      });
+    }
     else toggleCompare(b.dataset.id);
   });
 }

@@ -1,5 +1,8 @@
 // Validates src/core/ephemeris.js against NASA JPL Horizons (observer on the lunar surface).
-// Usage: node scripts/validate-horizons.mjs
+// Usage: node scripts/validate-horizons.mjs [--save]
+//   --save also writes the JPL answers to tests/fixtures/jpl-horizons.json, so the unit tests can
+//   check against NASA's values offline (tests/ephemeris.test.js).
+import { writeFileSync, mkdirSync } from 'node:fs';
 import { skyAt } from '../src/core/ephemeris.js';
 
 const sites = [
@@ -26,10 +29,12 @@ async function horizons(body, s) {
 }
 
 let worst = 0;
+const fixture = [];
 for (const s of sites) {
   for (const [body, key] of [['10', 'sun'], ['399', 'earth']]) {
     const rows = await horizons(body, s);
     for (const h of rows) {
+      fixture.push({ site: s, body: key, date: h.date.toISOString(), az: h.az, el: h.el });
       const m = skyAt(s, h.date)[key];
       let daz = Math.abs(m.az - h.az); if (daz > 180) daz = 360 - daz;
       const del = Math.abs(m.el - h.el);
@@ -39,6 +44,11 @@ for (const s of sites) {
       console.log(`${s.name.padEnd(15)} ${key.padEnd(5)} ${h.date.toISOString().slice(0, 16)}  JPL el ${h.el.toFixed(3).padStart(8)} az ${h.az.toFixed(2).padStart(7)} | ours el ${m.el.toFixed(3).padStart(8)} az ${m.az.toFixed(2).padStart(7)} | dEl ${del.toFixed(3)}`);
     }
   }
+}
+if (process.argv.includes('--save')) {
+  mkdirSync(new URL('../tests/fixtures/', import.meta.url), { recursive: true });
+  writeFileSync(new URL('../tests/fixtures/jpl-horizons.json', import.meta.url), JSON.stringify({ source: 'NASA JPL Horizons API, observer on the lunar surface (coord@301), AIRLESS', fetched: new Date().toISOString(), rows: fixture }, null, 1));
+  console.log(`Saved ${fixture.length} JPL rows to tests/fixtures/jpl-horizons.json`);
 }
 console.log(`\nWorst angular disagreement vs JPL Horizons: ${worst.toFixed(3)} deg`);
 process.exit(worst < 0.1 ? 0 : 1);

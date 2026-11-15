@@ -37,3 +37,5 @@ All done. See the Done list below.
 - [x] Landing page at / (hero render, problem, product shots, NASA data, name story); navigator moved to /app.html (old links forward)
 - [x] Hide panels button (same as F)
 - [x] Polish: tour fixes (eye scenes follow the Sun, brighter crater floor), camera fly-in on site change, loading screen + plain error messages, 720p layout, cached timeline/skyline layers for performance
+- [x] Rimlight picks (owner's Easter egg): 3 ideal south-pole spots found from NASA maps, verified by our engine, click to jump to the best date
+- [x] Test suite: 150 Vitest unit tests (66 JPL Horizons fixtures, 100% coverage of src/core), 15 science checks, GitHub Actions CI

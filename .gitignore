@@ -6,3 +6,4 @@ __pycache__/
 # NASA LOLA source DEMs are ~235 MB — re-download with scripts/fetch_dems.sh
 data/raw/
 review/
+coverage/

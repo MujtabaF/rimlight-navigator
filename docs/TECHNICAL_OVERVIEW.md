@@ -58,7 +58,7 @@ A static web app with two pages:
 | Hosting | **Static site, no backend** | One URL works anywhere, nothing server-side can break during judging, and the built `dist/` folder runs offline. |
 | Testing | Node science checks, plus headless-Chrome screenshots | The physics is verified on every change, plus a visual regression check. |
 
-**Scale:** about 3,500 lines of code and about 9.5 MB of processed data shipped to the browser. The raw NASA files (about 270 MB) stay offline.
+**Scale:** about 3,800 lines of code plus about 300 lines of tests and about 9.5 MB of processed data shipped to the browser. The raw NASA files (about 270 MB) stay offline.
 
 **Architecture rule:** `src/core/` is pure maths with no web-page code, so exactly the same physics runs in the browser and in the Node tests.
 
@@ -111,7 +111,13 @@ A static web app with two pages:
 
 ## 7. How we know it's right
 
-`npm test` runs **13 automatic science checks** on every change. If any fails, the change isn't accepted:
+Three layers of testing run with `npm test`, and **GitHub Actions** runs all of them automatically on every push (`.github/workflows/ci.yml`):
+
+1. **150 unit tests (Vitest)** in `tests/`. They check Sun and Earth positions against **66 saved NASA JPL Horizons answers** (each within 0.01°), the partial-Sun geometry, mission metrics, the verdict rule at every threshold, best days, date vs date, seasons, share links, the CSV export, the explainers, and that every site's data file is valid. **Coverage: 100% of lines and branches in the physics core (`src/core/`), 96% overall.**
+2. **15 science checks** (below): year-long results compared with physics and published studies.
+3. **A production build** plus headless-browser screenshots of every tour scene.
+
+The science checks:
 
 | Check | Result | Why it matters |
 |---|---|---|
@@ -127,8 +133,23 @@ A static web app with two pages:
 | Ridge: 12 monthly values averaged | **88.8%** = the yearly value | The Year view is consistent |
 | Ridge: best month minus worst month | **38 points** | Polar seasons are real |
 | Apollo 15 highest skyline | **12.4°** | The real Apennine mountains show up |
+| Rimlight picks: power and Earth at once | **60.5% and 60.2%** vs 48.9% for the best official candidate | Our picks really are better on the combined measure |
+| Pole Ridge pick sunlight | **77.3%** | The power pick stays mostly sunlit |
 
 Plus the **JPL Horizons comparison (0.004°)** and screenshot checks of every tour scene.
+
+## 7b. Rimlight picks: our own ideal spots
+
+`scripts/find_picks.py` scores every 120 m cell from 85°S to the pole using NASA's LOLA team maps: sunlight × (0.4 + 0.6 × Earth visibility) × safe slope (≤ 8°) × ice nearby (permanent shadow within 1–5 km). It keeps the best spots at least 12 km apart and away from existing sites. The app then **re-checks every pick with its own skyline and ephemeris** and finds the best landing dates:
+
+| Pick | Sunlight | Earth | Power + Earth at once | Best 2027 landings |
+|---|---|---|---|---|
+| **1: Malapert Shoulder** (85.92°S, 4.10°W) | 60.5% | 100% | **60.5%** | Sep 8, Oct 7, Nov 6 (about 19 days of light each) |
+| **2: Nobile Plateau** (84.37°S, 43.37°E) | 60.2% | 100% | **60.2%** | Sep 30, Oct 30, Nov 29 |
+| **3: Pole Ridge** (89.80°S, 53.99°E) | 77.3% | 49% | 36.1% | **Oct 9: 47 days of sunlight** |
+| *Shackleton ridge (official)* | 88.8% | 51% | *48.9%* | |
+
+**Picks 1 and 2 have power and a direct link to Earth at the same time for about 60% of the year, more than any official candidate in the app.** Clicking a pick in the app jumps straight to its best landing date.
 
 ## 8. Challenges and how we solved them
 
@@ -198,9 +219,9 @@ Plus the **JPL Horizons comparison (0.004°)** and screenshot checks of every to
 - **In the 3D view:** points are about 29 m apart at the landing spot, 8× sharper than our first version.
 - **Why it varies:** precision matters most at the pole, where terrain decides everything.
 
-### 17 sites, 13 checks
-- **17 sites:** 10 polar (with 40 m and 240 m terrain) and 7 elsewhere (with global terrain), spanning NASA, commercial landers, India, Japan, China and Russia, plus 3 future targets.
-- **13 checks:** automatic science tests that run on every change (section 7).
+### 20 sites, 150 tests, 15 checks
+- **20 sites:** 17 known sites plus 3 Rimlight picks. Of the 17 known sites, 10 polar (with 40 m and 240 m terrain) and 7 elsewhere (with global terrain), spanning NASA, commercial landers, India, Japan, China and Russia, plus 3 future targets.
+- **150 unit tests and 15 science checks** run on every change (section 7), with 100% coverage of the physics code.
 
 ### 10 days and 50%: the "good" thresholds
 - **10 days of sunlight before the first sunset:** about one lunar day of operations, the length of a typical commercial (CLPS) mission.

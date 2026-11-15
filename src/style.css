@@ -337,3 +337,6 @@ body.load-failed .loader p { color: var(--poor); max-width: 46ch; text-align: ce
   .transport .legend { display: none; }
   .transport #speed { max-width: 150px; }
 }
+
+/* Rimlight picks: the owner's ideal spots get a small gold star in the site list */
+.site-btn[data-id^="pick-"] .nm::after { content: ' ★'; color: var(--sun); font-size: 12px; }

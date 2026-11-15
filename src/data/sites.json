@@ -1,5 +1,5 @@
 {
-  "_note": "Single source of truth for curated sites. lat/lon in degrees, longitude East-positive. 'snap' = move to the highest LOLA terrain within N metres (rim crests / peaks). 'rim' = start from the highest point on that crater's rim (catalogued centre + diameter). Coordinates marked approx are region centres, not exact landing points.",
+  "_note": "Single source of truth for curated sites. lat/lon in degrees, longitude East-positive. 'snap' = move to the highest LOLA terrain within N metres (rim crests / peaks). 'tryDate' = best landing date found for that spot (the app jumps there when it's picked). 'rim' = start from the highest point on that crater's rim (catalogued centre + diameter). Coordinates marked approx are region centres, not exact landing points.",
   "sites": [
     { "id": "shackleton-ridge", "name": "Shackleton–de Gerlache Ridge", "group": "Artemis south pole", "lat": -89.45, "lon": -137.3, "snap": 1500, "approx": true,
       "blurb": "The ridge connecting Shackleton and de Gerlache craters — one of the most persistently sunlit spots on the Moon." },
@@ -13,6 +13,12 @@
       "blurb": "NASA Artemis III candidate region beside Haworth, a large permanently shadowed crater. Approximate point: the highest spot on its rim." },
     { "id": "change7", "name": "Chang'e-7 target (Shackleton rim)", "group": "Future targets (approximate)", "lat": -89.67, "lon": 129.78, "rim": { "lat": -89.67, "lon": 129.78, "diameterKm": 21 }, "snap": 1500, "approx": true,
       "blurb": "China's Chang'e-7 mission is planned to land near the sunlit rim of Shackleton crater to look for water ice. Approximate point: the highest spot on the rim." },
+    { "id": "pick-earthrise", "name": "Pick 1: Malapert Shoulder", "tryDate": "2027-09-08T13:00", "group": "Rimlight picks (ideal spots)", "lat": -85.9109, "lon": -4.1606, "snap": 200, "approx": true,
+      "blurb": "Balanced pick on the shoulder of Malapert. Power and Earth at the same time about 60% of the year, more than any official candidate here. Earth never sets. Best landings in 2027: Sep 8, Oct 7 and Nov 6 (about 19 days of light each). Permanent shadow, possible ice, about 5 km away. Found by Rimlight from NASA LOLA sunlight, Earth-visibility, shadow and slope maps (scripts/find_picks.py)." },
+    { "id": "pick-nobile", "name": "Pick 2: Nobile Plateau", "tryDate": "2027-09-30T22:00", "group": "Rimlight picks (ideal spots)", "lat": -84.3667, "lon": 43.4073, "snap": 200, "approx": true,
+      "blurb": "Balanced pick near Nobile crater. Power and Earth at the same time about 60% of the year, and Earth never sets. Best landings in 2027: Sep 30, Oct 30 and Nov 29. A permanently shadowed crater (possible ice) is about 1 km away. Found by Rimlight from NASA LOLA sunlight, Earth-visibility, shadow and slope maps (scripts/find_picks.py)." },
+    { "id": "pick-polar-ridge", "name": "Pick 3: Pole Ridge", "tryDate": "2027-10-09T10:00", "group": "Rimlight picks (ideal spots)", "lat": -89.8045, "lon": 54.0579, "snap": 200, "approx": true,
+      "blurb": "Power pick on a flat ridge 20 km from the pole. Sunlit 77% of the year. Land on Oct 9, 2027 and the Sun stays up for 47 days, with Earth in view almost all of the first two weeks. Permanent shadow, possible ice, is under 1 km away. Found by Rimlight from NASA LOLA sunlight, Earth-visibility, shadow and slope maps (scripts/find_picks.py)." },
     { "id": "im2", "name": "IM-2 Athena (Mons Mouton)", "group": "Commercial (CLPS)", "lat": -84.7906, "lon": 29.1957,
       "blurb": "Intuitive Machines' 2025 lander on the Mons Mouton plateau — the southernmost landing attempt to date." },
     { "id": "im1", "name": "IM-1 Odysseus (Malapert A)", "group": "Commercial (CLPS)", "lat": -80.13, "lon": 1.4376,
