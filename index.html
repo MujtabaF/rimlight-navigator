@@ -18,6 +18,7 @@
         </div>
       </div>
       <nav class="bar-actions">
+        <button id="evm-btn" class="btn" aria-haspopup="dialog" title="How a day here compares with a day on Earth">Moon vs Earth</button>
         <button id="help-btn" class="btn" aria-haspopup="dialog" title="Controls and how to read the screen (press ?)">How to use</button>
         <button id="eye" class="btn" aria-pressed="false">Stand on the surface</button>
         <button id="story-btn" class="btn primary">Guided tour</button>
@@ -72,6 +73,11 @@
         <p class="dates-info" id="dates-info">Tall green bars mean long sunlight and Earth contact. Click a day to land then.</p>
         <div class="dates-best" id="dates-best"></div>
       </section>
+      <section class="dvd" id="dvd" aria-labelledby="dvd-title">
+        <div class="dvd-head"><h2 id="dvd-title">Compare two landing dates</h2><button id="pin-btn" class="btn small">Pin this date</button></div>
+        <p class="dvd-hint" id="dvd-hint">Pin a date, then move to another one (timeline, chart or +1 day) to see both side by side.</p>
+        <div class="dvd-grid" id="dvd-grid" hidden></div>
+      </section>
 
       <section class="now sun">
         <h2>Sun</h2>
@@ -84,6 +90,7 @@
         <p class="big" id="earth-el">–</p>
         <p id="earth-state"></p>
         <p id="earth-next" class="next"></p>
+        <button id="lib-btn" class="linkish" aria-haspopup="dialog">Why does Earth move?</button>
       </section>
       <section class="power">
         <h2>Solar power right now</h2>
@@ -121,6 +128,8 @@
         </label>
         <label class="date">UTC <input id="date" type="datetime-local" /></label>
         <button id="today" class="btn ghost">Now</button>
+        <button id="share-btn" class="btn ghost" title="Copy a link to this exact site, date and comparison">Copy link</button>
+        <button id="csv-btn" class="btn ghost" title="Download the 30-day numbers as a spreadsheet (CSV)">Download CSV</button>
         <div class="dock-tabs" role="group" aria-label="Timeline range">
           <button class="dock-tab" data-dock="30d" aria-pressed="true" title="Hour by hour over 30 days">30 days</button>
           <button class="dock-tab" data-dock="year" aria-pressed="false" title="Each month of the year: the seasons">Year</button>
@@ -138,6 +147,14 @@
     <span>New here? Press <kbd>?</kbd> or click <b>How to use</b> for the controls.</span>
     <button class="btn ghost" id="hint-close" aria-label="Dismiss tip">OK</button>
   </div>
+
+  <dialog id="explain" aria-labelledby="explain-title">
+    <header class="help-head">
+      <h2 id="explain-title"></h2>
+      <button class="btn ghost" id="explain-close" aria-label="Close">Close</button>
+    </header>
+    <div class="explain-body" id="explain-body"></div>
+  </dialog>
 
   <dialog id="help" aria-labelledby="help-title">
     <header class="help-head">
@@ -171,6 +188,8 @@
           <tr><th>Switch view</th><td><b>Stand on the surface</b> / <b>Orbit view</b> button</td></tr>
           <tr><th>Compare sites</th><td><b>+</b> next to a site in the list (up to 4). Cards appear side by side on the right; click one to switch to it</td></tr>
           <tr><th>Guided tour</th><td><kbd>N</kbd> next, <kbd>P</kbd> back, <kbd>Esc</kbd> to leave</td></tr>
+          <tr><th>Share this view</th><td><b>Copy link</b> (site, date and comparison), <b>Download CSV</b> (30-day numbers)</td></tr>
+          <tr><th>Compare two dates</th><td><b>Pin this date</b> on the right, then move to another date</td></tr>
           <tr><th>Hide side panels</th><td><kbd>F</kbd></td></tr>
           <tr><th>This help</th><td><kbd>?</kbd> or <kbd>H</kbd></td></tr>
         </table>

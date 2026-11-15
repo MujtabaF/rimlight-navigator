@@ -126,3 +126,16 @@ Any AI or human picking this up should read the **last entry** first.
 ## Session 9: Sat 2026-11-14 (side-by-side comparison), approved by owner and committed
 
 - Replaced the bottom-of-panel comparison table with **cards under the verdict**: name, verdict right now (same rule, updated with the readout), a mini landing-day strip for the 30-day window, Sun % and Earth % over the window, and best day. The selected site is highlighted; click a card to switch. `datesFor()` caches landing days per site and window (shared with the main chart). Fixed a flex overflow with long names (`minmax(0, 1fr)` and `width: 100%` on button cards).
+
+## Session 10: Sat 2026-11-14 (all remaining core features), approved by owner and committed
+
+**Done**
+- **Date vs date** (`rateTouchdown()` in core/landing.js): "Pin this date" in the readout gives a 3-column grid, pinned vs current, with ✓ on the better value.
+- **Moon vs Earth** dialog (`src/explainers.js`): per-site daylight and night from our analysis, Diviner-based temperatures, Earth-in-sky text from actual Earth visibility.
+- **Libration explainer**: an SVG of Earth's computed az/el path over the window (azimuth unwrapped), skyline underneath, standard ±7.9°/±6.7° explanation.
+- **Share** (`src/share.js`): URL state (`site` or `lat`/`lon`, `t`, `cmp`, `eye`, `dock`) kept in sync with replaceState (throttled 1/s while playing). Copy link (clipboard, with a prompt fallback). Download CSV (30 days, 30-min steps, all compared sites). Demo links `?pin=`, `?explain=evm|lib`.
+- **Future targets**: `rim` option in sites.json + `rim_high_point()` in build_horizons.py. Added de Gerlache Rim, Haworth and the Chang'e-7 target. Nobile Rim was dropped (centre didn't check out). sites.json keeps its compact one-line format.
+- **Global terrain**: `GlobalDEM` in dem.py (LDEM_16, 1.9 km, simple cylindrical, lon wrap). All 17 sites now have real horizons and 3D patches. Orientation checked: Mons Hadley is +3.6 km over the Apollo 15 site; far-side highlands ~8 km. LDEM_64 was abandoned because NASA servers ran at ~35 KB/s. The readout's source line now comes from each site's `sourceLabel`.
+- `npm test`: 13 checks (new: Apollo 15 skyline 12.4°, from the Apennines).
+
+**Next**: Polish (tour click-through, fly-to, loading/error, screen sizes, performance), then Ship.

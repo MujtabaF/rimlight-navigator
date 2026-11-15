@@ -77,5 +77,16 @@ for (const [id, k, lo, hi, why] of EXPECT) {
   console.log(`${ok ? 'PASS' : 'FAIL'}  seasons ridge best-minus-worst month = ${swing.toFixed(0)} points  (expected ≥ 20: polar seasons)`);
 }
 
+// Global terrain (LDEM_16) for non-polar sites: Apollo 15 landed beside the Apennine mountains
+// (Hadley Delta rises ~3.5 km), so its real skyline must rise well above a flat horizon.
+{
+  const f = new URL('../public/data/sites/apollo15.json', import.meta.url);
+  if (existsSync(f)) {
+    const max = Math.max(...JSON.parse(readFileSync(f)).horizonEl);
+    const ok = max >= 2; if (!ok) fail++;
+    console.log(`${ok ? 'PASS' : 'FAIL'}  global terrain apollo15 highest skyline = ${max.toFixed(1)}°  (expected ≥ 2°: Apennine mountains)`);
+  } else console.log('SKIP  global terrain check (run scripts/fetch_dems.sh + build_horizons.py)');
+}
+
 console.log(fail ? `\n${fail} science check(s) FAILED` : '\nAll science checks passed');
 process.exit(fail ? 1 : 0);

@@ -21,7 +21,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).parent))
-from dem import R_M, DEMStack, PolarDEM  # noqa: E402
+from dem import R_M, DEMStack, GlobalDEM, PolarDEM  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "public" / "data" / "sites"
@@ -43,6 +43,20 @@ def destination(lat, lon, az, d):
 def snap_to_high(dem, lat, lon, radius_m):
     az = np.arange(0, 360, 5.0)
     d = np.linspace(0, radius_m, 40)
+    A, D = np.meshgrid(az, d)
+    la, lo = destination(lat, lon, A.ravel(), D.ravel())
+    h = dem.sample(la, lo)
+    i = int(np.nanargmax(h))
+    return float(la[i]), float(lo[i])
+
+
+def rim_high_point(dem, lat, lon, diameter_km):
+    """Highest point on a crater rim: search a narrow annulus 0.9-1.08 x the radius around the
+    catalogued centre (wider rings catch neighbouring massifs). Used to place "<crater> Rim"
+    targets reproducibly from LOLA terrain."""
+    r = diameter_km * 500.0
+    az = np.arange(0, 360, 1.0)
+    d = np.linspace(0.9 * r, 1.08 * r, 16)
     A, D = np.meshgrid(az, d)
     la, lo = destination(lat, lon, A.ravel(), D.ravel())
     h = dem.sample(la, lo)
@@ -81,13 +95,25 @@ def terrain_patch(dem, lat, lon, h0):
 
 def main():
     raw = ROOT / "data" / "raw"
-    dem = DEMStack([PolarDEM(raw / "LDEM_85S_40M.IMG"), PolarDEM(raw / "LDEM_60S_240M.IMG")])
+    # Finest first: 40 m and 240 m south-polar maps, then the global map for everywhere else.
+    dems = [PolarDEM(raw / "LDEM_85S_40M.IMG"), PolarDEM(raw / "LDEM_60S_240M.IMG")]
+    if (raw / "LDEM_16.IMG").exists():
+        try:
+            dems.append(GlobalDEM(raw / "LDEM_16.IMG"))
+        except ValueError:
+            print("LDEM_16.IMG is incomplete (still downloading?); skipping non-polar sites")
+    dem = DEMStack(dems)
+    has_global = len(dems) == 3
     sites = json.loads((ROOT / "src" / "data" / "sites.json").read_text())["sites"]
     OUT.mkdir(parents=True, exist_ok=True)
     for s in sites:
         lat, lon = s["lat"], s["lon"]
-        if lat > -60:
-            continue  # outside south-polar DEM coverage -> app uses smooth-sphere horizon
+        polar = lat <= -60
+        if not polar and not has_global:
+            continue  # no global map downloaded -> app uses a smooth-sphere horizon
+        if s.get("rim"):
+            c = s["rim"]
+            lat, lon = rim_high_point(dem, c["lat"], c["lon"], c["diameterKm"])
         if s.get("snap"):
             lat, lon = snap_to_high(dem, lat, lon, s["snap"])
         h0 = float(dem.sample(np.array([lat]), np.array([lon]))[0])
@@ -99,7 +125,10 @@ def main():
             "azStep": AZ_STEP, "horizonEl": [round(float(v), 3) for v in el],
             "horizonDistKm": [round(float(v) / 1000, 2) for v in dist],
             "patch": {"n": PATCH_N, "halfSizeM": PATCH_HALF_M, "warp": PATCH_WARP, "file": f"{s['id']}.bin"},
-            "source": "NASA LRO LOLA LDEM_85S_40M + LDEM_60S_240M (PDS Geosciences / MIT imbrium)",
+            "source": "NASA LRO LOLA LDEM_85S_40M + LDEM_60S_240M (PDS Geosciences / MIT imbrium)" if polar
+                      else "NASA LRO LOLA LDEM_16 global map, 16 px/deg (PDS Geosciences / MIT imbrium)",
+            "sourceLabel": "Horizon from NASA LOLA terrain (40 m and 240 m maps)" if polar
+                           else "Horizon from NASA LOLA global terrain (1.9 km map)",
         }))
         print(f"{s['id']:18s} lat {lat:9.4f} lon {lon:9.4f}  h {h0:7.0f} m  "
               f"horizon min {el.min():5.2f}  max {el.max():5.2f} deg")

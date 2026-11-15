@@ -66,3 +66,22 @@ export function bestDays(days, count = 3, minGapDays = 4) {
   }
   return picks;
 }
+
+/**
+ * Rate one exact touchdown moment (used by "date vs date"): hours of sunlight until the first
+ * sunset (searched up to 60 days), Earth contact over the first EARTH_DAYS days, the longest
+ * night in the following 30 days, and the same good/ok/poor level.
+ */
+export function rateTouchdown(site, horizon, date) {
+  const a = analyse(site, horizon, date, 30, 60);
+  const s = a.series;
+  let lightHours = 0;
+  while (lightHours < s.length && s[lightHours].sunVis > 0.5) lightHours++;
+  const capped = lightHours >= s.length;
+  const span = Math.min(s.length, EARTH_DAYS * 24);
+  let up = 0;
+  for (let i = 0; i < span; i++) if (s[i].earthVis > 0.5) up++;
+  const earthFrac = up / span;
+  return { date, lightHours, capped, earthFrac, level: classify(lightHours / 24, earthFrac),
+    sunlitPct: a.summary.sunlitPct, longestDarkHours: a.summary.longestDarkHours };
+}

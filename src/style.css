@@ -114,6 +114,7 @@ h1, h2, h3, p { margin: 0; }
 .window dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
 /* side-by-side comparison cards */
 .compare { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.compare[hidden] { display: none; }
 .compare-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 5px; }
 .cmp-card { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; width: 100%; min-width: 0; text-align: left; padding: 7px 10px 6px; border-radius: 8px; cursor: pointer; background: var(--panel-2); border: 1px solid var(--line); border-left: 3px solid var(--ink-3); }
 .cmp-card:hover { border-color: rgba(233, 228, 218, 0.3); }
@@ -155,6 +156,47 @@ h1, h2, h3, p { margin: 0; }
 .day-chip.lvl-good { border-color: var(--good); color: var(--good); }
 .day-chip.lvl-ok { border-color: var(--sun); color: var(--sun); }
 .day-chip:hover { background: rgba(233, 228, 218, 0.12); }
+
+/* compare two landing dates */
+.dvd { display: grid; gap: 8px; padding-bottom: 14px; border-bottom: 1px solid var(--line); grid-template-columns: minmax(0, 1fr); }
+.dvd-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.dvd-head h2 { margin: 0 !important; }
+.btn.small { padding: 3px 10px; font-size: 12px; font-weight: 600; }
+.dvd-hint { font-size: 13px; color: var(--ink-2); }
+.dvd-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr); gap: 0; font-size: 12px; font-variant-numeric: tabular-nums; }
+.dvd-grid[hidden] { display: none; }
+.dvd-grid > * { padding: 5px 4px; border-bottom: 1px solid var(--line); }
+.dvd-grid .dh { font-weight: 650; color: var(--ink-1); font-size: 12px; }
+.dvd-grid .dh small { display: block; font-weight: 400; color: var(--ink-3); }
+.dvd-grid .dk { color: var(--ink-3); padding-right: 8px; }
+.dvd-grid .dv { color: var(--ink-1); white-space: nowrap; }
+.dvd-grid .better { color: var(--good); font-weight: 650; }
+.dvd-grid .better::after { content: ' ✓'; }
+.dvd-grid .lvl-good { color: var(--good); font-weight: 650; }
+.dvd-grid .lvl-ok { color: var(--sun); font-weight: 650; }
+.dvd-grid .lvl-poor { color: var(--poor); font-weight: 650; }
+.linkish { background: none; border: 0; padding: 0; margin-top: 4px; color: var(--earth); font-size: 13px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(79, 163, 255, 0.4); }
+.linkish:hover { text-decoration-color: var(--earth); }
+
+/* explainer pop-up (Moon vs Earth, libration) */
+#explain { width: min(760px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 0; color: var(--ink-1); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+#explain::backdrop { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(3px); }
+.explain-body { padding: 16px 22px 22px; display: grid; gap: 12px; font-size: 14px; }
+.explain-lead { color: var(--ink-2); }
+.explain-note { color: var(--ink-3); font-size: 12px; }
+.explain-steps { margin: 0; padding-left: 20px; display: grid; gap: 6px; color: var(--ink-2); }
+.explain-steps b { color: var(--ink-1); }
+table.evm { width: 100%; border-collapse: collapse; }
+table.evm th, table.evm td { text-align: left; vertical-align: top; padding: 7px 8px; border-bottom: 1px solid var(--line); }
+table.evm thead th { font: 500 15px/1.2 var(--serif); color: var(--ink-1); }
+table.evm tbody th { font-weight: 500; color: var(--ink-3); width: 26%; }
+table.evm td { color: var(--ink-2); }
+table.evm td:last-child { color: var(--ink-1); }
+.lib-svg { width: 100%; height: auto; background: rgba(233, 228, 218, 0.03); border: 1px solid var(--line); border-radius: 8px; }
+.lib-path { fill: none; stroke: var(--earth); stroke-width: 2.2; }
+.lib-now { fill: var(--earth); stroke: #000; stroke-width: 2; }
+.lib-ground { fill: var(--terrain); opacity: 0.8; }
+.lib-axis { fill: var(--ink-3); font: 12px var(--font); }
 
 /* ---------- time dock ---------- */
 #bottom { position: absolute; z-index: 2; left: var(--gap); right: var(--gap); bottom: var(--gap); padding: 10px 14px 8px; display: grid; gap: 4px; background: var(--glass); border: 1px solid var(--glass-edge); border-radius: 14px; backdrop-filter: blur(16px) saturate(1.15); -webkit-backdrop-filter: blur(16px) saturate(1.15); }

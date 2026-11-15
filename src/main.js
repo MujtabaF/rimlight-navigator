@@ -10,7 +10,9 @@ import { createStory } from './story.js';
 import { createDateChart } from './datechart.js';
 import { createSeasons } from './seasons.js';
 import { monthlyStats } from './core/seasons.js';
-import { landingDays, bestDays, classify, EARTH_DAYS } from './core/landing.js';
+import { landingDays, bestDays, classify, EARTH_DAYS, rateTouchdown } from './core/landing.js';
+import { stateUrl, createUrlSync, windowCsv, download, copyText } from './share.js';
+import { earthVsMoon, libration } from './explainers.js';
 
 const DAY = 86400e3, HOUR = 3600e3;
 const WINDOW_DAYS = 30;
@@ -38,6 +40,7 @@ const seasons = createSeasons($('#seasons'), (month) => {
   setDate(new Date(Date.UTC(y, month, Math.min(d.getUTCDate(), dim), d.getUTCHours(), d.getUTCMinutes())));
 }, $('#seasons-tip'));
 app.dockView = '30d';
+const syncUrl = createUrlSync(() => stateUrl(app, { eye: scene.eye, dock: app.dockView }));
 const DATES_HINT = 'Tall green bars mean long sunlight and Earth contact. Click a day to land then.';
 
 // ---------------- analysis cache ----------------
@@ -133,6 +136,7 @@ function renderReadout(site, a, st) {
   $('#readout').dataset.sun = st.sun.visible > 0.5 ? 'up' : 'down';
   renderVerdict(m, sun, earth, a);
   updateCompareVerdicts();
+  renderDvd();
 }
 
 // Plain-English verdict for a solar lander touching down at the current time. Same rule as the
@@ -167,7 +171,7 @@ function renderSiteHeader(site) {
   // The right panel always describes the selected site (amber dot), even when others are compared.
   set('#verdict-title', `If a solar lander touched down at ${site.name.replace(/ \(.*\)$/, '')} now`);
   set('#site-coords', `${fmtLat(site.lat)}, ${fmtLon(site.lon)}${site.hasTerrain ? `, ${(site.heightM / 1000).toFixed(2)} km elevation` : ''}`);
-  set('#site-source', site.hasTerrain ? 'Horizon from NASA LOLA terrain (240 m and 40 m maps)' : 'Smooth horizon: terrain not modelled here');
+  set('#site-source', site.source || (site.hasTerrain ? 'Horizon from NASA LOLA terrain' : 'Smooth horizon: terrain not modelled here'));
   set('#site-blurb', site.blurb || '');
   document.querySelectorAll('.site-btn').forEach((b) => b.setAttribute('aria-pressed', b.dataset.id === site.id));
 }
@@ -220,6 +224,7 @@ async function setSite(site) {
   renderAnalyses();
   renderDates();
   renderAll();
+  syncUrl(true);
 }
 function setDate(d) {
   const before = app.windowStart?.getTime();
@@ -227,6 +232,7 @@ function setDate(d) {
   ensureWindow();
   if (app.windowStart.getTime() !== before) { renderAnalyses(); renderDates(); }
   renderAll();
+  syncUrl();
 }
 
 // ---------------- year view (seasons) ----------------
@@ -247,6 +253,49 @@ function setDockView(v) {
   $('#seasons').hidden = v !== 'year';
   document.querySelectorAll('.dock-tab').forEach((b) => b.setAttribute('aria-pressed', b.dataset.dock === v));
   if (v === 'year') renderSeasons();
+  syncUrl(true);
+}
+
+// ---------------- compare two landing dates ----------------
+// Pin one moment, move to another: both touchdowns for the selected site, side by side.
+const rateCache = new Map();
+function rateAt(site, date) {
+  const key = `${site.id}|${site.lat}|${site.lon}|${Math.round(+date / HOUR)}`;
+  if (!rateCache.has(key)) { if (rateCache.size > 200) rateCache.clear(); rateCache.set(key, rateTouchdown(site, site.horizon, new Date(Math.round(+date / HOUR) * HOUR))); }
+  return rateCache.get(key);
+}
+function renderDvd() {
+  const grid = $('#dvd-grid');
+  if (!app.pinned) { grid.hidden = true; $('#dvd-hint').hidden = false; return; }
+  const A = rateAt(app.active, app.pinned), B = rateAt(app.active, app.date);
+  const same = Math.abs(app.date - app.pinned) < HOUR;
+  $('#dvd-hint').hidden = !same;
+  set('#dvd-hint', 'Now move to another date (timeline, chart or +1 day) to compare.');
+  const LV = { good: 'Good', ok: 'Workable', poor: 'Poor' }, RK = { poor: 0, ok: 1, good: 2 };
+  const when = (d) => `${fmtDay(d)}<small>${new Date(d).toISOString().slice(11, 16)} UTC</small>`;
+  const cmp = (a, b, higher = true) => (same || a === b ? ['', ''] : (a > b) === higher ? ['better', ''] : ['', 'better']);
+  const light = (r) => (r.lightHours < 1 ? 'None' : `${r.capped ? '30+ days' : hours(r.lightHours)}`);
+  const rows = [
+    ['Verdict', `<span class="lvl-${A.level}">${LV[A.level]}</span>`, `<span class="lvl-${B.level}">${LV[B.level]}</span>`, cmp(RK[A.level], RK[B.level])],
+    ['Sunlight before first sunset', light(A), light(B), cmp(A.lightHours, B.lightHours)],
+    ['Earth in view, first 2 weeks', `${Math.round(A.earthFrac * 100)}%`, `${Math.round(B.earthFrac * 100)}%`, cmp(Math.round(A.earthFrac * 100), Math.round(B.earthFrac * 100))],
+    ['Longest night, next 30 days', A.longestDarkHours < 1 ? 'None' : hours(A.longestDarkHours), B.longestDarkHours < 1 ? 'None' : hours(B.longestDarkHours), cmp(Math.round(A.longestDarkHours), Math.round(B.longestDarkHours), false)],
+  ];
+  grid.innerHTML = `<span></span><span class="dh">Pinned ${when(app.pinned)}</span><span class="dh">Current ${when(app.date)}</span>`
+    + rows.map(([k, a, b, [ca, cb]]) => `<span class="dk">${k}</span><span class="dv ${ca}">${a}</span><span class="dv ${cb}">${b}</span>`).join('');
+  grid.hidden = false;
+}
+function togglePin() {
+  app.pinned = app.pinned ? null : new Date(app.date);
+  $('#pin-btn').textContent = app.pinned ? 'Unpin' : 'Pin this date';
+  renderDvd();
+}
+
+// ---------------- explainers ----------------
+function openExplainer({ title, html }) {
+  set('#explain-title', title);
+  $('#explain-body').innerHTML = html;
+  if (!$('#explain').open) $('#explain').showModal();
 }
 
 // ---------------- landing-date chart ----------------
@@ -274,6 +323,7 @@ function toggleCompare(id) {
   app.compare = app.compare.includes(s) ? app.compare.filter((x) => x !== s) : [...app.compare, s].slice(-4);
   syncCompareButtons();
   renderAnalyses();
+  syncUrl(true);
 }
 function setPlaying(p) {
   app.playing = p;
@@ -345,6 +395,23 @@ function syncEye() {
 
 function wire() {
   $('#play').addEventListener('click', () => setPlaying(!app.playing));
+  $('#pin-btn').addEventListener('click', togglePin);
+  $('#evm-btn').addEventListener('click', () => openExplainer(earthVsMoon(app.active, analysisFor(app.active))));
+  $('#lib-btn').addEventListener('click', () => openExplainer(libration(app.active, analysisFor(app.active), app.date)));
+  $('#explain-close').addEventListener('click', () => $('#explain').close());
+  $('#explain').addEventListener('click', (e) => { if (e.target === $('#explain')) $('#explain').close(); });
+  $('#share-btn').addEventListener('click', async () => {
+    syncUrl(true);
+    const ok = await copyText(location.href);
+    const b = $('#share-btn'); b.textContent = ok ? 'Link copied' : 'Copy link';
+    setTimeout(() => { b.textContent = 'Copy link'; }, 1800);
+  });
+  $('#csv-btn').addEventListener('click', () => {
+    const list = [app.active, ...app.compare.filter((s) => s.id !== app.active.id)];
+    const csv = windowCsv(list.map((site) => ({ site, analysis: analysisFor(site) })));
+    const slug = app.active.id === 'custom' ? 'custom-point' : app.active.id;
+    download(`rimlight-${slug}-${app.windowStart.toISOString().slice(0, 10)}-30days.csv`, csv);
+  });
   document.querySelectorAll('.dock-tab').forEach((b) => b.addEventListener('click', () => setDockView(b.dataset.dock)));
   $('#compare-list').addEventListener('click', (e) => {
     const c = e.target.closest('.cmp-card');
@@ -359,6 +426,7 @@ function wire() {
   $('#eye').addEventListener('click', () => {
     scene.setEyeLevel(!scene.eye, stateAt(app.active, app.active.horizon, app.date).sun.az);
     syncEye();
+    syncUrl(true);
   });
   $('#story-btn').addEventListener('click', () => (story.active ? story.stop() : story.start()));
   $('#custom').addEventListener('submit', (e) => {
@@ -385,7 +453,7 @@ function wire() {
   }).observe($('#bottom'));
 
   window.addEventListener('keydown', (e) => {
-    if (help.open) return; // the dialog handles its own Esc
+    if (help.open || $('#explain').open) return; // dialogs handle their own Esc
     if (e.target.matches('input, select, textarea')) return;
     if (e.key === '?' || e.key === 'h') openHelp();
     else if (e.key === ' ') { e.preventDefault(); setPlaying(!app.playing); }
@@ -443,10 +511,17 @@ function groupBy(arr) { const m = new Map(); for (const s of arr) { if (!m.has(s
   syncEye();
   // Deep links (also a backup for live demos): ?site=malapert&t=2027-01-05T12:00&eye=1  or  ?tour=3
   const q = new URLSearchParams(location.search);
-  await setSite(app.byId.get(q.get('site')) || app.byId.get('shackleton-ridge'));
+  if (q.get('cmp')) app.compare = q.get('cmp').split(',').map((id) => app.byId.get(id)).filter(Boolean).slice(0, 4);
+  syncCompareButtons();
+  const lat = parseFloat(q.get('lat')), lon = parseFloat(q.get('lon'));
+  if (Math.abs(lat) <= 90 && Math.abs(lon) <= 180) { const c = customSite(lat, lon); app.byId.set('custom', c); await setSite(c); }
+  else await setSite(app.byId.get(q.get('site')) || app.byId.get('shackleton-ridge'));
   if (q.get('t')) setDate(new Date(q.get('t') + (q.get('t').endsWith('Z') ? '' : 'Z')));
   if (q.get('eye') === '1') { scene.setEyeLevel(true, stateAt(app.active, app.active.horizon, app.date).sun.az); syncEye(); }
   if (q.get('dock') === 'year') setDockView('year');
+  if (q.get('pin')) { app.pinned = new Date(q.get('pin') + (q.get('pin').endsWith('Z') ? '' : 'Z')); $('#pin-btn').textContent = 'Unpin'; renderDvd(); }
+  if (q.get('explain') === 'evm') $('#evm-btn').click(); // direct links for demos and videos
+  if (q.get('explain') === 'lib') $('#lib-btn').click();
   if (q.get('tour')) await story.goTo(+q.get('tour') - 1);
   else if (!q.toString()) showHintOnce();
   if (q.get('help') === '1') $('#help-btn').click(); // deep link straight to the help panel

@@ -66,3 +66,38 @@ class DEMStack:
                 break
             out[miss] = d.sample(lat[miss], np.asarray(lon, float)[miss] if np.ndim(lon) else lon)
         return out
+
+
+class GlobalDEM:
+    """NASA LOLA global simple-cylindrical DEM (e.g. LDEM_16, 16 px/deg ~ 1.9 km).
+    0-based pixel centres:  line = LINE_OFFSET - lat * ppd,  sample = SAMPLE_OFFSET + (lon - CENTER_LON) * ppd
+    with lon in [0, 360). Heights = DN * SCALING_FACTOR, relative to the 1737.4 km sphere."""
+
+    def __init__(self, img_path):
+        img_path = Path(img_path)
+        lbl = img_path.with_suffix(".LBL").read_text(errors="ignore")
+        num = lambda key: float(re.search(rf"\b{key}\s*=\s*([-\d.]+)", lbl).group(1))
+        self.lines, self.samples = int(num("LINES")), int(num("LINE_SAMPLES"))
+        self.ppd = num("MAP_RESOLUTION")
+        self.line_off, self.samp_off = num("LINE_PROJECTION_OFFSET"), num("SAMPLE_PROJECTION_OFFSET")
+        self.center_lon = num("CENTER_LONGITUDE")
+        raw = np.memmap(img_path, dtype="<i2", mode="r", shape=(self.lines, self.samples))
+        self.h = raw.astype(np.float32) * num("SCALING_FACTOR")
+        self.name = img_path.stem
+
+    def sample(self, lat, lon):
+        lat = np.asarray(lat, float)
+        lon = np.mod(np.asarray(lon, float), 360.0)
+        li = self.line_off - lat * self.ppd
+        si = self.samp_off + (lon - self.center_lon) * self.ppd
+        si = np.mod(si, self.samples)  # wrap around the 0/360 seam
+        out = np.full(li.shape, np.nan, dtype=np.float32)
+        ok = (li >= 0) & (li < self.lines - 1)
+        l0 = np.floor(li[ok]).astype(int)
+        s0 = np.floor(si[ok]).astype(int)
+        fl, fs = li[ok] - l0, si[ok] - s0
+        s1 = (s0 + 1) % self.samples
+        h = self.h
+        out[ok] = (h[l0, s0] * (1 - fl) * (1 - fs) + h[l0 + 1, s0] * fl * (1 - fs)
+                   + h[l0, s1] * (1 - fl) * fs + h[l0 + 1, s1] * fl * fs)
+        return out

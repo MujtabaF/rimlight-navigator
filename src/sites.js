@@ -7,13 +7,12 @@ const BASE = import.meta.env.BASE_URL;
 export async function loadSites() {
   return Promise.all(catalog.sites.map(async (s) => {
     const site = { ...s, heightM: 0, horizon: smoothHorizon(), hasTerrain: false };
-    if (s.lat > -60) return site;
     try {
       const r = await fetch(`${BASE}data/sites/${s.id}.json`);
       if (!r.ok) return site;
       const d = await r.json();
       Object.assign(site, { lat: d.lat, lon: d.lon, heightM: d.heightM, horizon: terrainHorizon(d),
-        hasTerrain: true, patchMeta: d.patch, horizonDistKm: d.horizonDistKm });
+        hasTerrain: true, patchMeta: d.patch, horizonDistKm: d.horizonDistKm, source: d.sourceLabel });
     } catch { /* offline or missing — falls back to smooth horizon */ }
     return site;
   }));

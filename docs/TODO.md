@@ -4,12 +4,7 @@ The one list to work from. Tick each box when the owner approves the item and it
 One item at a time: build → checks → owner reviews in the browser → commit.
 
 ## 1. Core features (what the challenge asks for)
-- [ ] **Date vs date:** the same site on two landing dates, side by side
-- [ ] **Earth vs Moon panel:** day length, night length, Sun height, temperature swing, side by side
-- [ ] **Libration explainer:** a short overlay on why Earth traces a small loop in the sky
-- [ ] **Share link + CSV export:** the link keeps site, date and compare set; "Copy link" button; download the 30-day numbers
-- [ ] **More future targets:** Artemis III candidate regions, Chang'e-7 target
-- [ ] **Real terrain for non-polar sites** (Apollo, SLIM, Blue Ghost and others) from the global LOLA map
+All done. See the Done list below.
 
 ## 2. Polish
 - [ ] **Tour click-through:** fix anything ugly or wrong in the 8 scenes
@@ -37,3 +32,9 @@ One item at a time: build → checks → owner reviews in the browser → commit
 - [x] Season view: Year switch in the dock, 12 months of Sun % and Earth % per site, instant tooltips, click a month to jump
 - [x] Readability: right panel names its site, calm numbers while playing (3 updates/s, whole hours), selected site marked in timeline rows
 - [x] Side-by-side comparison: a card per compared site under the verdict (verdict now, landing-day strip, Sun/Earth %, best day); click to switch
+- [x] Date vs date: pin a date, compare two touchdowns side by side (verdict, light, Earth, longest night)
+- [x] Moon vs Earth panel (top bar): day/night length, Sun height, temperature, sky, gravity
+- [x] Libration explainer: Earth's real path in this site's sky, plus a 4-step explanation
+- [x] Share link (address bar always matches the view) + Copy link + Download CSV (30 days, every 30 min)
+- [x] More future targets: de Gerlache Rim, Haworth (Artemis III regions), Chang'e-7 target (Shackleton rim)
+- [x] Real NASA terrain for all 17 sites (global LOLA map, 1.9 km, for non-polar sites)

@@ -51,9 +51,18 @@ There's no atmosphere, so **there is no refraction**. Earth's apparent radius is
 * **Earth:** NASA Scientific Visualization Studio Blue Marble map (SVS 3615). It's lit by the true Sun direction, so its phase is correct, and turned so the hemisphere that really faces the Moon is the one shown. Earth's axial tilt isn't modelled.
 * **Sizes:** the Sun is drawn 6× and Earth 3× larger than true, so they're visible on screen.
 
+## 6. Planning tools (`src/core/landing.js`, `src/core/seasons.js`, `src/explainers.js`)
+* **Landing days and verdict:** one rule (`classify`): good = 10+ days of light before the first sunset and Earth in view ≥ 50% of the first 14 days; poor = under 2 days of light.
+* **Date vs date:** `rateTouchdown()` rates an exact moment: hours of light until the first sunset, Earth over 14 days, and longest night over 30 days.
+* **Seasons:** `monthlyStats()`, 12 calendar months at 2-hour steps. Tested: the monthly mean equals the yearly value.
+* **Earth vs Moon:** daylight and night lengths come from our own calculation for the site. Moon temperatures are rounded from NASA LRO Diviner results: equator ≈ +117 °C at noon (390 K × cos(lat)^¼), ≈ −180 °C at night; polar sunlit ground about −60 °C; permanent shadow about −240 °C.
+* **Libration:** drawn from Earth's computed az/el over the window. The text uses the standard amplitudes (±7.9° in longitude, ±6.7° in latitude).
+
 ## Limitations (say these honestly if asked)
 
 * The 3D view draws 60 km of terrain. The horizon numbers use terrain out to 300 km.
 * Non-polar sites use a smooth horizon (no DEM loaded).
 * A small observer-height change can matter at rim sites (a 10 m mast sees more Sun). This is a possible extension.
 * The Earth-visibility threshold ignores antenna beamwidth and terrain multipath.
+* **Non-polar terrain is 1.9 km resolution** (LOLA global map). It's good for distant mountains but smooth up close, so small nearby craters aren't in those skylines.
+* **Future targets are approximate points** inside regions NASA and CNSA describe as areas.
