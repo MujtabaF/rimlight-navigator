@@ -308,3 +308,32 @@ body.focus .site-title { right: var(--gap); }
   .legend { margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto; } }
+
+/* ---------- loading screen and notices ---------- */
+.loader { position: fixed; inset: 0; z-index: 50; display: grid; place-content: center; justify-items: center; gap: 16px; background: #000; color: var(--ink-2); font-size: 14px; transition: opacity 0.6s ease; }
+.loader .mark { width: 44px; height: 44px; animation: breathe 1.6s ease-in-out infinite; }
+body.ready .loader { opacity: 0; pointer-events: none; }
+body.load-failed .loader .mark { animation: none; filter: grayscale(1); }
+body.load-failed .loader p { color: var(--poor); max-width: 46ch; text-align: center; }
+@keyframes breathe { 50% { box-shadow: 0 0 30px rgba(255, 181, 71, 0.7); transform: scale(1.06); } }
+.notice { position: fixed; z-index: 30; left: 50%; top: calc(var(--top) + 10px); transform: translateX(-50%); display: flex; align-items: center; gap: 12px; max-width: min(560px, calc(100vw - 32px)); padding: 9px 12px 9px 14px; font-size: 14px; background: var(--glass); border: 1px solid var(--sun); border-radius: 10px; backdrop-filter: blur(16px); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6); }
+.notice[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .loader .mark { animation: none; } }
+
+/* ---------- shorter screens (720p laptops and projectors): slimmer dock, smaller title ---------- */
+@media (max-height: 820px) and (min-width: 901px) {
+  :root { --top: 56px; --readout-w: 288px; }
+  #panorama { height: 84px; }
+  #timeline, #seasons { height: 70px; }
+  #bottom { padding: 6px 12px 6px; gap: 2px; }
+  .transport { gap: 6px; }
+  .transport .btn, .transport select, .transport input { padding-top: 3px; padding-bottom: 3px; }
+  .site-title h1 { font-size: clamp(26px, 2.8vw, 40px); }
+  .site-title .meta.source { display: none; }
+  #sites { top: calc(var(--top) + 84px); }
+  .now-row .big { font-size: 30px; }
+  #datechart { height: 64px; }
+  #readout { gap: 12px; padding: 12px 14px; }
+  .transport .legend { display: none; }
+  .transport #speed { max-width: 150px; }
+}

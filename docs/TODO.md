@@ -7,11 +7,7 @@ One item at a time: build → checks → owner reviews in the browser → commit
 All done. See the Done list below.
 
 ## 2. Polish
-- [ ] **Tour click-through:** fix anything ugly or wrong in the 8 scenes
-- [ ] **Smooth camera fly-to** when the site changes
-- [ ] **Loading and error messages** (never a blank screen)
-- [ ] **Screen-size check:** 1080p for recording, 720p (the dock is too tall and the scene 8 table is hidden)
-- [ ] **Performance:** smooth while playing fast with 4 sites compared
+All done. See the Done list below.
 
 ## 3. Ship
 - [ ] Deploy to a public link, add a screenshot to the README
@@ -40,3 +36,4 @@ All done. See the Done list below.
 - [x] Real NASA terrain for all 17 sites (global LOLA map, 1.9 km, for non-polar sites)
 - [x] Landing page at / (hero render, problem, product shots, NASA data, name story); navigator moved to /app.html (old links forward)
 - [x] Hide panels button (same as F)
+- [x] Polish: tour fixes (eye scenes follow the Sun, brighter crater floor), camera fly-in on site change, loading screen + plain error messages, 720p layout, cached timeline/skyline layers for performance

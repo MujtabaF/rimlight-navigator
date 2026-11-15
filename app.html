@@ -151,6 +151,12 @@
     </section>
   </div>
 
+  <div id="loader" class="loader" role="status" aria-live="polite">
+    <span class="mark" aria-hidden="true"></span>
+    <p id="loader-text">Loading NASA terrain…</p>
+  </div>
+  <div id="notice" class="notice" role="alert" hidden><span id="notice-text"></span><button class="btn ghost small" id="notice-close">OK</button></div>
+
   <div id="hint" class="hint" hidden>
     <span>New here? Press <kbd>?</kbd> or click <b>How to use</b> for the controls.</span>
     <button class="btn ghost" id="hint-close" aria-label="Dismiss tip">OK</button>
@@ -214,6 +220,15 @@
       </section>
     </div>
   </dialog>
+  <script>
+    // If 3D can't start at all (no WebGL) the app module throws before it can report it: say so here.
+    addEventListener('error', function (e) {
+      if (document.body.classList.contains('ready')) return;
+      document.body.classList.add('load-failed');
+      var t = document.getElementById('loader-text');
+      t.textContent = /WebGL/i.test(String(e.message)) ? "This browser can't show 3D graphics (WebGL is off). Try a recent Chrome, Edge, Safari or Firefox." : "Something went wrong while starting. Reload the page to try again.";
+    });
+  </script>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

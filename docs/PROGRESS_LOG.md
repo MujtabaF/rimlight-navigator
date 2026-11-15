@@ -153,3 +153,12 @@ Any AI or human picking this up should read the **last entry** first.
 - **Navigator de-cluttered:** verdict sentence replaced by two icon chips (full sentence on hover). Sun and Earth side by side, high in the panel. Hint sentences removed in favour of ⓘ tooltips on headings. Power and 30-day numbers, and the site blurb, folded into `<details>`. Tour card texts cut to 1–2 sentences. Best-day buttons shown in date order.
 - **Landing page motion:** one orchestrated hero entrance. The hero crossfades into the live simulator (iframe `app.html?clean=1&eye=1&play=1&speed=1.5&follow=1`, desktop and no reduced motion only). New animated 360° skyline of the ridge (`src/landing-sky.js`, our physics, 30 days in 20 s, power and Earth lamps). Count-up for 89% and 0%.
 - App options added: `?play=1`, `?speed=`, `?follow=1` (eye view turns with the Sun).
+
+## Session 13: Sun 2026-11-15 (polish), approved by owner and committed
+
+- Tour: eye-level chapters set `app.follow` (Sun, or `'away'` for faceAway) so the camera tracks the Sun while playing. A drag on the viewport or leaving the tour stops following. Crater-floor exposure ×3.2 and bounce light 1.5.
+- Camera fly-in on site change (`startFly` in scene.js: from 1.9× distance +10 km up, cubic ease over 1.6 s, canvas fade from 0.15). A drag or switching to eye level skips it.
+- Loading screen (`#loader`, hidden by `body.ready`). Plain errors for data failure, no WebGL (inline error handler, since the module throws before boot), and per-site missing terrain (`notify()`).
+- `@media (max-height: 820px)`: slimmer dock, legend hidden, smaller title and numbers. Panorama degree labels spaced by pixels.
+- Performance: timeline and panorama draw static layers to offscreen canvases; frames blit plus the playhead or bodies only. Real FPS couldn't be measured headlessly (software GL), so the owner checks on their machine.
+- Note: a `git stash` during perf testing was immediately popped back; no work lost.

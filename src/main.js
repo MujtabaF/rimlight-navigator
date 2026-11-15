@@ -227,10 +227,18 @@ function updateCompareVerdicts() {
 }
 
 // ---------------- actions ----------------
+// Short, plain message at the top of the screen (data problems, never technical jargon).
+function notify(msg) {
+  set('#notice-text', msg);
+  $('#notice').hidden = false;
+  clearTimeout(notify.t);
+  notify.t = setTimeout(() => { $('#notice').hidden = true; }, 9000);
+}
 async function setSite(site) {
   app.active = site;
   renderSiteHeader(site);
   const patch = await loadPatch(site).catch(() => null);
+  if (site.hasTerrain && !patch) notify(`The 3D terrain for ${site.name.replace(/ \(.*\)$/, '')} didn't load, so the view shows a stand-in landscape. The numbers still use the real skyline. Reload the page to try again.`);
   scene.setSite(site, patch);
   panorama.setSite(site);
   renderAnalyses();
@@ -364,6 +372,7 @@ app.nextSunrise = (id, afterHours = 0) => {
   for (let i = 1; i < s.length; i++) if (s[i].sunVis > 0.5 && s[i - 1].sunVis <= 0.5) return new Date(s[i].t + afterHours * HOUR);
   return app.date;
 };
+app.storyStopped = () => { app.follow = false; };
 app.applyChapter = async (c) => {
   setPlaying(false);
   app.compare = (c.compare || []).map((id) => app.byId.get(id));
@@ -376,6 +385,8 @@ app.applyChapter = async (c) => {
   if (c.eye && scene.eye) scene.setEyeLevel(false);
   if (c.eye !== scene.eye) { scene.setEyeLevel(c.eye, sunAz); syncEye(); }
   if (c.speed) { app.speed = c.speed; $('#speed').value = String(c.speed); }
+  // Eye-level scenes keep the camera on the Sun (or opposite it) while time plays.
+  app.follow = c.eye ? (c.faceAway ? 'away' : true) : false;
   setPlaying(!!c.play);
 };
 
@@ -443,6 +454,7 @@ function wire() {
   $('#fwd-day').addEventListener('click', () => setDate(new Date(+app.date + DAY)));
   $('#date').addEventListener('change', (e) => { const d = new Date(e.target.value + 'Z'); if (!isNaN(d)) setDate(d); });
   $('#today').addEventListener('click', () => setDate(new Date()));
+  $('#viewport').addEventListener('pointerdown', () => { app.follow = false; }); // a drag means the user wants to look around
   $('#eye').addEventListener('click', () => {
     scene.setEyeLevel(!scene.eye, stateAt(app.active, app.active.horizon, app.date).sun.az);
     syncEye();
@@ -464,6 +476,7 @@ function wire() {
   $('#help-close').addEventListener('click', () => help.close());
   help.addEventListener('click', (e) => { if (e.target === help) help.close(); }); // click outside the panel
   $('#hint-close').addEventListener('click', dismissHint);
+  $('#notice-close').addEventListener('click', () => { $('#notice').hidden = true; });
 
   // Floating panels sit above the time dock; keep them clear of it whatever its height.
   new ResizeObserver(([e]) => {
@@ -491,7 +504,7 @@ function tick(now) {
   const dt = (now - last) / 1000;
   last = now;
   if (app.playing && app.speed) setDate(new Date(+app.date + dt * app.speed * HOUR));
-  if (app.follow && scene.eye) scene.faceAz(stateAt(app.active, app.active.horizon, app.date).sun.az);
+  if (app.follow && scene.eye) scene.faceAz(stateAt(app.active, app.active.horizon, app.date).sun.az + (app.follow === 'away' ? 180 : 0));
   requestAnimationFrame(tick);
 }
 
@@ -525,7 +538,19 @@ function groupBy(arr) { const m = new Map(); for (const s of arr) { if (!m.has(s
 
 // ---------------- boot ----------------
 (async function boot() {
+  try { await start(); } catch (err) {
+    console.error(err);
+    document.body.classList.add('load-failed');
+    set('#loader-text', /WebGL/i.test(String(err)) ? 'This browser can\'t show 3D graphics (WebGL is off). Try a recent Chrome, Edge, Safari or Firefox.'
+      : 'The NASA data didn\'t load. Check your internet connection, then reload the page.');
+  }
+})();
+
+async function start() {
   app.sites = await loadSites();
+  const missing = app.sites.filter((s) => !s.hasTerrain).length;
+  if (missing === app.sites.length) throw new Error('No site data loaded');
+  if (missing) notify(`${missing} site${missing > 1 ? 's' : ''} couldn't load NASA terrain and use a smooth horizon instead. Reload to try again.`);
   app.sites.forEach((s) => app.byId.set(s.id, s));
   buildSiteList();
   wire();
@@ -555,4 +580,4 @@ function groupBy(arr) { const m = new Map(); for (const s of arr) { if (!m.has(s
   if (q.get('help') === '1') $('#help-btn').click(); // deep link straight to the help panel
   document.body.classList.add('ready');
   requestAnimationFrame(tick);
-})();
+}

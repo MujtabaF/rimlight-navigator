@@ -5,15 +5,22 @@ const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n
 const DAY = 86400e3;
 
 export function createTimeline(canvas, onScrub) {
-  const ctx = canvas.getContext('2d');
+  const out = canvas.getContext('2d');
   let rows = [], now = null;
   const LABEL_W = 150;
+  // Performance: bars and ticks are drawn once into an offscreen layer; frames copy it + playhead.
+  const bg = document.createElement('canvas');
+  let geo = null;
 
-  function draw() {
+  function draw() { drawStatic(); drawFrame(); }
+
+  function drawStatic() {
     const dpr = Math.min(devicePixelRatio, 2);
     const W = canvas.clientWidth, H = canvas.clientHeight;
+    geo = null;
     if (!W || !H) return;
-    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.width = bg.width = W * dpr; canvas.height = bg.height = H * dpr;
+    const ctx = bg.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
     if (!rows.length) return;
@@ -60,14 +67,21 @@ export function createTimeline(canvas, onScrub) {
         ctx.fillText(d.toLocaleDateString('en', { month: 'short', day: 'numeric', timeZone: 'UTC' }), x(t) + 2, base);
       }
     }
-    // playhead
-    if (now) {
-      ctx.strokeStyle = css('--ink-1');
-      ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(x(now), 0); ctx.lineTo(x(now), H - axisH + 2); ctx.stroke();
-      ctx.lineWidth = 1;
-    }
+    geo = { x, H, axisH, dpr };
     canvas._toTime = (px) => t0 + ((px - LABEL_W) / (W - LABEL_W - 8)) * (t1 - t0);
+  }
+
+  function drawFrame() {
+    out.setTransform(1, 0, 0, 1, 0, 0);
+    out.clearRect(0, 0, canvas.width, canvas.height);
+    if (!geo) return;
+    out.drawImage(bg, 0, 0);
+    if (!now) return;
+    const { x, H, axisH, dpr } = geo;
+    out.setTransform(dpr, 0, 0, dpr, 0, 0);
+    out.strokeStyle = css('--ink-1');
+    out.lineWidth = 2;
+    out.beginPath(); out.moveTo(x(now), 0); out.lineTo(x(now), H - axisH + 2); out.stroke();
   }
 
   let dragging = false;
@@ -84,7 +98,7 @@ export function createTimeline(canvas, onScrub) {
   new ResizeObserver(draw).observe(canvas);
   return {
     setRows(r) { rows = r; draw(); },
-    setNow(t) { now = t.getTime(); draw(); },
+    setNow(t) { now = t.getTime(); drawFrame(); },
   };
 }
 

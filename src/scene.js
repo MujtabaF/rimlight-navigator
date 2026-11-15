@@ -91,6 +91,7 @@ export function createScene(container) {
     }
     if (skyline) scene.remove(skyline);
     if (wall) { scene.remove(wall); wall.geometry.dispose(); }
+    if (!eye && terrain) startFly();
     terrain = makeTerrain(site, patch);
     scene.add(terrain);
     siteMarker = makeMarker(site.name);
@@ -149,7 +150,9 @@ export function createScene(container) {
 
   let eye = false;
   const saved = { pos: camera.position.clone(), target: new THREE.Vector3() };
+  controls.addEventListener('start', () => { if (fly) { camera.position.copy(fly.end); fly = null; } });
   function setEyeLevel(on, faceAz = 0) {
+    if (fly) { camera.position.copy(fly.end); fly = null; }
     eye = on;
     if (on) {
       saved.pos.copy(camera.position); saved.target.copy(controls.target);
@@ -212,12 +215,29 @@ export function createScene(container) {
   // surroundings (lit only by faint scattered light) stay visible. Eased so it never pops.
   let siteLit = 1;
   const BASE_EXPOSURE = renderer.toneMappingExposure;
+  // Arrival move when the site changes: the camera sweeps in from further out and the view fades up.
+  let fly = null;
+  function startFly() {
+    const end = fly ? fly.end.clone() : camera.position.clone(); // switching again mid-flight keeps the same resting view
+    const dir = end.clone().sub(controls.target);
+    const start = controls.target.clone().add(dir.multiplyScalar(1.9)).add(new THREE.Vector3(0, 10, 0));
+    fly = { t0: performance.now(), start, end };
+    camera.position.copy(start);
+    renderer.domElement.style.transition = 'none';
+    renderer.domElement.style.opacity = '0.15';
+    requestAnimationFrame(() => { renderer.domElement.style.transition = 'opacity 0.9s ease'; renderer.domElement.style.opacity = '1'; });
+  }
   renderer.setAnimationLoop(() => {
     const dark = eye && siteLit < 0.5;
-    const target = dark ? BASE_EXPOSURE * 2.6 : BASE_EXPOSURE;
+    const target = dark ? BASE_EXPOSURE * 3.2 : BASE_EXPOSURE;
     renderer.toneMappingExposure += (target - renderer.toneMappingExposure) * 0.12;
     scattered.intensity += ((dark ? 0.22 : 0.11) - scattered.intensity) * 0.12;
-    bounce.intensity += ((dark ? 1.1 : 0) - bounce.intensity) * 0.12;
+    bounce.intensity += ((dark ? 1.5 : 0) - bounce.intensity) * 0.12;
+    if (fly) {
+      const f = Math.min(1, (performance.now() - fly.t0) / 1600), e = 1 - (1 - f) ** 3;
+      camera.position.lerpVectors(fly.start, fly.end, e);
+      if (f >= 1) fly = null;
+    }
     controls.update();
     composer.render();
     labels.render(scene, camera);

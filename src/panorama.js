@@ -7,12 +7,20 @@ const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n
 export function createPanorama(canvas) {
   const ctx = canvas.getContext('2d');
   let site = null, analysis = null, state = null;
+  // Performance: the grid, skyline and 30-day tracks only change with the site or window, so they
+  // are drawn once into an offscreen layer; each frame just copies it and draws the two bodies.
+  const bg = document.createElement('canvas');
+  let geo = null; // { x, y, padL, padT, pw, ph, W, H, dpr }
 
-  function draw() {
+  function draw() { drawStatic(); drawFrame(); }
+
+  function drawStatic() {
     const dpr = Math.min(devicePixelRatio, 2);
     const W = canvas.clientWidth, H = canvas.clientHeight;
+    geo = null;
     if (!W || !H) return;
-    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.width = bg.width = W * dpr; canvas.height = bg.height = H * dpr;
+    const ctx = bg.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
     if (!site) return;
@@ -36,7 +44,8 @@ export function createPanorama(canvas) {
     ctx.fillStyle = css('--ink-3');
     ctx.strokeStyle = css('--line');
     ctx.lineWidth = 1;
-    const step = hi - lo > 40 ? 15 : hi - lo > 20 ? 5 : 2;
+    // label spacing: at least ~16 px between degree labels, whatever the strip height
+    const step = [1, 2, 5, 10, 15, 30, 45].find((v) => (v / (hi - lo)) * ph >= 16) || 45;
     for (let e = Math.ceil(lo / step) * step; e <= hi; e += step) {
       ctx.beginPath(); ctx.moveTo(padL, y(e)); ctx.lineTo(padL + pw, y(e)); ctx.stroke();
       ctx.fillText(`${e}°`, 4, y(e) + 4);
@@ -65,12 +74,8 @@ export function createPanorama(canvas) {
       track(analysis.series, 'sun', css('--sun'));
       track(analysis.series, 'earth', css('--earth'));
     }
-    // current bodies
-    if (state) {
-      body(state.earth, css('--earth'), 6);
-      body(state.sun, css('--sun'), 7);
-    }
     ctx.restore();
+    geo = { x, y, padL, padT, pw, ph, W, H, dpr };
 
     function track(series, k, color) {
       ctx.fillStyle = color;
@@ -81,6 +86,21 @@ export function createPanorama(canvas) {
       }
       ctx.globalAlpha = 1;
     }
+  }
+
+  function drawFrame() {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!geo) return;
+    ctx.drawImage(bg, 0, 0);
+    if (!state) return;
+    const { x, y, padL, padT, pw, ph, dpr } = geo;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.save();
+    ctx.beginPath(); ctx.rect(padL, padT, pw, ph); ctx.clip();
+    body(state.earth, css('--earth'), 6);
+    body(state.sun, css('--sun'), 7);
+    ctx.restore();
     function body(b, color, r) {
       ctx.beginPath();
       ctx.arc(x(b.az), y(b.el), r, 0, Math.PI * 2);
@@ -99,6 +119,6 @@ export function createPanorama(canvas) {
   return {
     setSite(s) { site = s; draw(); },
     setAnalysis(a) { analysis = a; draw(); },
-    setState(s) { state = s; draw(); },
+    setState(s) { state = s; drawFrame(); },
   };
 }
