@@ -1,0 +1,13 @@
+{
+ "fine": {
+  "file": "elev_fine.bin",
+  "n": 1264,
+  "scale": 240.0
+ },
+ "coarse": {
+  "file": "elev_coarse.bin",
+  "n": 1250,
+  "scale": 960.0
+ },
+ "source": "NASA LRO LOLA LDEM_85S_40M (block-averaged to 240 m) and LDEM_60S_240M (to 960 m)"
+}

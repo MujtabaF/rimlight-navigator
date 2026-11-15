@@ -85,6 +85,9 @@ A static web app with two pages:
   - **Workable:** anything in between.
   - Why 10 days: that's roughly one lunar day of surface operations, the length of a typical CLPS mission.
 
+### Custom coordinates: live terrain (`src/core/terrain.js`)
+Type any point south of about 83°S and the browser computes its skyline the same way the Python builder does (720 directions, great circles, lunar curvature) from two NASA LOLA grids (240 m near, 960 m out to 600 km; `scripts/build_terrain_grids.py`, about 6 MB, loaded only on first use). It also builds a 3D terrain patch. It takes about 50 ms. The grids are tested to agree with the detailed 40 m skylines within 3 points of yearly sunlight.
+
 ### The 3D view (`src/scene.js`)
 - **Terrain patch:** 513 × 513 points covering 60 × 60 km. Points are about 29 m apart at the landing spot (matching NASA's 40 m data) and about 290 m apart at the edges. Lunar curvature is included.
 - **Surface:** a procedural regolith texture (small craters, dust ripples) that responds correctly to the moving Sun.
@@ -113,7 +116,7 @@ A static web app with two pages:
 
 Three layers of testing run with `npm test`, and **GitHub Actions** runs all of them automatically on every push (`.github/workflows/ci.yml`):
 
-1. **150 unit tests (Vitest)** in `tests/`. They check Sun and Earth positions against **66 saved NASA JPL Horizons answers** (each within 0.01°), the partial-Sun geometry, mission metrics, the verdict rule at every threshold, best days, date vs date, seasons, share links, the CSV export, the explainers, and that every site's data file is valid. **Coverage: 100% of lines and branches in the physics core (`src/core/`), 96% overall.**
+1. **160 unit tests (Vitest)** in `tests/`. They check Sun and Earth positions against **66 saved NASA JPL Horizons answers** (each within 0.01°), the partial-Sun geometry, mission metrics, the verdict rule at every threshold, best days, date vs date, seasons, share links, the CSV export, the explainers, the live terrain engine for custom coordinates (it must agree with the detailed 40 m skylines within 3 points of yearly sunlight), and that every site's data file is valid. **Coverage: 100% of lines and branches in the physics core (`src/core/`), 96% overall.**
 2. **15 science checks** (below): year-long results compared with physics and published studies.
 3. **A production build** plus headless-browser screenshots of every tour scene.
 
@@ -165,7 +168,7 @@ Plus the **JPL Horizons comparison (0.004°)** and screenshot checks of every to
 ## 9. Honest limitations
 
 - **Terrain detail varies:** 40 m and 240 m at the polar sites, 1.9 km elsewhere, so non-polar skylines are smooth up close.
-- **Custom coordinates** get real terrain only near the south pole; elsewhere they use a flat horizon.
+- **Custom coordinates** get a real skyline and 3D terrain computed live (about 50 ms) anywhere south of about 83°S, from NASA LOLA grids at 240 m and 960 m. Elsewhere they use a flat horizon. On sharp summits, the 240 m grid can be slightly optimistic about Earth contact.
 - **The 3D patch is 60 km across.** More distant mountains are in the numbers but not drawn in 3D.
 - **Future targets are approximate points** inside regions NASA and CNSA describe as areas.
 - **The Sun and Earth are drawn 6× and 3× larger** than true so they're visible on screen.
@@ -219,9 +222,9 @@ Plus the **JPL Horizons comparison (0.004°)** and screenshot checks of every to
 - **In the 3D view:** points are about 29 m apart at the landing spot, 8× sharper than our first version.
 - **Why it varies:** precision matters most at the pole, where terrain decides everything.
 
-### 20 sites, 150 tests, 15 checks
+### 20 sites, 160 tests, 15 checks
 - **20 sites:** 17 known sites plus 3 Rimlight picks. Of the 17 known sites, 10 polar (with 40 m and 240 m terrain) and 7 elsewhere (with global terrain), spanning NASA, commercial landers, India, Japan, China and Russia, plus 3 future targets.
-- **150 unit tests and 15 science checks** run on every change (section 7), with 100% coverage of the physics code.
+- **160 unit tests and 15 science checks** run on every change (section 7), with 100% coverage of the physics code.
 
 ### 10 days and 50%: the "good" thresholds
 - **10 days of sunlight before the first sunset:** about one lunar day of operations, the length of a typical commercial (CLPS) mission.

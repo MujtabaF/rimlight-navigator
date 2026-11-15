@@ -472,9 +472,8 @@ function wire() {
     const lat = +$('#c-lat').value, lon = +$('#c-lon').value;
     if (!(Math.abs(lat) <= 90 && Math.abs(lon) <= 180)) { set('#c-msg', 'Latitude must be within ±90 and longitude within ±180.'); return; }
     set('#c-msg', '');
-    const s = customSite(lat, lon);
-    app.byId.set('custom', s);
-    setSite(s);
+    set('#c-msg', lat < -82.8 ? 'Computing the skyline from NASA terrain…' : '');
+    customSite(lat, lon).then((s) => { set('#c-msg', ''); app.byId.set('custom', s); setSite(s); });
   });
   const help = $('#help');
   const openHelp = () => { dismissHint(); if (!help.open) help.showModal(); };
@@ -566,7 +565,7 @@ async function start() {
   if (q.get('cmp')) app.compare = q.get('cmp').split(',').map((id) => app.byId.get(id)).filter(Boolean).slice(0, 4);
   syncCompareButtons();
   const lat = parseFloat(q.get('lat')), lon = parseFloat(q.get('lon'));
-  if (Math.abs(lat) <= 90 && Math.abs(lon) <= 180) { const c = customSite(lat, lon); app.byId.set('custom', c); await setSite(c); }
+  if (Math.abs(lat) <= 90 && Math.abs(lon) <= 180) { const c = await customSite(lat, lon); app.byId.set('custom', c); await setSite(c); }
   else await setSite(app.byId.get(q.get('site')) || app.byId.get('shackleton-ridge'));
   if (q.get('t')) setDate(new Date(q.get('t') + (q.get('t').endsWith('Z') ? '' : 'Z')));
   // ?eye=1 stands on the surface facing the Sun, or ?face=<azimuth> (e.g. towards Earth).

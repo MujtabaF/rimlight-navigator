@@ -167,3 +167,10 @@ Any AI or human picking this up should read the **last entry** first.
 
 - **Rimlight picks** (the owner's Easter egg): `scripts/find_picks.py` scores 120 m cells (85°S to pole) from LOLA AVGVISIB sun/Earth, LPSR distance (ice within 1–5 km, 0 inside) and 40/240 m slope (≤ 8° safe). It keeps spots 12 km apart and 8 km from existing sites. Three picks were added to sites.json (group "Rimlight picks (ideal spots)", `tryDate` = best 2027 landing) and verified with our engine: Malapert Shoulder and Nobile Plateau have ~60% power+Earth at once (beating the best official candidate, 48.9%); Pole Ridge is 77% sunlit, with 47 days of light from Oct 9. A fourth (Sun Belt) was dropped for 17.5-day nights. Clicking a pick jumps to `tryDate` with a notice; gold ★ in the list.
 - **Tests:** Vitest 2 with 150 tests in `tests/`. Ephemeris vs 66 JPL rows saved by `validate-horizons.mjs --save` (fixtures/jpl-horizons.json). Horizon geometry, analysis, landing/seasons, share/CSV, explainers, and data integrity for all 20 sites. Coverage 100% of src/core (96% overall). Science checks now 15 (picks). `npm test` = vitest + science + build. GitHub Actions `.github/workflows/ci.yml` runs the same.
+
+## Session 15: Sun 2026-11-15 (live terrain for custom coordinates), approved by owner and committed
+
+- Gap found in a check against the brief: on main, typed-in coordinates used a flat horizon even at the pole (live terrain existed only on the parked map branch).
+- Restored `src/core/terrain.js` (no map UI). New `scripts/build_terrain_grids.py` writes `public/data/terrain/` (240 m and 960 m Int16 grids, ~6 MB, lazy-loaded). `customSite()` is now async and computes the horizon and patch south of 82.8°S, falling back to a smooth horizon otherwise.
+- `tests/terrain.test.js`: 10 tests (projection round trip, landmarks, live vs 40 m skyline within 3 points at 4 sites, floor stays dark, patch). 160 tests total; src/core at 100% lines.
+- Example: 87.5°S 45°E is inside a crater 2.3 km deep, with no Sun and no Earth (a flat horizon would have said ~50% sunlit).
