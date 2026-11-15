@@ -11,8 +11,8 @@ All done. See the Done list below.
 
 ## 3. Ship
 - [x] Deploy to a public link (https://rimlight-navigator.vercel.app), add a screenshot to the README
-- [ ] Make the GitHub repo public
-- [ ] **Film mode:** timed automatic tour with captions and no buttons, for clean screen recording
+- [x] Make the GitHub repo public
+- [x] **Film mode:** `/?film=1` plays a 3:00 self-running demo, including a "try it yourself" segment
 - [ ] Record the **30-second demo** (owner voice-over, English subtitles if needed)
 - [ ] Record the **3-minute walkthrough**
 - [ ] Write the Space Apps project page: summary, how it works, NASA data used, AI use, links

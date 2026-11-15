@@ -352,3 +352,13 @@ body.load-failed .loader p { color: var(--poor); max-width: 46ch; text-align: ce
   .transport select { max-width: 100%; }
   #viewport { height: 52vh; }
 }
+
+/* ---------- film mode (?film=1): clean screen for recording ---------- */
+body.film, body.film * { cursor: none !important; }
+body.film .story-nav, body.film .hint, body.film #notice { display: none !important; }
+/* film mode: a visible pointer for the "try it yourself" segment, and its caption */
+#film-cursor { position: fixed; z-index: 60; left: 0; top: 0; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; border: 2px solid #fff; background: rgba(255, 181, 71, 0.35); box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.35), 0 0 18px rgba(255, 181, 71, 0.6); pointer-events: none; transform: translate(50vw, 50vh); transition: transform 0.75s cubic-bezier(.3, .7, .2, 1); }
+#film-cursor.tap::after { content: ''; position: absolute; inset: -12px; border-radius: 50%; border: 2px solid var(--sun); animation: tap 0.6s ease-out forwards; }
+@keyframes tap { from { opacity: 1; transform: scale(0.4); } to { opacity: 0; transform: scale(1.6); } }
+#film-caption { left: calc(var(--rail-w) + 3 * var(--gap)); max-width: 520px; }
+#film-caption .story-title { margin-bottom: 0; }

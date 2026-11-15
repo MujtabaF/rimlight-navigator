@@ -181,3 +181,10 @@ Any AI or human picking this up should read the **last entry** first.
 - DEMO_SCRIPT.md rewritten for the recorded format: a 30 s shot list with voice-over, a 3 min walkthrough, a direct-link table, the 9-scene list. PRESENTATION.md numbers and pitches updated.
 - Phone check (true 390 px frames, since desktop Chrome's minimum window width makes `--window-size=390` misleading): landing page OK. Navigator top bar wrapped and overflowed, so it's now a single swipeable row, `overflow-x: hidden`, and Hide panels is hidden on phones.
 - The owner chose Vercel for hosting.
+
+## Session 17: Sun 2026-11-15 (live, public, presentation prep), approved by owner and committed
+
+- Deployed on Vercel: https://rimlight-navigator.vercel.app (auto-deploys from main). The repo was made public. README rewritten (live link, CI badge, picks, testing).
+- Submission text in docs/SUBMISSION.md (summary, details, SI use, 8 NASA links + 11 other links, all checked live).
+- Local event: a 3-minute presentation at ~3pm (owner talks over a recording). docs/PRESENT_3MIN.md is the cue card.
+- **Film mode** (`/?film=1`): landing page 15 s, then the app's tour plays itself (scenes 1–7, scene 6 auto-slips the launch), a 45 s "try it yourself" segment (a scripted orange pointer types custom coordinates, clicks a best day, pins and slips the date, adds a comparison, opens the Year view, with captions), then scene 9 (the pick). Total 3:00. Cursor and tour buttons hidden.

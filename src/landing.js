@@ -11,6 +11,12 @@ const params = new URLSearchParams(location.search);
 if (params.has('shot')) document.documentElement.classList.add('shot');
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ?film=1: 15 seconds on the hero (the live Sun fades in), then the navigator's self-playing tour.
+if (params.get('film') === '1') {
+  document.documentElement.style.cursor = 'none';
+  setTimeout(() => { location.href = 'app.html?film=1'; }, 15000);
+}
 const $ = (s) => document.querySelector(s);
 
 // 1. Live hero: only on larger screens and without reduced motion (the still render stays otherwise).

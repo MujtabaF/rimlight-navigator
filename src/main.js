@@ -311,6 +311,81 @@ function togglePin() {
   renderDvd();
 }
 
+// ---------------- film mode (?film=1): the tour plays itself, for screen recording ----------------
+// Timings match docs/PRESENT_3MIN.md: landing page 15 s, then tour scenes 1-7, a 45 s
+// "try it yourself" segment (a visible pointer uses the app like a person would), then scene 9.
+const FILM = [12, 12, 18, 14, 14, 14, 8]; // seconds for tour scenes 1-7
+const FILM_DEMO = 45, FILM_FINALE = 28;
+const wait = (s) => new Promise((r) => setTimeout(r, s * 1000));
+async function runFilm() {
+  document.body.classList.add('film');
+  for (let k = 0; k < FILM.length; k++) {
+    await story.goTo(k);
+    if (k === 5) { // scene 6: the launch slips, one day at a time
+      for (let n = 0; n < 3; n++) { await wait(3); setDate(new Date(+app.date + DAY)); }
+      await wait(FILM[k] - 9);
+    } else await wait(FILM[k]);
+  }
+  await filmDemo();
+  if (app.pinned) togglePin();
+  setDockView('30d');
+  await story.goTo(8); // finale: Rimlight pick
+  await wait(FILM_FINALE);
+}
+
+// The scripted "try it yourself" part: a pointer moves, clicks and types, with captions.
+async function filmDemo() {
+  const t0 = performance.now(), at = (s) => wait(Math.max(0, s - (performance.now() - t0) / 1000));
+  story.stop();
+  app.compare = []; syncCompareButtons(); // start the hands-on part with a clean slate
+  const cursor = Object.assign(document.createElement('div'), { id: 'film-cursor' });
+  const cap = Object.assign(document.createElement('div'), { id: 'film-caption', className: 'story' });
+  cap.innerHTML = '<p class="story-count">Try it yourself</p><h2 class="story-title"></h2>';
+  document.body.append(cursor, cap);
+  const say = (t) => { cap.querySelector('.story-title').textContent = t; };
+  const moveTo = async (el) => {
+    el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    await wait(0.4);
+    const r = el.getBoundingClientRect();
+    cursor.style.transform = `translate(${r.left + r.width / 2}px, ${r.top + r.height / 2}px)`;
+    await wait(0.8);
+  };
+  const click = async (el) => { await moveTo(el); cursor.classList.remove('tap'); void cursor.offsetWidth; cursor.classList.add('tap'); el.click(); await wait(0.4); };
+  const type = async (el, text) => { // number boxes reject a lone '-', so type into a text box and switch back
+    await click(el); el.type = 'text'; el.value = '';
+    for (const ch of text) { el.value += ch; await wait(0.09); }
+    el.type = 'number'; el.value = text;
+  };
+
+  // 1. any coordinates -> real terrain computed live
+  say('Type any coordinates near the pole');
+  await type($('#c-lat'), '-89.47');
+  await type($('#c-lon'), '-137.4');
+  await click($('#custom button[type="submit"]'));
+  await at(12);
+  // 2. best day to land
+  say('Pick the best day to land');
+  const chip = $('#dates-best .day-chip');
+  if (chip) await click(chip);
+  await at(20);
+  // 3. launch slipped: pin and compare two dates
+  say('Launch slipped? Pin a date and compare');
+  await click($('#pin-btn'));
+  for (let n = 0; n < 3; n++) await click($('#fwd-day'));
+  $('#dvd').scrollIntoView({ block: 'center', behavior: 'smooth' });
+  await at(31);
+  // 4. compare sites side by side
+  say('Compare sites side by side');
+  await click($('.cmp-btn[data-id="malapert"]'));
+  $('#compare').scrollIntoView({ block: 'start', behavior: 'smooth' });
+  await at(38);
+  // 5. seasons
+  say('See every season at a glance');
+  await click($('.dock-tab[data-dock="year"]'));
+  await at(FILM_DEMO);
+  cursor.remove(); cap.remove();
+}
+
 // ---------------- focus mode (F or the Hide panels button) ----------------
 function toggleFocus() {
   const on = document.body.classList.toggle('focus');
@@ -581,6 +656,7 @@ async function start() {
   if (q.get('explain') === 'evm') $('#evm-btn').click(); // direct links for demos and videos
   if (q.get('explain') === 'lib') $('#lib-btn').click();
   if (q.get('tour')) await story.goTo(+q.get('tour') - 1);
+  if (q.get('film') === '1') runFilm();
   else if (!q.toString()) showHintOnce();
   if (q.get('help') === '1') $('#help-btn').click(); // deep link straight to the help panel
   document.body.classList.add('ready');
