@@ -10,7 +10,7 @@ All done. See the Done list below.
 All done. See the Done list below.
 
 ## 3. Ship
-- [ ] Deploy to a public link, add a screenshot to the README
+- [x] Deploy to a public link (https://rimlight-navigator.vercel.app), add a screenshot to the README
 - [ ] Make the GitHub repo public
 - [ ] **Film mode:** timed automatic tour with captions and no buttons, for clean screen recording
 - [ ] Record the **30-second demo** (owner voice-over, English subtitles if needed)
