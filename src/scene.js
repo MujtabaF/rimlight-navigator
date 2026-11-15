@@ -169,6 +169,12 @@ export function createScene(container) {
     camera.updateProjectionMatrix();
     siteMarker.visible = !on && decor;
   }
+  // Turn the eye-level view to face an azimuth (used to follow the Sun in the landing-page hero).
+  function faceAz(az) {
+    if (!eye) return;
+    const dir = azElToVec(az, 0, 1);
+    controls.target.set(camera.position.x + dir.x * 0.01, camera.position.y, camera.position.z + dir.z * 0.01);
+  }
   function setDecor(on) {
     decor = on;
     compass.visible = tracks.visible = on;
@@ -217,7 +223,7 @@ export function createScene(container) {
     labels.render(scene, camera);
   });
 
-  return { setSite, setState, setTracks, setEyeLevel, setInsetBottom, setDecor, get eye() { return eye; } };
+  return { setSite, setState, setTracks, setEyeLevel, setInsetBottom, setDecor, faceAz, get eye() { return eye; } };
 }
 
 // ---------- builders ----------

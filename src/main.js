@@ -41,7 +41,7 @@ const seasons = createSeasons($('#seasons'), (month) => {
 }, $('#seasons-tip'));
 app.dockView = '30d';
 const syncUrl = createUrlSync(() => stateUrl(app, { eye: scene.eye, dock: app.dockView }));
-const DATES_HINT = 'Tall green bars mean long sunlight and Earth contact. Click a day to land then.';
+const DATES_HINT = ''; // the hint lives in the heading's ⓘ; hover text floats over the chart
 
 // ---------------- analysis cache ----------------
 function ensureWindow() {
@@ -121,7 +121,7 @@ function renderReadout(site, a, st) {
   set('#sun-state', sunState);
   set('#sun-next', sun.at ? `${sun.now ? 'Sunset' : 'Sunrise'} in ${dur(sun.at - app.date)}` : sun.now ? 'No sunset for 60+ days' : 'No sunrise for 60+ days');
   set('#earth-el', `${st.earth.el.toFixed(1)}°`);
-  set('#earth-state', st.earth.visible > 0.5 ? 'Earth in view: direct link possible' : 'Earth below horizon: relay needed');
+  set('#earth-state', st.earth.visible > 0.5 ? 'Direct link' : 'Relay needed');
   set('#earth-next', earth.at ? `${earth.now ? 'Earthset' : 'Earthrise'} in ${dur(earth.at - app.date)}` : earth.now ? 'Earth stays up for 60+ days' : 'Earth stays down for 60+ days');
   set('#power-v', `${Math.round(st.power.verticalTracking * 100)}%`);
   set('#power-h', `${Math.round(st.power.horizontal * 100)}%`);
@@ -163,13 +163,25 @@ function renderVerdict(m, sun, earth, a) {
   const level = classify(lightMs / DAY, earthNextDays(a, EARTH_DAYS));
   $('#verdict').dataset.level = level;
   set('#verdict-chip', { good: 'Good time to land', ok: 'Workable, with limits', poor: 'Poor time to land' }[level]);
-  set('#verdict-text', `${power} ${link}`);
+  // Two short icon chips instead of a sentence; the full sentence stays as the hover text.
+  const sunChip = m.sunlitPct < 0.5 ? 'No sunlight' : !sun.now ? (sun.at ? `Sunrise in ${dur(sun.at - app.date)}` : 'Dark 60+ days')
+    : sun.at ? `${dur(lightMs)} of light` : 'Light 60+ days';
+  const earthChip = m.earthVisiblePct < 0.5 ? 'Earth never up' : earth.now ? (earth.at ? `Earth up ${dur(earth.at - app.date)}` : 'Earth always up')
+    : earth.at ? `No link for ${dur(earth.at - app.date)}` : 'No link 60+ days';
+  const html = `<span class="vchip vsun${sun.now ? '' : ' off'}">${ICON.sun}${sunChip}</span><span class="vchip vearth${earth.now ? '' : ' off'}">${ICON.earth}${earthChip}</span>`;
+  const el = $('#verdict-text');
+  if (el.dataset.html !== html) { el.innerHTML = html; el.dataset.html = html; }
+  el.title = `${power} ${link}`;
 }
+const ICON = {
+  sun: '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6 13 13M3 13l1.4-1.4M11.6 4.4 13 3"/></svg>',
+  earth: '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M2.5 6.5h11M2.5 9.5h11M8 2c-2 2.2-2 9.8 0 12M8 2c2 2.2 2 9.8 0 12"/></svg>',
+};
 
 function renderSiteHeader(site) {
   set('#site-name', site.name);
   // The right panel always describes the selected site (amber dot), even when others are compared.
-  set('#verdict-title', `If a solar lander touched down at ${site.name.replace(/ \(.*\)$/, '')} now`);
+  set('#verdict-title', `Landing at ${site.name.replace(/ \(.*\)$/, '')} now`);
   set('#site-coords', `${fmtLat(site.lat)}, ${fmtLon(site.lon)}${site.hasTerrain ? `, ${(site.heightM / 1000).toFixed(2)} km elevation` : ''}`);
   set('#site-source', site.source || (site.hasTerrain ? 'Horizon from NASA LOLA terrain' : 'Smooth horizon: terrain not modelled here'));
   set('#site-blurb', site.blurb || '');
@@ -266,11 +278,11 @@ function rateAt(site, date) {
 }
 function renderDvd() {
   const grid = $('#dvd-grid');
-  if (!app.pinned) { grid.hidden = true; $('#dvd-hint').hidden = false; return; }
+  if (!app.pinned) { grid.hidden = true; $('#dvd-hint').hidden = true; return; }
   const A = rateAt(app.active, app.pinned), B = rateAt(app.active, app.date);
   const same = Math.abs(app.date - app.pinned) < HOUR;
   $('#dvd-hint').hidden = !same;
-  set('#dvd-hint', 'Now move to another date (timeline, chart or +1 day) to compare.');
+  set('#dvd-hint', 'Now move to another date to compare.');
   const LV = { good: 'Good', ok: 'Workable', poor: 'Poor' }, RK = { poor: 0, ok: 1, good: 2 };
   const when = (d) => `${fmtDay(d)}<small>${new Date(d).toISOString().slice(11, 16)} UTC</small>`;
   const cmp = (a, b, higher = true) => (same || a === b ? ['', ''] : (a > b) === higher ? ['better', ''] : ['', 'better']);
@@ -313,7 +325,7 @@ function renderDates() {
   ensureWindow();
   const days = datesFor(site);
   dateChart.setDays(days);
-  const picks = bestDays(days, 3);
+  const picks = bestDays(days, 3).sort((a, b) => a.date - b.date); // top 3, shown in date order
   $('#dates-best').innerHTML = picks.length
     ? `<span>Best:</span>${picks.map((p) => `<button class="day-chip lvl-${p.level}" data-t="${+p.date}" title="${describeDay(p)}">${fmtDay(p.date)}</button>`).join('')}`
     : '<span>No day in this window gives a solar lander more than 2 days of light here.</span>';
@@ -479,6 +491,7 @@ function tick(now) {
   const dt = (now - last) / 1000;
   last = now;
   if (app.playing && app.speed) setDate(new Date(+app.date + dt * app.speed * HOUR));
+  if (app.follow && scene.eye) scene.faceAz(stateAt(app.active, app.active.horizon, app.date).sun.az);
   requestAnimationFrame(tick);
 }
 
@@ -529,6 +542,10 @@ function groupBy(arr) { const m = new Map(); for (const s of arr) { if (!m.has(s
   if (q.get('eye') === '1') { scene.setEyeLevel(true, q.get('face') ? +q.get('face') : stateAt(app.active, app.active.horizon, app.date).sun.az); syncEye(); }
   // ?clean=1: just the Moon, no interface (for hero images and film captures).
   if (q.get('clean') === '1') { document.body.classList.add('clean'); scene.setInsetBottom(0); scene.setDecor(false); }
+  // ?play=1&speed=<hours per second>: start playing (embedded hero, film captures); ?follow=1 keeps the Sun in view.
+  if (q.get('speed')) { app.speed = +q.get('speed'); $('#speed').value = q.get('speed'); }
+  if (q.get('follow') === '1') app.follow = true;
+  if (q.get('play') === '1') setPlaying(true);
   if (q.get('dock') === 'year') setDockView('year');
   if (q.get('pin')) { app.pinned = new Date(q.get('pin') + (q.get('pin').endsWith('Z') ? '' : 'Z')); $('#pin-btn').textContent = 'Unpin'; renderDvd(); }
   if (q.get('explain') === 'evm') $('#evm-btn').click(); // direct links for demos and videos

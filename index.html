@@ -26,6 +26,8 @@
   <main>
     <section class="hero">
       <img class="hero-img" src="landing/hero-rim.webp" alt="The Sun skimming the horizon at the Moon's south pole, rendered by Rimlight Navigator from NASA terrain" />
+      <iframe class="hero-live" title="Live simulation: the Sun moving along the horizon at the Shackleton ridge" tabindex="-1" aria-hidden="true" loading="eager"></iframe>
+      <p class="live-tag" aria-hidden="true"><i></i>Live: the Shackleton ridge, running in your browser</p>
       <div class="hero-copy">
         <p class="context">NASA Space Apps Challenge 2026: Lunar Landing Site Navigator</p>
         <h1>Rimlight<br />Navigator</h1>
@@ -49,10 +51,21 @@
           <p>If Earth is above the skyline, the lander can radio home directly. If a hill is in the way, every message needs a relay satellite.</p>
         </div>
       </div>
+      <div class="wrap sky">
+        <div class="sky-head">
+          <p class="sky-caption">The real skyline of the Shackleton ridge, all 360°. Thirty days of Sun and Earth in twenty seconds.</p>
+          <div class="lamps" aria-live="off">
+            <span class="lamp lamp-sun" id="lamp-sun"><i></i>Power</span>
+            <span class="lamp lamp-earth" id="lamp-earth"><i></i>Earth link</span>
+            <span class="sky-date" id="sky-date"></span>
+          </div>
+        </div>
+        <canvas id="sky" aria-label="Animated 360 degree skyline at the Shackleton ridge with the Sun and Earth moving over 30 days"></canvas>
+      </div>
       <div class="wrap fact">
         <figure class="fact-img"><img src="landing/crater.webp" alt="Shackleton crater in permanent shadow, with sunlight catching the far rim" loading="lazy" /></figure>
         <div class="fact-copy">
-          <p class="fact-big">89% and 0%.</p>
+          <p class="fact-big"><span class="count" data-to="89">89</span>% and <span class="count" data-to="0">0</span>%.</p>
           <p>The ridge beside Shackleton crater is in sunlight 89% of the year. The crater floor, 20 km away, has not seen the Sun in billions of years, which is exactly why water ice can survive there.</p>
           <p>At the pole, moving a few kilometres or slipping the launch a few days can turn a great site into an impossible one. The tools that work this out today are built for specialists. This one is built for everyone.</p>
         </div>

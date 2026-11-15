@@ -147,3 +147,9 @@ Any AI or human picking this up should read the **last entry** first.
 - **App:** `?clean=1` (no UI, no guide lines via `scene.setDecor(false)`) and `?face=<az>` for eye-level captures; useful for film mode.
 - **Hide panels** button in the top bar, synced with `F`.
 - Owner question answered: the app plans touchdown; launch ≈ touchdown − trip time (direct ~4–5 days). A "launch by" hint was offered.
+
+## Session 12: Sun 2026-11-15 (less text + animated landing), approved by owner and committed
+
+- **Navigator de-cluttered:** verdict sentence replaced by two icon chips (full sentence on hover). Sun and Earth side by side, high in the panel. Hint sentences removed in favour of ⓘ tooltips on headings. Power and 30-day numbers, and the site blurb, folded into `<details>`. Tour card texts cut to 1–2 sentences. Best-day buttons shown in date order.
+- **Landing page motion:** one orchestrated hero entrance. The hero crossfades into the live simulator (iframe `app.html?clean=1&eye=1&play=1&speed=1.5&follow=1`, desktop and no reduced motion only). New animated 360° skyline of the ridge (`src/landing-sky.js`, our physics, 30 days in 20 s, power and Earth lamps). Count-up for 89% and 0%.
+- App options added: `?play=1`, `?speed=`, `?follow=1` (eye view turns with the Sun).

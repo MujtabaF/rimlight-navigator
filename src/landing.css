@@ -116,3 +116,37 @@ h3 { font: 500 clamp(22px, 2vw, 28px)/1.15 var(--serif); }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
 html.shot { scroll-behavior: auto; }
 html.shot .hero { min-height: 900px; }
+
+/* ---------- motion ---------- */
+/* live hero: the simulator fades in over the still render once it's drawing */
+.hero-live { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; opacity: 0; transition: opacity 1.6s ease; pointer-events: none; }
+body.hero-on .hero-live { opacity: 1; }
+.live-tag { position: absolute; z-index: 2; right: var(--gap); bottom: 26px; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-2); opacity: 0; transition: opacity 1s ease 1.2s; }
+.live-tag i { width: 7px; height: 7px; border-radius: 50%; background: #ff5a4f; box-shadow: 0 0 8px #ff5a4f; animation: pulse 1.6s ease-in-out infinite; }
+body.hero-on .live-tag { opacity: 1; }
+@keyframes pulse { 50% { opacity: 0.35; } }
+
+/* one orchestrated entrance for the hero text */
+.hero-copy > * { animation: rise 1s cubic-bezier(.2, .7, .2, 1) both; }
+.hero-copy .context { animation-delay: 0.1s; }
+.hero-copy h1 { animation-delay: 0.25s; }
+.hero-copy .lead { animation-delay: 0.55s; }
+.hero-copy .cta { animation-delay: 0.75s; }
+@keyframes rise { from { opacity: 0; transform: translateY(22px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+
+/* animated skyline */
+.sky { margin-top: clamp(48px, 8vh, 88px); }
+.sky-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 10px 24px; margin-bottom: 12px; }
+.sky-caption { color: var(--ink-2); font-size: 15px; max-width: 60ch; }
+.lamps { display: flex; align-items: center; gap: 16px; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.lamp { display: inline-flex; align-items: center; gap: 7px; color: var(--ink-3); transition: color 0.3s; }
+.lamp i { width: 9px; height: 9px; border-radius: 50%; background: #2a2a2a; transition: background-color 0.3s, box-shadow 0.3s; }
+.lamp-sun.on { color: var(--sun); } .lamp-sun.on i { background: var(--sun); box-shadow: 0 0 10px var(--sun); }
+.lamp-earth.on { color: var(--earth); } .lamp-earth.on i { background: var(--earth); box-shadow: 0 0 10px var(--earth); }
+.sky-date { color: var(--ink-2); min-width: 9ch; text-align: right; }
+#sky { width: 100%; height: clamp(180px, 22vw, 280px); display: block; border-radius: 10px; border: 1px solid var(--line); background: radial-gradient(ellipse 80% 120% at 50% 100%, #0b0d10, #000); }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-copy > * { animation: none; }
+  .live-tag i { animation: none; }
+}

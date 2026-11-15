@@ -32,7 +32,6 @@
       <p id="site-source" class="meta source"></p>
     </header>
     <aside id="sites" aria-label="Landing sites">
-      <p class="rail-intro">Click a site to view it. Press <span class="cmp-demo" aria-hidden="true">+</span> to compare up to four.</p>
       <ul id="site-list"></ul>
       <form id="custom" class="custom">
         <h3>Custom coordinates</h3>
@@ -60,57 +59,65 @@
 
     <aside id="readout" aria-label="Site conditions" data-sun="up">
       <section class="verdict" id="verdict" data-level="ok" aria-live="polite">
-        <h2 id="verdict-title">If a solar lander touched down now</h2>
+        <h2 id="verdict-title">Landing here now</h2>
         <p class="verdict-chip" id="verdict-chip">–</p>
-        <p class="verdict-text" id="verdict-text"></p>
+        <p class="verdict-chips" id="verdict-text"></p>
       </section>
+
+      <div class="now-row">
+        <section class="now sun">
+          <h2>Sun</h2>
+          <p class="big" id="sun-el">–</p>
+          <p id="sun-state" class="state"></p>
+          <p id="sun-next" class="next"></p>
+        </section>
+        <section class="now earth">
+          <h2>Earth</h2>
+          <p class="big" id="earth-el">–</p>
+          <p id="earth-state" class="state"></p>
+          <p id="earth-next" class="next"></p>
+        </section>
+      </div>
+      <button id="lib-btn" class="linkish lib-link" aria-haspopup="dialog">Why does Earth move?</button>
+
       <section id="compare" class="compare" hidden aria-labelledby="compare-title">
-        <h2 id="compare-title">Side by side right now. Click a site to switch to it.</h2>
+        <h2 id="compare-title">Side by side <i class="info" title="Each site you added with +. Click a card to switch to that site.">i</i></h2>
         <div id="compare-list" class="compare-list"></div>
       </section>
       <section class="dates" aria-labelledby="dates-title">
-        <h2 id="dates-title">Best days to land (same 30 days as the timeline)</h2>
+        <h2 id="dates-title">Best days to land <i class="info" title="Each day of the 30-day timeline. Tall green bars: long sunlight and Earth contact. Hover a bar to read it, click to land then.">i</i></h2>
         <canvas id="datechart" aria-label="Landing quality for each day of the 30-day window. Click a day to land then."></canvas>
-        <p class="dates-info" id="dates-info">Tall green bars mean long sunlight and Earth contact. Click a day to land then.</p>
+        <p class="dates-info" id="dates-info"></p>
         <div class="dates-best" id="dates-best"></div>
       </section>
       <section class="dvd" id="dvd" aria-labelledby="dvd-title">
-        <div class="dvd-head"><h2 id="dvd-title">Compare two landing dates</h2><button id="pin-btn" class="btn small">Pin this date</button></div>
-        <p class="dvd-hint" id="dvd-hint">Pin a date, then move to another one (timeline, chart or +1 day) to see both side by side.</p>
+        <div class="dvd-head"><h2 id="dvd-title">Compare two dates <i class="info" title="Pin this date, then move to another one (timeline, chart or +1 day) to see both side by side.">i</i></h2><button id="pin-btn" class="btn small">Pin this date</button></div>
+        <p class="dvd-hint" id="dvd-hint" hidden></p>
         <div class="dvd-grid" id="dvd-grid" hidden></div>
       </section>
 
-      <section class="now sun">
-        <h2>Sun</h2>
-        <p class="big" id="sun-el">–</p>
-        <p id="sun-state"></p>
-        <p id="sun-next" class="next"></p>
-      </section>
-      <section class="now earth">
-        <h2>Earth</h2>
-        <p class="big" id="earth-el">–</p>
-        <p id="earth-state"></p>
-        <p id="earth-next" class="next"></p>
-        <button id="lib-btn" class="linkish" aria-haspopup="dialog">Why does Earth move?</button>
-      </section>
-      <section class="power">
-        <h2>Solar power right now</h2>
-        <p class="pw-row"><span>Upright panel, turns to face the Sun</span><b id="power-v">–</b></p>
-        <div class="meter"><div id="power-bar-v"></div></div>
-        <p class="pw-row"><span>Flat panel on the deck</span><b id="power-h">–</b></p>
-        <div class="meter"><div id="power-bar-h"></div></div>
-      </section>
-      <section class="window">
-        <h2>Over this 30-day window</h2>
-        <dl>
-          <div><dt>Sunlit</dt><dd id="m-sun">–</dd></div>
-          <div><dt>Earth in view</dt><dd id="m-earth">–</dd></div>
-          <div><dt>Both at once</dt><dd id="m-both">–</dd></div>
-          <div><dt>Longest night</dt><dd id="m-dark">–</dd></div>
-          <div><dt>Longest Earth blackout</dt><dd id="m-noearth">–</dd></div>
-        </dl>
-      </section>
-      <p id="site-blurb" class="blurb"></p>
+      <details class="more">
+        <summary>Power and 30-day numbers</summary>
+        <section class="power">
+          <p class="pw-row"><span>Tracking panel (upright, turns to the Sun)</span><b id="power-v">–</b></p>
+          <div class="meter"><div id="power-bar-v"></div></div>
+          <p class="pw-row"><span>Flat panel on the deck</span><b id="power-h">–</b></p>
+          <div class="meter"><div id="power-bar-h"></div></div>
+        </section>
+        <section class="window">
+          <dl>
+            <div><dt>Sunlit</dt><dd id="m-sun">–</dd></div>
+            <div><dt>Earth in view</dt><dd id="m-earth">–</dd></div>
+            <div><dt>Both at once</dt><dd id="m-both">–</dd></div>
+            <div><dt>Longest night</dt><dd id="m-dark">–</dd></div>
+            <div><dt>Longest Earth blackout</dt><dd id="m-noearth">–</dd></div>
+          </dl>
+        </section>
+      </details>
+      <details class="more">
+        <summary>About this site</summary>
+        <p id="site-blurb" class="blurb"></p>
+      </details>
     </aside>
 
     <section id="bottom" aria-label="Time controls">

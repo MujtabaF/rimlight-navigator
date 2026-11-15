@@ -112,6 +112,33 @@ h1, h2, h3, p { margin: 0; }
 .window dl div { display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 4px 0; }
 .window dt { color: var(--ink-2); font-size: 14px; }
 .window dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+/* de-cluttered readout: icon chips, Sun|Earth side by side, collapsible details, ⓘ hints */
+.verdict-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.vchip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 8px; border-radius: 999px; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; background: var(--panel-2); border: 1px solid var(--line); }
+.vchip svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
+.vchip.vsun { color: var(--sun); } .vchip.vsun svg circle { fill: currentColor; }
+.vchip.vearth { color: var(--earth); }
+.vchip.off { color: var(--ink-3); }
+.now-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.now-row .now { padding-left: 10px; }
+.now-row .big { font-size: 36px; }
+.now .state { font-size: 13px; color: var(--ink-2); }
+.now .next { font-size: 13px; }
+.lib-link { justify-self: start; margin-top: -8px; font-size: 12px; }
+.info { display: inline-grid; place-items: center; width: 15px; height: 15px; margin-left: 4px; border-radius: 50%; border: 1px solid var(--ink-3); font: italic 600 10px/1 var(--serif); color: var(--ink-3); cursor: help; vertical-align: 1px; }
+.info:hover { color: var(--ink-1); border-color: var(--ink-1); }
+.dates { position: relative; }
+.dates-info { position: absolute; z-index: 2; left: 0; right: 0; top: 22px; padding: 6px 9px; font-size: 12px; color: var(--ink-1); background: rgba(10, 12, 14, 0.94); border: 1px solid var(--line); border-radius: 6px; pointer-events: none; min-height: 0 !important; }
+.dates-info:empty { display: none; }
+details.more { border-top: 1px solid var(--line); padding-top: 10px; }
+details.more > summary { cursor: pointer; font-size: 13px; color: var(--ink-2); list-style: none; display: flex; align-items: center; gap: 6px; }
+details.more > summary::-webkit-details-marker { display: none; }
+details.more > summary::before { content: '▸'; color: var(--ink-3); transition: transform 0.15s; }
+details.more[open] > summary::before { transform: rotate(90deg); }
+details.more > summary:hover { color: var(--ink-1); }
+details.more[open] > summary { margin-bottom: 10px; }
+details.more .power { margin-bottom: 12px; }
+
 /* side-by-side comparison cards */
 .compare { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
 .compare[hidden] { display: none; }

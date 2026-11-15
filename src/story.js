@@ -5,42 +5,42 @@
 export const chapters = [
   {
     title: 'On the Moon, a day lasts a month',
-    text: 'Apollo 11, near the equator. The Sun climbs almost straight overhead and takes about two weeks to cross the sky. Earth barely moves, so the crew could always talk to Houston.',
+    text: 'Apollo 11, at the equator. The Sun takes two weeks to cross the sky, and Earth never leaves it.',
     site: 'apollo11', compare: [], at: (app) => app.peakSun('apollo11'), eye: false, speed: 6, play: true,
   },
   {
     title: 'Head south and the Sun stays low',
-    text: 'Chandrayaan-3 landed at 69°S. Its Sun never climbed above about 22°. It got one lunar day of power, then the two-week night came and it never woke up.',
+    text: 'Chandrayaan-3, at 69°S. One lunar day of power, then the two-week night. It never woke up.',
     site: 'chandrayaan3', compare: [], at: (app) => app.peakSun('chandrayaan3'), eye: false, speed: 12, play: true,
   },
   {
     title: 'Some craters never see the Sun',
-    text: 'Shackleton crater floor, 2.8 km below the rim. The Sun never gets more than about 2° above the horizon here, and the crater wall stands 20° high. That means 0% sunlight all year, which keeps it cold enough to trap water ice.',
+    text: "Shackleton's floor: the wall stands 20° high, the Sun never tops 2°. 0% sunlight, cold enough to keep water ice.",
     site: 'shackleton-floor', compare: [], at: (app) => app.peakSun('shackleton-ridge'), eye: true, faceAway: true, speed: 24, play: true,
   },
   {
     title: '…and a few ridges almost never go dark',
-    text: 'About 20 km away, on the ridge that connects Shackleton and de Gerlache, the Sun circles the whole horizon. This spot is sunlit about 89% of 2027, by far the best power on the Moon.',
+    text: '20 km away on the ridge, the Sun circles the horizon: 89% sunlight all year.',
     site: 'shackleton-ridge', compare: ['shackleton-floor'], at: (app) => app.peakSun('shackleton-ridge'), eye: true, speed: 24, play: true,
   },
   {
     title: 'Earth decides when you can talk',
-    text: 'At the pole, Earth bobs up and down along the horizon. The 5 km-high Malapert Massif can see Earth about 80% of the time. The Shackleton ridge manages about half. One site gives you power, the other gives you comms.',
+    text: 'Earth bobs along the horizon. Malapert sees it 80% of the time, the ridge about half. Power or comms: pick one.',
     site: 'malapert', compare: ['shackleton-ridge'], at: (app) => app.windowStart(), eye: false, speed: 24, play: true,
   },
   {
     title: 'The launch just slipped',
-    text: 'Plans change. Here is IM-2 at Mons Mouton, landing right after sunrise. Press Shift + → to slip the landing a day at a time and watch the countdown to sunset shrink. Every day of delay is a day of mission you lose.',
+    text: 'IM-2 lands at sunrise. Press Shift + → to slip it a day at a time: every day late is a day of mission lost.',
     site: 'im2', compare: [], at: (app) => app.nextSunrise('im2', 3), eye: false, speed: 0, play: false,
   },
   {
     title: 'The far side has no line to Earth',
-    text: "Chang'e 4 and 6 landed on the far side. The Sun rises and sets normally, but Earth never comes up, so every byte has to go through a relay satellite.",
+    text: "Chang'e 4 and 6, on the far side. Earth never rises, so every message needs a relay satellite.",
     site: 'change4', compare: ['change6', 'apollo11'], at: (app) => app.peakSun('change4'), eye: false, speed: 12, play: true,
   },
   {
     title: 'Compare candidates in seconds',
-    text: 'Four candidate sites, one month, shown side by side. The gold bars are hours of power and the blue bars are hours of direct contact with Earth. Change the date and every bar recalculates from NASA terrain data.',
+    text: 'Four candidates, one month, side by side: gold is power, blue is contact with Earth. Change the date and it all recalculates.',
     site: 'shackleton-ridge', compare: ['malapert', 'im2', 'im1'], at: (app) => app.windowStart(), eye: false, speed: 24, play: false,
   },
 ];
