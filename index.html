@@ -4,208 +4,141 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Rimlight Navigator</title>
-  <meta name="description" content="Compare lunar landing sites and dates: Sun and Earth above the real LOLA horizon, power and direct-to-Earth windows. NASA Space Apps 2026." />
+  <meta name="description" content="Find where and when a lunar lander gets sunlight for power and a clear line to Earth, from real NASA terrain. NASA Space Apps 2026." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%23222'/><path d='M2 20h28' stroke='%23ffb547' stroke-width='3'/></svg>" />
+  <script>
+    // Old share links pointed at the site root: send any navigator link straight to the app.
+    if (/[?&](site|lat|t|tour|cmp|eye|dock|help|pin|explain|clean)=/.test(location.search)) location.replace('app.html' + location.search);
+  </script>
 </head>
-<body>
-  <div id="app">
-    <header class="bar">
-      <div class="brand">
-        <span class="mark" aria-hidden="true"></span>
-        <div>
-          <strong>Rimlight Navigator</strong>
-          <span class="sub">Lunar landing sites: light and link</span>
+<body class="landing">
+  <header class="top">
+    <a class="brand" href="./"><span class="mark" aria-hidden="true"></span>Rimlight Navigator</a>
+    <nav aria-label="Page">
+      <a href="#problem">The problem</a>
+      <a href="#features">What it does</a>
+      <a href="#data">NASA data</a>
+      <a href="#name">The name</a>
+    </nav>
+    <a class="btn primary" href="app.html">Open the navigator</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <img class="hero-img" src="landing/hero-rim.webp" alt="The Sun skimming the horizon at the Moon's south pole, rendered by Rimlight Navigator from NASA terrain" />
+      <div class="hero-copy">
+        <p class="context">NASA Space Apps Challenge 2026: Lunar Landing Site Navigator</p>
+        <h1>Rimlight<br />Navigator</h1>
+        <p class="lead">At the Moon's south pole the Sun never climbs more than a few degrees. Only the crater rims catch the light. Rimlight Navigator shows where and when a lander gets sunlight for power and a clear line to Earth.</p>
+        <div class="cta">
+          <a class="btn primary big" href="app.html">Open the navigator</a>
+          <a class="btn big" href="app.html?tour=1">Take the guided tour</a>
         </div>
       </div>
-      <nav class="bar-actions">
-        <button id="evm-btn" class="btn" aria-haspopup="dialog" title="How a day here compares with a day on Earth">Moon vs Earth</button>
-        <button id="help-btn" class="btn" aria-haspopup="dialog" title="Controls and how to read the screen (press ?)">How to use</button>
-        <button id="eye" class="btn" aria-pressed="false">Stand on the surface</button>
-        <button id="story-btn" class="btn primary">Guided tour</button>
-      </nav>
-    </header>
-
-    <header id="site-title" class="site-title">
-      <h1 id="site-name">Loading…</h1>
-      <p id="site-coords" class="meta"></p>
-      <p id="site-source" class="meta source"></p>
-    </header>
-    <aside id="sites" aria-label="Landing sites">
-      <p class="rail-intro">Click a site to view it. Press <span class="cmp-demo" aria-hidden="true">+</span> to compare up to four.</p>
-      <ul id="site-list"></ul>
-      <form id="custom" class="custom">
-        <h3>Custom coordinates</h3>
-        <div class="row">
-          <label>Lat <input id="c-lat" type="number" step="0.0001" value="-87.5" required /></label>
-          <label>Lon <input id="c-lon" type="number" step="0.0001" value="45" required /></label>
-        </div>
-        <button class="btn" type="submit">Go to point</button>
-        <p id="c-msg" class="msg" role="alert"></p>
-      </form>
-    </aside>
-
-    <main id="viewport" aria-label="3D view of the landing site">
-      <section id="story" class="story" hidden aria-live="polite">
-        <p class="story-count"></p>
-        <h2 class="story-title"></h2>
-        <p class="story-text"></p>
-        <div class="story-nav">
-          <button class="btn story-prev">Back</button>
-          <button class="btn primary story-next">Next</button>
-          <button class="btn ghost story-close" aria-label="Close guided tour">Close</button>
-        </div>
-      </section>
-    </main>
-
-    <aside id="readout" aria-label="Site conditions" data-sun="up">
-      <section class="verdict" id="verdict" data-level="ok" aria-live="polite">
-        <h2 id="verdict-title">If a solar lander touched down now</h2>
-        <p class="verdict-chip" id="verdict-chip">–</p>
-        <p class="verdict-text" id="verdict-text"></p>
-      </section>
-      <section id="compare" class="compare" hidden aria-labelledby="compare-title">
-        <h2 id="compare-title">Side by side right now. Click a site to switch to it.</h2>
-        <div id="compare-list" class="compare-list"></div>
-      </section>
-      <section class="dates" aria-labelledby="dates-title">
-        <h2 id="dates-title">Best days to land (same 30 days as the timeline)</h2>
-        <canvas id="datechart" aria-label="Landing quality for each day of the 30-day window. Click a day to land then."></canvas>
-        <p class="dates-info" id="dates-info">Tall green bars mean long sunlight and Earth contact. Click a day to land then.</p>
-        <div class="dates-best" id="dates-best"></div>
-      </section>
-      <section class="dvd" id="dvd" aria-labelledby="dvd-title">
-        <div class="dvd-head"><h2 id="dvd-title">Compare two landing dates</h2><button id="pin-btn" class="btn small">Pin this date</button></div>
-        <p class="dvd-hint" id="dvd-hint">Pin a date, then move to another one (timeline, chart or +1 day) to see both side by side.</p>
-        <div class="dvd-grid" id="dvd-grid" hidden></div>
-      </section>
-
-      <section class="now sun">
-        <h2>Sun</h2>
-        <p class="big" id="sun-el">–</p>
-        <p id="sun-state"></p>
-        <p id="sun-next" class="next"></p>
-      </section>
-      <section class="now earth">
-        <h2>Earth</h2>
-        <p class="big" id="earth-el">–</p>
-        <p id="earth-state"></p>
-        <p id="earth-next" class="next"></p>
-        <button id="lib-btn" class="linkish" aria-haspopup="dialog">Why does Earth move?</button>
-      </section>
-      <section class="power">
-        <h2>Solar power right now</h2>
-        <p class="pw-row"><span>Upright panel, turns to face the Sun</span><b id="power-v">–</b></p>
-        <div class="meter"><div id="power-bar-v"></div></div>
-        <p class="pw-row"><span>Flat panel on the deck</span><b id="power-h">–</b></p>
-        <div class="meter"><div id="power-bar-h"></div></div>
-      </section>
-      <section class="window">
-        <h2>Over this 30-day window</h2>
-        <dl>
-          <div><dt>Sunlit</dt><dd id="m-sun">–</dd></div>
-          <div><dt>Earth in view</dt><dd id="m-earth">–</dd></div>
-          <div><dt>Both at once</dt><dd id="m-both">–</dd></div>
-          <div><dt>Longest night</dt><dd id="m-dark">–</dd></div>
-          <div><dt>Longest Earth blackout</dt><dd id="m-noearth">–</dd></div>
-        </dl>
-      </section>
-      <p id="site-blurb" class="blurb"></p>
-    </aside>
-
-    <section id="bottom" aria-label="Time controls">
-      <div class="transport">
-        <button id="back-day" class="btn" title="Back one day (Shift + ←)">−1 day</button>
-        <button id="play" class="btn primary" aria-pressed="false">Play</button>
-        <button id="fwd-day" class="btn" title="Forward one day (Shift + →)">+1 day</button>
-        <label class="speed">Speed
-          <select id="speed">
-            <option value="1">1 hour / s (a Moon day takes 12 min)</option>
-            <option value="6" selected>6 hours / s (a Moon day takes 2 min)</option>
-            <option value="12">12 hours / s (a Moon day takes 1 min)</option>
-            <option value="24">1 day / s (a Moon day takes 30 s)</option>
-            <option value="72">3 days / s (a Moon day takes 10 s)</option>
-          </select>
-        </label>
-        <label class="date">UTC <input id="date" type="datetime-local" /></label>
-        <button id="today" class="btn ghost">Now</button>
-        <button id="share-btn" class="btn ghost" title="Copy a link to this exact site, date and comparison">Copy link</button>
-        <button id="csv-btn" class="btn ghost" title="Download the 30-day numbers as a spreadsheet (CSV)">Download CSV</button>
-        <div class="dock-tabs" role="group" aria-label="Timeline range">
-          <button class="dock-tab" data-dock="30d" aria-pressed="true" title="Hour by hour over 30 days">30 days</button>
-          <button class="dock-tab" data-dock="year" aria-pressed="false" title="Each month of the year: the seasons">Year</button>
-        </div>
-        <span class="legend"><i class="sw sun"></i>Sun up (power) <i class="sw earth"></i>Earth up (direct link)</span>
-      </div>
-      <canvas id="panorama" aria-label="360 degree horizon with Sun and Earth tracks"></canvas>
-      <canvas id="timeline" aria-label="30-day sunlight and Earth visibility timeline. Click to change time."></canvas>
-      <div class="chart-tip" id="seasons-tip" hidden></div>
-      <canvas id="seasons" hidden title="Share of each month with the Sun up (top) and Earth up (bottom). Click a month to jump there." aria-label="Sunlight and Earth visibility for each month of the year. Click a month to jump there."></canvas>
     </section>
-  </div>
 
-  <div id="hint" class="hint" hidden>
-    <span>New here? Press <kbd>?</kbd> or click <b>How to use</b> for the controls.</span>
-    <button class="btn ghost" id="hint-close" aria-label="Dismiss tip">OK</button>
-  </div>
+    <section class="band" id="problem">
+      <div class="wrap two-q">
+        <h2>Two questions decide every landing</h2>
+        <div class="q q-sun">
+          <h3>Will it have power?</h3>
+          <p>Solar panels need the Sun above the skyline. When it sets, the lunar night lasts up to two weeks, and many landers never wake up.</p>
+        </div>
+        <div class="q q-earth">
+          <h3>Can it talk to Earth?</h3>
+          <p>If Earth is above the skyline, the lander can radio home directly. If a hill is in the way, every message needs a relay satellite.</p>
+        </div>
+      </div>
+      <div class="wrap fact">
+        <figure class="fact-img"><img src="landing/crater.webp" alt="Shackleton crater in permanent shadow, with sunlight catching the far rim" loading="lazy" /></figure>
+        <div class="fact-copy">
+          <p class="fact-big">89% and 0%.</p>
+          <p>The ridge beside Shackleton crater is in sunlight 89% of the year. The crater floor, 20 km away, has not seen the Sun in billions of years, which is exactly why water ice can survive there.</p>
+          <p>At the pole, moving a few kilometres or slipping the launch a few days can turn a great site into an impossible one. The tools that work this out today are built for specialists. This one is built for everyone.</p>
+        </div>
+      </div>
+    </section>
 
-  <dialog id="explain" aria-labelledby="explain-title">
-    <header class="help-head">
-      <h2 id="explain-title"></h2>
-      <button class="btn ghost" id="explain-close" aria-label="Close">Close</button>
-    </header>
-    <div class="explain-body" id="explain-body"></div>
-  </dialog>
+    <section class="band product">
+      <div class="wrap">
+        <h2>The whole decision on one screen</h2>
+        <p class="section-lead">Pick any of 17 landing sites, from Apollo 11 to the Artemis III candidate regions, or type in your own coordinates. Pick a date. Everything recalculates from NASA terrain in an instant.</p>
+        <img class="shot" src="landing/app-overview.webp" alt="The Rimlight Navigator app showing Malapert Massif with a verdict, landing-day chart and site comparison" loading="lazy" />
+      </div>
+    </section>
 
-  <dialog id="help" aria-labelledby="help-title">
-    <header class="help-head">
-      <h2 id="help-title">How to use Rimlight Navigator</h2>
-      <button class="btn ghost" id="help-close" aria-label="Close help">Close</button>
-    </header>
-    <div class="help-body">
-      <section>
-        <h3>What it tells you</h3>
-        <p>Pick a spot on the Moon and a date. The app works out two things a lander needs: <b class="c-sun">sunlight</b> for solar power, and <b class="c-earth">Earth above the horizon</b> to radio home directly. Hills and crater walls from NASA's terrain maps can block either one.</p>
-        <h3>How to use it to decide</h3>
-        <ol>
-          <li>Pick a site on the left, or type in your own coordinates.</li>
-          <li>Set your landing date in the <b>UTC</b> box, or click the timeline.</li>
-          <li>Read the verdict on the right. Below it, <b>Best days to land</b> shows the same 30 days as the timeline: tall green bars are the best days. Click one to jump there.</li>
-          <li>Click <b>+</b> next to other sites (up to 4) to compare them side by side.</li>
-          <li>Launch slipped? Press <kbd>Shift</kbd> + <kbd>→</kbd> to move a day later and watch the numbers change.</li>
-        </ol>
-      </section>
-      <section>
-        <h3>Controls</h3>
-        <table class="keys">
-          <tr><th>Play / pause</th><td><kbd>Space</kbd> or the Play button</td></tr>
-          <tr><th>Step 1 hour</th><td><kbd>←</kbd> <kbd>→</kbd></td></tr>
-          <tr><th>Step 1 day</th><td><kbd>Shift</kbd> + <kbd>←</kbd> <kbd>→</kbd>, or −1 day / +1 day</td></tr>
-          <tr><th>Jump to a date</th><td>Click or drag the timeline, or type in the UTC box</td></tr>
-          <tr><th>See the seasons</th><td><b>Year</b> button next to the timeline, then click a month</td></tr>
-          <tr><th>Speed</th><td>Speed menu (a Moon day lasts about 29.5 Earth days)</td></tr>
-          <tr><th>Rotate / move / zoom</th><td>Drag / right-drag / scroll (orbit view)</td></tr>
-          <tr><th>Look around</th><td>Drag (surface view)</td></tr>
-          <tr><th>Switch view</th><td><b>Stand on the surface</b> / <b>Orbit view</b> button</td></tr>
-          <tr><th>Compare sites</th><td><b>+</b> next to a site in the list (up to 4). Cards appear side by side on the right; click one to switch to it</td></tr>
-          <tr><th>Guided tour</th><td><kbd>N</kbd> next, <kbd>P</kbd> back, <kbd>Esc</kbd> to leave</td></tr>
-          <tr><th>Share this view</th><td><b>Copy link</b> (site, date and comparison), <b>Download CSV</b> (30-day numbers)</td></tr>
-          <tr><th>Compare two dates</th><td><b>Pin this date</b> on the right, then move to another date</td></tr>
-          <tr><th>Hide side panels</th><td><kbd>F</kbd></td></tr>
-          <tr><th>This help</th><td><kbd>?</kbd> or <kbd>H</kbd></td></tr>
-        </table>
-      </section>
-      <section>
-        <h3>Reading the screen</h3>
-        <ul class="legend-list">
-          <li><i class="sw sun"></i><span><b>Orange is the Sun</b>, which means power. <i class="sw earth"></i><b>Blue is Earth</b>, which means a direct radio link.</span></li>
-          <li><span><b>3D view:</b> the white pin is the landing spot. The white line around the sky is the skyline, where the terrain meets the sky. The orange and blue lines are the paths of the Sun and Earth over the 30 days. Where they are dim, the terrain hides them.</span></li>
-          <li><span><b>Skyline strip</b> (bottom): the whole 360° horizon laid out flat. The grey shape is the terrain. Dots show the Sun and Earth paths: bright means in view, faint means blocked. The circles are where they are right now.</span></li>
-          <li><span><b>Timeline</b> (very bottom): 30 days for each site. The top bar is orange when the Sun is up (brighter means more of the Sun is showing). The bottom bar is blue when Earth is up. The white line is now. Where both bars are filled, you have power and a link at the same time.</span></li>
-          <li><span><b>Right panel:</b> how high the Sun and Earth are right now (in degrees above the flat horizon), the countdown to the next sunset or Earthset, solar power, and a 30-day summary.</span></li>
-        </ul>
-      </section>
-    </div>
-  </dialog>
-  <script type="module" src="/src/main.js"></script>
+    <section class="band" id="features">
+      <div class="wrap features">
+        <article class="feat">
+          <img src="landing/feature-dates.webp" alt="A verdict saying Workable, with limits, above a bar chart of the best days to land" loading="lazy" />
+          <div>
+            <h3>Find the best day to land</h3>
+            <p>Every day of the month is rated good, workable or poor, from how long the Sun shines before the first sunset and how often Earth is in view. Click a day and the whole scene jumps there.</p>
+          </div>
+        </article>
+        <article class="feat flip">
+          <img src="landing/feature-compare.webp" alt="Three landing sites compared side by side, each with a verdict and best day" loading="lazy" />
+          <div>
+            <h3>Compare sites side by side</h3>
+            <p>Add up to four candidates. See which one works right now, and when each one's window opens.</p>
+          </div>
+        </article>
+        <article class="feat">
+          <img src="landing/feature-pin.webp" alt="Two landing dates compared: Jan 13 is good, Jan 20 is only workable" loading="lazy" />
+          <div>
+            <h3>Ask what happens if the launch slips</h3>
+            <p>Pin one landing date, move to another, and see exactly what you gain or lose: days of sunlight, contact with Earth, the longest night ahead.</p>
+          </div>
+        </article>
+        <article class="feat wide">
+          <div>
+            <h3>See the seasons</h3>
+            <p>The Moon is tilted only 1.5°, yet even the sunniest ridge has a winter: 100% sunlight in January, 62% in April. Month by month, for every site.</p>
+          </div>
+          <img src="landing/feature-year.webp" alt="Twelve months of sunlight and Earth contact for two sites" loading="lazy" />
+        </article>
+        <article class="feat flip">
+          <img src="landing/earthrise.webp" alt="Earth, half lit, above the horizon at Malapert Massif" loading="lazy" />
+          <div>
+            <h3>Stand on the surface</h3>
+            <p>Drop to eye level and watch the Sun skim the skyline and Earth bob along the horizon, with real NASA terrain in every direction and Earth showing its true phase.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="band" id="data">
+      <div class="wrap data">
+        <h2>Real NASA data, checked</h2>
+        <dl>
+          <div><dt>Terrain</dt><dd>NASA's Lunar Reconnaissance Orbiter laser altimeter (LOLA): 40 m and 240 m maps at the south pole, the global map everywhere else.</dd></div>
+          <div><dt>Sun and Earth</dt><dd>Positions computed for any moment, agreeing with NASA JPL Horizons to within <b>0.004°</b>.</dd></div>
+          <div><dt>Earth</dt><dd>NASA Scientific Visualization Studio Blue Marble imagery, lit by the real Sun so its phase is correct.</dd></div>
+          <div><dt>Temperatures</dt><dd>Rounded from NASA LRO Diviner measurements.</dd></div>
+          <div><dt>Checks</dt><dd><b>13</b> automatic science tests run on every change. The ridge's 89% sunlight matches published studies, the crater floor stays dark, and the far side never sees Earth.</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="band" id="name">
+      <div class="wrap name">
+        <h2>Why "Rimlight"?</h2>
+        <blockquote>At the pole, almost everything sits in shadow. Only the raised rims of craters catch the light. Finding that rim light is what this tool does.</blockquote>
+        <p>In film, a rim light is the light behind a subject that traces it with a bright outline against the dark. That's how the polar terrain looks in the navigator: the Sun skims the horizon and outlines the ridges in gold.</p>
+      </div>
+    </section>
+
+    <section class="final">
+      <h2>Pick a spot. Pick a date. Find the light.</h2>
+      <a class="btn primary big" href="app.html">Open the navigator</a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p><b>Team Rimlight</b>, a solo entry to the NASA Space Apps Challenge 2026.</p>
+    <p>All data from NASA. Built with help from AI (Claude). Not an official NASA product.</p>
+  </footer>
+
+  <script type="module" src="/src/landing.js"></script>
 </body>
 </html>

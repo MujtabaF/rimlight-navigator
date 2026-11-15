@@ -139,3 +139,11 @@ Any AI or human picking this up should read the **last entry** first.
 - `npm test`: 13 checks (new: Apollo 15 skyline 12.4°, from the Apennines).
 
 **Next**: Polish (tour click-through, fly-to, loading/error, screen sizes, performance), then Ship.
+
+## Session 11: Sat 2026-11-14 (landing page + Hide panels), approved by owner and committed
+
+- **Landing page** (`index.html`, `src/landing.css`, `src/landing.js`): hero = our own clean render of the Sun on the ridge horizon with the name huge; problem (two questions, 89% vs 0% with crater render); product shot; five feature rows with real UI crops; NASA data ledger; name story; closing CTA; honest footer (solo, NASA data, AI-assisted, not an official NASA product). Images in `public/landing/` (webp, ~330 KB total). `?shot=1` gives a fixed-height hero for full-page screenshots.
+- **Navigator moved to `app.html`** (Vite two-page build). The landing page forwards navigator query links (`?site=`, `?tour=`, and so on) to the app. The app logo links back to `/`. screenshots.sh points at app.html.
+- **App:** `?clean=1` (no UI, no guide lines via `scene.setDecor(false)`) and `?face=<az>` for eye-level captures; useful for film mode.
+- **Hide panels** button in the top bar, synced with `F`.
+- Owner question answered: the app plans touchdown; launch ≈ touchdown − trip time (direct ~4–5 days). A "launch by" hint was offered.

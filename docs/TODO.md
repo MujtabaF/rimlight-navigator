@@ -38,3 +38,5 @@ All done. See the Done list below.
 - [x] Share link (address bar always matches the view) + Copy link + Download CSV (30 days, every 30 min)
 - [x] More future targets: de Gerlache Rim, Haworth (Artemis III regions), Chang'e-7 target (Shackleton rim)
 - [x] Real NASA terrain for all 17 sites (global LOLA map, 1.9 km, for non-polar sites)
+- [x] Landing page at / (hero render, problem, product shots, NASA data, name story); navigator moved to /app.html (old links forward)
+- [x] Hide panels button (same as F)

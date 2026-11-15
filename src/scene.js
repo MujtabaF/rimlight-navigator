@@ -79,6 +79,7 @@ export function createScene(container) {
   scene.add(sunLabel, earthLabel);
 
   let terrain = null, siteMarker = null, skyline = null, wall = null;
+  let decor = true; // guide lines (compass, skyline, tracks, site pin); off for clean renders
   const tracks = new THREE.Group();
   scene.add(tracks);
 
@@ -96,6 +97,8 @@ export function createScene(container) {
     siteMarker.visible = !eye;
     scene.add(siteMarker);
     skyline = makeSkyline(site.horizon);
+    skyline.visible = decor;
+    siteMarker.visible = !eye && decor;
     scene.add(skyline);
     wall = makeHorizonWall(site.horizon);
     wall.visible = eye;
@@ -106,6 +109,7 @@ export function createScene(container) {
     tracks.clear();
     if (!analysis) return;
     tracks.add(trackLine(analysis.series, 'sun', COLORS.sun), trackLine(analysis.series, 'earth', COLORS.earth));
+    tracks.visible = decor;
   }
 
   function setState(state, date) {
@@ -163,7 +167,13 @@ export function createScene(container) {
       if (wall) wall.visible = false;
     }
     camera.updateProjectionMatrix();
-    siteMarker.visible = !on;
+    siteMarker.visible = !on && decor;
+  }
+  function setDecor(on) {
+    decor = on;
+    compass.visible = tracks.visible = on;
+    if (skyline) skyline.visible = on;
+    if (siteMarker) siteMarker.visible = on && !eye;
   }
 
   // The interface floats over the bottom of the view. Shift the picture up by half that
@@ -207,7 +217,7 @@ export function createScene(container) {
     labels.render(scene, camera);
   });
 
-  return { setSite, setState, setTracks, setEyeLevel, setInsetBottom, get eye() { return eye; } };
+  return { setSite, setState, setTracks, setEyeLevel, setInsetBottom, setDecor, get eye() { return eye; } };
 }
 
 // ---------- builders ----------

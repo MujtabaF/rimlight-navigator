@@ -1,0 +1,118 @@
+/* Rimlight Navigator landing page. Same language as the app: true-black space, Newsreader serif
+   for headlines, Archivo for text, amber = Sun / power, blue = Earth / radio link.
+   The one bold element is the hero: our own render of the Sun skimming the south-pole horizon,
+   with the name set huge across the dark ground. Everything else stays quiet. */
+:root {
+  --font: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
+  --serif: 'Newsreader Variable', 'Newsreader', Georgia, serif;
+  --sky: #000;
+  --ink-1: #e9e4da;
+  --ink-2: #b0aa9f;
+  --ink-3: #7a756d;
+  --line: rgba(233, 228, 218, 0.12);
+  --sun: #ffb547;
+  --earth: #4fa3ff;
+  --gap: clamp(16px, 4vw, 48px);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body.landing { margin: 0; background: var(--sky); color: var(--ink-1); font: 17px/1.55 var(--font); }
+h1, h2, h3, p, blockquote, figure, dl, dd { margin: 0; }
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--earth); outline-offset: 3px; }
+
+/* ---------- header ---------- */
+.top { position: fixed; z-index: 10; inset: 0 0 auto 0; display: flex; align-items: center; gap: 28px; padding: 14px var(--gap); background: linear-gradient(rgba(0, 0, 0, 0.75), transparent); }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 650; font-stretch: 125%; font-size: 15px; letter-spacing: 0.01em; text-decoration: none; }
+.mark { width: 24px; height: 24px; border-radius: 50%; background: radial-gradient(circle at 50% 125%, #2a2c2f 58%, transparent 59%), linear-gradient(var(--sky) 62%, var(--sun) 62% 68%, #2a2c2f 68%); box-shadow: 0 0 14px rgba(255, 181, 71, 0.35); }
+.top nav { display: flex; gap: 22px; margin-left: auto; font-size: 14px; color: var(--ink-2); }
+.top nav a { text-decoration: none; }
+.top nav a:hover { color: var(--ink-1); }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 18px; border-radius: 999px; border: 1px solid rgba(233, 228, 218, 0.25); background: rgba(233, 228, 218, 0.06); font-weight: 600; font-size: 14px; text-decoration: none; white-space: nowrap; transition: background-color 0.15s, border-color 0.15s; }
+.btn:hover { background: rgba(233, 228, 218, 0.12); border-color: rgba(233, 228, 218, 0.45); }
+.btn.primary { background: var(--sun); border-color: var(--sun); color: #1d1407; }
+.btn.primary:hover { background: #ffc46e; }
+.btn.big { padding: 13px 26px; font-size: 16px; }
+
+/* ---------- hero ---------- */
+.hero { position: relative; min-height: 100vh; min-height: 100svh; display: flex; align-items: flex-end; overflow: hidden; }
+.hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; }
+.hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0, 0, 0, 0.92) 8%, rgba(0, 0, 0, 0.35) 45%, transparent 70%); }
+.hero-copy { position: relative; z-index: 1; padding: 0 var(--gap) clamp(40px, 8vh, 96px); max-width: 1180px; }
+.context { font-size: 14px; color: var(--ink-2); margin-bottom: 14px; }
+.hero h1 { font: 400 clamp(64px, 11vw, 168px)/0.88 var(--serif); font-optical-sizing: auto; letter-spacing: -0.025em; text-shadow: 0 4px 40px rgba(0, 0, 0, 0.6); }
+.lead { max-width: 58ch; margin-top: 26px; font-size: clamp(17px, 1.5vw, 20px); color: var(--ink-1); }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+
+/* ---------- sections ---------- */
+.band { padding: clamp(72px, 12vh, 140px) 0 0; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 var(--gap); }
+h2 { font: 400 clamp(34px, 4.4vw, 60px)/1.04 var(--serif); letter-spacing: -0.015em; max-width: 20ch; text-wrap: balance; }
+h3 { font: 500 clamp(22px, 2vw, 28px)/1.15 var(--serif); }
+.section-lead { max-width: 62ch; margin-top: 18px; color: var(--ink-2); }
+
+/* two questions: colour = meaning, a thin rule in each colour */
+.two-q { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 56px; }
+.two-q h2 { grid-column: 1 / -1; margin-bottom: 8px; }
+.q { padding-top: 18px; border-top: 2px solid var(--line); }
+.q-sun { border-top-color: var(--sun); }
+.q-earth { border-top-color: var(--earth); }
+.q h3 { margin-bottom: 8px; }
+.q-sun h3 { color: var(--sun); }
+.q-earth h3 { color: var(--earth); }
+.q p { color: var(--ink-2); max-width: 46ch; }
+
+.fact { display: grid; grid-template-columns: 1.25fr 1fr; gap: 48px; align-items: center; margin-top: clamp(56px, 9vh, 100px); }
+.fact-img img { width: 100%; border-radius: 10px; border: 1px solid var(--line); }
+.fact-big { font: 400 clamp(44px, 5vw, 72px)/1 var(--serif); margin-bottom: 18px; }
+.fact-copy p:not(.fact-big) { color: var(--ink-2); max-width: 46ch; }
+.fact-copy p + p { margin-top: 14px; }
+
+.shot { width: 100%; margin-top: 36px; border-radius: 12px; border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 181, 71, 0.05); }
+
+/* features: alternating image and text, the seasons strip full width */
+.features { display: grid; gap: clamp(64px, 10vh, 112px); }
+.feat { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: center; }
+.feat img { width: 100%; border-radius: 10px; border: 1px solid var(--line); }
+.feat > div { max-width: 44ch; }
+.feat h3 { margin-bottom: 12px; }
+.feat p { color: var(--ink-2); }
+.feat:not(.flip) img { max-width: 420px; justify-self: end; }
+.feat.flip img { order: 2; max-width: 420px; }
+.feat.flip > div { order: 1; justify-self: end; }
+.feat.flip:last-child img { max-width: none; }
+.feat.wide { grid-template-columns: 1fr; gap: 24px; }
+.feat.wide img { max-width: none; justify-self: stretch; }
+
+/* data ledger */
+.data dl { margin-top: 36px; border-top: 1px solid var(--line); }
+.data dl div { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 24px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.data dt { font: 500 19px/1.3 var(--serif); }
+.data dd { color: var(--ink-2); max-width: 70ch; }
+.data b { color: var(--ink-1); }
+
+/* name */
+.name blockquote { margin-top: 28px; max-width: 30ch; font: 400 clamp(26px, 2.8vw, 38px)/1.25 var(--serif); color: var(--ink-1); padding-left: 22px; border-left: 2px solid var(--sun); }
+.name p { margin-top: 24px; max-width: 62ch; color: var(--ink-2); }
+
+.final { padding: clamp(96px, 16vh, 180px) var(--gap); text-align: center; display: grid; justify-items: center; gap: 30px; background: radial-gradient(ellipse 60% 50% at 50% 100%, rgba(255, 181, 71, 0.12), transparent 70%); }
+.final h2 { max-width: 18ch; }
+
+.foot { padding: 28px var(--gap) 40px; border-top: 1px solid var(--line); font-size: 14px; color: var(--ink-3); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+.foot b { color: var(--ink-2); font-weight: 600; }
+
+/* ---------- small screens ---------- */
+@media (max-width: 860px) {
+  .top nav { display: none; }
+  .top .btn { margin-left: auto; }
+  .two-q, .fact, .feat { grid-template-columns: 1fr; gap: 24px; }
+  .feat img, .feat.flip img, .feat:not(.flip) img { order: 0; max-width: none; justify-self: stretch; }
+  .feat.flip > div { order: 1; justify-self: start; }
+  .data dl div { grid-template-columns: 1fr; gap: 6px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+html.shot { scroll-behavior: auto; }
+html.shot .hero { min-height: 900px; }

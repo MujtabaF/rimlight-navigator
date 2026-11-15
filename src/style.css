@@ -49,7 +49,7 @@ h1, h2, h3, p { margin: 0; }
 
 /* ---------- top bar (no background: it sits on the sky) ---------- */
 .bar { position: absolute; z-index: 3; inset: 0 0 auto 0; height: var(--top); display: flex; align-items: center; justify-content: space-between; padding: 0 var(--gap); background: linear-gradient(rgba(0, 0, 0, 0.7), transparent); }
-.brand { display: flex; align-items: center; gap: 10px; }
+.brand { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
 .brand strong { font-size: 15px; font-weight: 650; font-stretch: 125%; letter-spacing: 0.01em; display: block; }
 .brand .sub { color: var(--ink-3); font-size: 12px; }
 .mark { width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(circle at 50% 125%, #2a2c2f 58%, transparent 59%), linear-gradient(var(--sky) 62%, var(--sun) 62% 68%, #2a2c2f 68%); box-shadow: 0 0 14px rgba(255, 181, 71, 0.35); }
@@ -258,6 +258,10 @@ kbd { display: inline-block; min-width: 1.6em; padding: 0 5px; font: 600 12px/1.
 .keys td { color: var(--ink-2); }
 .legend-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .legend-list .sw { margin: 0 4px 0 0; }
+
+/* ---------- clean render (?clean=1): only the Moon ---------- */
+body.clean .bar, body.clean #sites, body.clean #readout, body.clean #bottom, body.clean .site-title,
+body.clean .story, body.clean .hint, body.clean .scene-labels { display: none !important; }
 
 /* ---------- presenter focus mode (F): only the sky, the title and the dock ---------- */
 body.focus #sites, body.focus #readout { opacity: 0; pointer-events: none; }

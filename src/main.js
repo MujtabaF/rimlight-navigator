@@ -291,6 +291,13 @@ function togglePin() {
   renderDvd();
 }
 
+// ---------------- focus mode (F or the Hide panels button) ----------------
+function toggleFocus() {
+  const on = document.body.classList.toggle('focus');
+  $('#focus-btn').setAttribute('aria-pressed', on);
+  $('#focus-btn').textContent = on ? 'Show panels' : 'Hide panels';
+}
+
 // ---------------- explainers ----------------
 function openExplainer({ title, html }) {
   set('#explain-title', title);
@@ -395,6 +402,7 @@ function syncEye() {
 
 function wire() {
   $('#play').addEventListener('click', () => setPlaying(!app.playing));
+  $('#focus-btn').addEventListener('click', toggleFocus);
   $('#pin-btn').addEventListener('click', togglePin);
   $('#evm-btn').addEventListener('click', () => openExplainer(earthVsMoon(app.active, analysisFor(app.active))));
   $('#lib-btn').addEventListener('click', () => openExplainer(libration(app.active, analysisFor(app.active), app.date)));
@@ -449,7 +457,7 @@ function wire() {
   new ResizeObserver(([e]) => {
     const h = Math.ceil(e.borderBoxSize[0].blockSize);
     document.documentElement.style.setProperty('--dock-h', `${h}px`);
-    scene.setInsetBottom(matchMedia('(max-width: 900px)').matches ? 0 : h + 16);
+    scene.setInsetBottom(matchMedia('(max-width: 900px)').matches || document.body.classList.contains('clean') ? 0 : h + 16);
   }).observe($('#bottom'));
 
   window.addEventListener('keydown', (e) => {
@@ -462,7 +470,7 @@ function wire() {
     else if (e.key === 'PageDown' || (e.key === 'n' && story.active)) story.next();
     else if (e.key === 'PageUp' || (e.key === 'p' && story.active)) story.prev();
     else if (e.key === 'Escape' && story.active) story.stop();
-    else if (e.key === 'f') document.body.classList.toggle('focus');
+    else if (e.key === 'f') toggleFocus();
   });
 }
 
@@ -517,7 +525,10 @@ function groupBy(arr) { const m = new Map(); for (const s of arr) { if (!m.has(s
   if (Math.abs(lat) <= 90 && Math.abs(lon) <= 180) { const c = customSite(lat, lon); app.byId.set('custom', c); await setSite(c); }
   else await setSite(app.byId.get(q.get('site')) || app.byId.get('shackleton-ridge'));
   if (q.get('t')) setDate(new Date(q.get('t') + (q.get('t').endsWith('Z') ? '' : 'Z')));
-  if (q.get('eye') === '1') { scene.setEyeLevel(true, stateAt(app.active, app.active.horizon, app.date).sun.az); syncEye(); }
+  // ?eye=1 stands on the surface facing the Sun, or ?face=<azimuth> (e.g. towards Earth).
+  if (q.get('eye') === '1') { scene.setEyeLevel(true, q.get('face') ? +q.get('face') : stateAt(app.active, app.active.horizon, app.date).sun.az); syncEye(); }
+  // ?clean=1: just the Moon, no interface (for hero images and film captures).
+  if (q.get('clean') === '1') { document.body.classList.add('clean'); scene.setInsetBottom(0); scene.setDecor(false); }
   if (q.get('dock') === 'year') setDockView('year');
   if (q.get('pin')) { app.pinned = new Date(q.get('pin') + (q.get('pin').endsWith('Z') ? '' : 'Z')); $('#pin-btn').textContent = 'Unpin'; renderDvd(); }
   if (q.get('explain') === 'evm') $('#evm-btn').click(); // direct links for demos and videos

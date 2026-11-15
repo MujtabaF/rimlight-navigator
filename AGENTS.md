@@ -32,7 +32,7 @@ The deadline is about **Sun 2026-11-15, 15:30 local time** (the project started 
 ## Commands
 
 ```bash
-npm run dev                         # dev server
+npm run dev                         # dev server: / = landing page, /app.html = the navigator
 npm run build                       # production build -> dist/
 npm test                            # science checks (13 pass/fail) + build
 npm run validate                    # JPL Horizons comparison (exit 1 if > 0.1°)

@@ -17,7 +17,7 @@ PROFILE=$(mktemp -d)
 shot() { # name url-query
   "$CHROME" --headless=new --use-angle=swiftshader --enable-unsafe-swiftshader \
     --user-data-dir="$PROFILE" --window-size="${SIZE:-1600,900}" --virtual-time-budget=6000 \
-    --screenshot="$OUT/$1.png" "http://localhost:$PORT/$2" >/dev/null 2>&1
+    --screenshot="$OUT/$1.png" "http://localhost:$PORT/app.html$2" >/dev/null 2>&1
   echo "  $OUT/$1.png"
 }
 echo "Screenshots:"
