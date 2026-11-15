@@ -174,3 +174,10 @@ Any AI or human picking this up should read the **last entry** first.
 - Restored `src/core/terrain.js` (no map UI). New `scripts/build_terrain_grids.py` writes `public/data/terrain/` (240 m and 960 m Int16 grids, ~6 MB, lazy-loaded). `customSite()` is now async and computes the horizon and patch south of 82.8°S, falling back to a smooth horizon otherwise.
 - `tests/terrain.test.js`: 10 tests (projection round trip, landmarks, live vs 40 m skyline within 3 points at 4 sites, floor stays dark, patch). 160 tests total; src/core at 100% lines.
 - Example: 87.5°S 45°E is inside a crater 2.3 km deep, with no Sun and no Earth (a flat horizon would have said ~50% sunlit).
+
+## Session 16: Sun 2026-11-15 (pre-ship improvements), approved by owner and committed
+
+- Tour scene 9 "Rimlight found a better spot": Pick 1 on its best date (Sep 8, 2027) vs the ridge and Malapert. screenshots.sh covers 9 scenes.
+- DEMO_SCRIPT.md rewritten for the recorded format: a 30 s shot list with voice-over, a 3 min walkthrough, a direct-link table, the 9-scene list. PRESENTATION.md numbers and pitches updated.
+- Phone check (true 390 px frames, since desktop Chrome's minimum window width makes `--window-size=390` misleading): landing page OK. Navigator top bar wrapped and overflowed, so it's now a single swipeable row, `overflow-x: hidden`, and Hide panels is hidden on phones.
+- The owner chose Vercel for hosting.

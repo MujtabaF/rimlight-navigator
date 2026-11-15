@@ -22,7 +22,7 @@ shot() { # name url-query
 }
 echo "Screenshots:"
 shot 0-default ""
-for n in 1 2 3 4 5 6 7 8; do shot "tour-$n" "?tour=$n"; done
+for n in 1 2 3 4 5 6 7 8 9; do shot "tour-$n" "?tour=$n"; done
 shot help "?help=1"
 SIZE=1280,720 shot small-720p "?tour=8"
 rm -rf "$PROFILE"

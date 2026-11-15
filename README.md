@@ -20,7 +20,7 @@ Pick a spot on the Moon and a date. Rimlight Navigator shows where the Sun and E
 | **Power estimate** | Output from an upright Sun-tracking panel versus a flat deck panel. This shows why polar landers mount their panels vertically. |
 | **Mission metrics** | % of time sunlit, % with Earth in view, % with both, longest night, and longest comms blackout. |
 | **14 curated sites** | Artemis south-pole candidates, CLPS landers (IM-1, IM-2, Blue Ghost), Apollo 11/15/17, Chandrayaan-3, SLIM, Chang'e 4/6, plus any custom coordinates. |
-| **Guided tour** | An 8-scene story mode used as the live presentation (no slides). |
+| **Guided tour** | A 9-scene story mode that drives the demo videos. |
 
 ## Accuracy
 

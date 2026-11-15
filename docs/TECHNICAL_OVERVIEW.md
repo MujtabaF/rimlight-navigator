@@ -42,7 +42,7 @@ A static web app with two pages:
   - **Best days to land:** each day of the 30-day window rated, with the top three picked out.
   - **Side-by-side comparison** of up to 4 sites, **date vs date** (pin one landing date, compare another), and a **Year view** showing the seasons month by month.
   - **360° skyline strip** and a **30-day timeline** of Sun-up and Earth-up periods.
-  - **Guided tour** (8 scenes), **Moon vs Earth** and **libration** explainers.
+  - **Guided tour** (9 scenes, ending on a Rimlight pick), **Moon vs Earth** and **libration** explainers.
   - **Copy link** (the address bar always holds the exact view) and **Download CSV** (the 30-day numbers).
 
 ## 4. Tech stack and why

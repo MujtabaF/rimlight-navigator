@@ -27,26 +27,29 @@ Your personal cheat sheet for presenting. The scene-by-scene script is in `DEMO_
 
 > "Rimlight Navigator lets anyone pick a spot on the Moon and a date, and instantly see whether a lander there would have sunlight for power and a line of sight to Earth, using real NASA terrain."
 
-## The 30-second pitch (for hallways, judges walking by, the video)
+## The 30-second pitch (hallways, judges, the video)
 
-> "NASA is going back to the Moon's south pole, but there the Sun and Earth both sit right on the horizon. Move a few kilometres, or slip the launch a few days, and a site can go from great to impossible. The tools that work this out today are built for specialists. Rimlight Navigator puts it on one screen: real NASA laser-altimeter terrain, the true positions of the Sun and Earth checked against JPL to four thousandths of a degree, and countdowns to sunset and Earthset. You can compare sites side by side and see a slipped launch play out in seconds."
+> "NASA is going back to the Moon's south pole, but there the Sun and Earth both sit right on the horizon. Move a few kilometres, or slip the launch a few days, and a site can go from great to impossible. Rimlight Navigator puts the whole decision on one screen: real NASA laser-altimeter terrain, Sun and Earth positions checked against JPL to four thousandths of a degree, a verdict, the best days to land, and side-by-side comparison. It even found spots that beat NASA's own candidates."
 
 ---
 
 ## Numbers worth memorising
+*(`TECHNICAL_OVERVIEW.md` section 10 explains each one in depth.)*
 
 | Number | What it means |
 |---|---|
 | **0.004°** | Our worst disagreement with NASA JPL Horizons, the official ephemeris |
-| **89%** | Share of 2027 the Shackleton ridge is sunlit (published studies: ~86–89%) |
-| **0%** | Sunlight on the Shackleton crater floor: permanent shadow, which is where ice survives |
-| **~20 km** | Distance between those two places |
-| **~1.5°** | The highest the Sun gets above the horizon at the pole |
-| **20°** | How high the Shackleton crater wall rises when you stand on the floor |
-| **80% vs 51%** | Earth visibility at Malapert Massif versus the ridge: the power-vs-comms trade-off |
-| **~14 days** | Length of a lunar day, and of a lunar night |
-| **14 sites** | Apollo, commercial (CLPS), India, Japan, China, Russia, and Artemis candidates |
-| **NASA LOLA** | The laser altimeter on the Lunar Reconnaissance Orbiter, the source of our terrain data |
+| **89% vs 0%** | Ridge sunlight vs the Shackleton crater floor, **about 20 km** apart |
+| **About 2°** | The highest the Sun gets at the pole |
+| **20°** | The Shackleton crater wall, seen from the floor |
+| **80% vs 51%** | Earth contact at Malapert vs the ridge (but the ridge has more Sun): power or comms |
+| **60% vs 49%** | Power and Earth **at the same time**: our Pick 1 vs the best official candidate |
+| **47 days** | Unbroken sunlight at our Pole Ridge pick if you land on Oct 9, 2027 |
+| **29.5 days** | One lunar day; at most sites you get one landing window a month |
+| **9 vs 15 days** | Longest night on the ridge vs at the equator |
+| **20 sites** | Apollo, CLPS, five countries, Artemis III candidates, Chang'e-7, plus 3 Rimlight picks |
+| **160 tests** | Automated tests, 100% coverage of the physics, checked against 66 NASA JPL answers |
+| **NASA LOLA** | The Lunar Reconnaissance Orbiter's laser altimeter, the source of our terrain |
 
 ---
 
@@ -56,9 +59,9 @@ Your personal cheat sheet for presenting. The scene-by-scene script is in `DEMO_
 2. **It's real.** It uses NASA terrain data and is validated against JPL Horizons, not a toy.
 3. **It's for everyone.** Planners get the numbers, students get the story, and both get it in seconds.
 
-## Presenting tips
+## Recording tips
 
-* Talk to people, not to the screen. The tour sets every scene for you, so you just press `N`.
+* Record the picture first, then the voice-over. The tour sets every scene for you, so you just press `N`.
 * Let the visuals breathe: pause for a second when a sunset happens in the 3D view.
-* If something glitches, say "let me jump ahead", then use `?tour=N` or press `N`. Don't debug live.
-* End on the comparison scene, with the four sites side by side. It's the most "tool-like" image to leave judges with.
+* If a take glitches, jump straight to the scene with `?tour=N` and re-record just that bit.
+* End on scene 9 (your pick beating the official candidates). It's your strongest original result.

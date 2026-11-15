@@ -340,3 +340,15 @@ body.load-failed .loader p { color: var(--poor); max-width: 46ch; text-align: ce
 
 /* Rimlight picks: the owner's ideal spots get a small gold star in the site list */
 .site-btn[data-id^="pick-"] .nm::after { content: ' ★'; color: var(--sun); font-size: 12px; }
+
+/* ---------- phones: one scrollable row of buttons, no sideways page scroll ---------- */
+@media (max-width: 900px) {
+  html, body { overflow-x: hidden; }
+  .bar-actions { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; padding-bottom: 2px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .bar-actions::-webkit-scrollbar { display: none; }
+  .bar-actions .btn { flex: none; white-space: nowrap; padding: 5px 12px; font-size: 13px; }
+  #focus-btn { display: none; } /* the side panels already stack below on phones */
+  .transport { row-gap: 8px; }
+  .transport select { max-width: 100%; }
+  #viewport { height: 52vh; }
+}

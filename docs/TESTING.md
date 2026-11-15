@@ -21,7 +21,7 @@ Each feature goes through the same loop. Nothing moves forward until the owner a
 
 ## Standard manual checklist (do this every review, about 3 minutes)
 - [ ] The page loads with no blank areas, and the 3D terrain appears.
-- [ ] Click **Guided tour** and press `N` through all 8 scenes. Each one shows the right site and reads correctly.
+- [ ] Click **Guided tour** and press `N` through all 9 scenes. Each one shows the right site and reads correctly.
 - [ ] **Play** works and the Sun moves smoothly. `Space` pauses it.
 - [ ] Click a few sites in the left list; the 3D view, numbers and timeline all change.
 - [ ] Click the timeline; time jumps there.

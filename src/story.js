@@ -43,6 +43,11 @@ export const chapters = [
     text: 'Four candidates, one month, side by side: gold is power, blue is contact with Earth. Change the date and it all recalculates.',
     site: 'shackleton-ridge', compare: ['malapert', 'im2', 'im1'], at: (app) => app.windowStart(), eye: false, speed: 24, play: false,
   },
+  {
+    title: 'Rimlight found a better spot',
+    text: 'We searched the whole pole with NASA maps. Pick 1 has power and Earth at once 60% of the year, more than any official candidate. Best landing: Sep 8, 2027.',
+    site: 'pick-earthrise', compare: ['shackleton-ridge', 'malapert'], at: () => new Date('2027-09-08T13:00:00Z'), eye: false, speed: 12, play: true,
+  },
 ];
 
 export function createStory(app, el) {
