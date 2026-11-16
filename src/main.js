@@ -333,21 +333,27 @@ async function runFilm() {
   await wait(FILM_FINALE);
 }
 
-// The scripted "try it yourself" part: a pointer moves, clicks and types, with captions.
-async function filmDemo() {
-  const t0 = performance.now(), at = (s) => wait(Math.max(0, s - (performance.now() - t0) / 1000));
-  story.stop();
-  app.compare = []; syncCompareButtons(); // start the hands-on part with a clean slate
+// A visible pointer that moves, clicks and types like a person, plus a caption box (film modes).
+function makePointer(label) {
   const cursor = Object.assign(document.createElement('div'), { id: 'film-cursor' });
   const cap = Object.assign(document.createElement('div'), { id: 'film-caption', className: 'story' });
-  cap.innerHTML = '<p class="story-count">Try it yourself</p><h2 class="story-title"></h2>';
+  cap.innerHTML = `${label ? `<p class="story-count">${label}</p>` : ''}<h2 class="story-title"></h2>`;
   document.body.append(cursor, cap);
-  const say = (t) => { cap.querySelector('.story-title').textContent = t; };
+  const say = (t) => { // crossfade between lines
+    const h = cap.querySelector('.story-title');
+    if (!h.textContent) { h.textContent = t; return; }
+    h.classList.add('swap');
+    setTimeout(() => { h.textContent = t; h.classList.remove('swap'); }, 350);
+  };
   const moveTo = async (el) => {
     el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     await wait(0.4);
     const r = el.getBoundingClientRect();
+    const first = cursor.style.opacity !== '1'; // hidden until its first move, so it never idles mid-screen
+    if (first) cursor.style.transition = 'opacity 0.3s ease'; // appear in place, don't glide in from the centre
     cursor.style.transform = `translate(${r.left + r.width / 2}px, ${r.top + r.height / 2}px)`;
+    if (first) { void cursor.offsetWidth; cursor.style.transition = ''; }
+    cursor.style.opacity = '1';
     await wait(0.8);
   };
   const click = async (el) => { await moveTo(el); cursor.classList.remove('tap'); void cursor.offsetWidth; cursor.classList.add('tap'); el.click(); await wait(0.4); };
@@ -356,6 +362,15 @@ async function filmDemo() {
     for (const ch of text) { el.value += ch; await wait(0.09); }
     el.type = 'number'; el.value = text;
   };
+  return { cursor, cap, say, moveTo, click, type, remove: () => { cursor.remove(); cap.remove(); } };
+}
+
+// The scripted "try it yourself" part: a pointer moves, clicks and types, with captions.
+async function filmDemo() {
+  const t0 = performance.now(), at = (s) => wait(Math.max(0, s - (performance.now() - t0) / 1000));
+  story.stop();
+  app.compare = []; syncCompareButtons(); // start the hands-on part with a clean slate
+  const { say, click, type, remove } = makePointer('Try it yourself');
 
   // 1. any coordinates -> real terrain computed live
   say('Type any coordinates near the pole');
@@ -383,7 +398,47 @@ async function filmDemo() {
   say('See every season at a glance');
   await click($('.dock-tab[data-dock="year"]'));
   await at(FILM_DEMO);
-  cursor.remove(); cap.remove();
+  remove();
+}
+
+// ---------------- film mode, 30-second cut (?film=30): the official Space Apps demo video ----------------
+// Seven captions on fixed beats (docs/DEMO_SCRIPT.md). The captions are the subtitles, and the
+// voice-over reads the same lines. Beats are measured from the first frame, so slow terrain
+// loads never push the end past 30 s.
+const FILM30 = [
+  [0, 'The Moon’s south pole: where NASA lands next'],
+  [4, 'This crater floor: 0% sunlight'],
+  [8, '20 km away, the ridge: 89%'],
+  [12, 'Pick a site. It finds the best day to land.'],
+  [17, 'Compare sites side by side, in seconds.'],
+  [22, 'Our pick: power and Earth contact 60% of the year'],
+  [27, 'Rimlight Navigator. Find the light.'],
+];
+async function runFilm30() {
+  document.body.classList.add('film', 'film30');
+  await story.goTo(3); // ridge at eye level, the Sun skimming the skyline
+  const t0 = performance.now(), at = (s) => wait(Math.max(0, s - (performance.now() - t0) / 1000));
+  const p = makePointer(), line = (k) => p.say(FILM30[k][1]);
+  line(0);
+  await at(FILM30[1][0]); line(1); await story.goTo(2); // crater floor, looking at the wall
+  await at(FILM30[2][0]); line(2); await story.goTo(3); // back on the ridge
+  await at(FILM30[3][0]); line(3);
+  await app.applyChapter({ site: 'malapert', compare: [], at: () => app.windowStart, eye: false, speed: 24, play: false });
+  await p.moveTo($('#verdict')); // "Poor time to land" right now…
+  const chip = $('#dates-best .day-chip');
+  if (chip) await p.click(chip); // …click the best day and it turns green
+  setPlaying(true);
+  await at(FILM30[4][0]); line(4);
+  await story.goTo(7); // four candidates side by side, on the day that suits all four best
+  const all = [app.active, ...app.compare].map(datesFor), rank = { poor: 0, ok: 1, good: 2 };
+  const k = all[0].reduce((b, _, i) => (all.reduce((n, d) => n + rank[d[i].level], 0) > all.reduce((n, d) => n + rank[d[b].level], 0) ? i : b), 0);
+  await p.moveTo($('#compare'));
+  setDate(all[0][k].date);
+  setPlaying(true);
+  await at(FILM30[5][0]); line(5); p.cursor.style.opacity = '0';
+  await story.goTo(8); // Rimlight pick on its best date
+  await at(FILM30[6][0]); line(6);
+  await at(30);
 }
 
 // ---------------- focus mode (F or the Hide panels button) ----------------
@@ -657,6 +712,7 @@ async function start() {
   if (q.get('explain') === 'lib') $('#lib-btn').click();
   if (q.get('tour')) await story.goTo(+q.get('tour') - 1);
   if (q.get('film') === '1') runFilm();
+  else if (q.get('film') === '30') runFilm30();
   else if (!q.toString()) showHintOnce();
   if (q.get('help') === '1') $('#help-btn').click(); // deep link straight to the help panel
   document.body.classList.add('ready');

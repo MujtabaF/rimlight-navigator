@@ -11,6 +11,7 @@ The presentation is **recorded**, not live. There are two videos:
 
 | Shot | Link |
 |---|---|
+| 30-second demo, self-playing | `/app.html?film=30` |
 | Landing page hero (live Sun on the ridge) | `/` |
 | Clean Moon, no interface | `/app.html?clean=1&site=shackleton-ridge&t=2027-01-11T15:00&eye=1&play=1&speed=1.5&follow=1` |
 | Tour scene N (1–9) | `/app.html?tour=N` |
@@ -24,12 +25,23 @@ The presentation is **recorded**, not live. There are two videos:
 
 ---
 
-## Video 1: 30 seconds (your voice-over)
+## Video 1: 30 seconds (self-playing, captioned)
 
-This follows the official Space Apps structure (name, challenge, title, how it works, future). It's about 75 words, a comfortable pace for 30 seconds.
+Open **`/app.html?film=30`** (or `/?film=30`), full screen, and record the screen. It plays by itself for 30 seconds: a pointer clicks through the app and large captions tell the story, so the video works with the sound off. The captions are also the voice-over script and the subtitles.
 
-| Time | On screen | Voice-over |
+| Time | On screen | Caption = voice-over |
 |---|---|---|
+| 0:00–0:04 | Ridge at eye level, the Sun skimming the skyline | "The Moon's south pole: where NASA lands next." |
+| 0:04–0:08 | Shackleton crater floor, the wall towering above | "This crater floor: 0% sunlight." |
+| 0:08–0:12 | Back on the ridge | "20 km away, the ridge: 89%." |
+| 0:12–0:17 | Malapert: "Poor time to land", then the pointer clicks the best day | "Pick a site. It finds the best day to land." |
+| 0:17–0:22 | Four candidates side by side, all good on the best shared day | "Compare sites side by side, in seconds." |
+| 0:22–0:27 | Rimlight pick 1 on its best date | "Our pick: power and Earth contact 60% of the year." |
+| 0:27–0:30 | Same view | "Rimlight Navigator. Find the light." |
+
+**Voice-over:** your own voice, recorded over the finished video (QuickTime: File → New Audio Recording while the video plays, then combine in iMovie). Read one line per caption, about 60 words in total.
+
+---|---|---|
 | 0:00–0:03 | Landing page hero, the Sun skimming the horizon | "I'm [your name], Team Rimlight." |
 | 0:03–0:07 | Tour scene 3 (crater floor), then scene 4 (ridge) | "NASA's next landers go to the Moon's south pole, where sunlight and contact with Earth are rare." |
 | 0:07–0:11 | The name on the landing page, then the navigator | "Rimlight Navigator shows where and when a lander gets both." |

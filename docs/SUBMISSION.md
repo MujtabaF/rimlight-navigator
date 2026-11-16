@@ -11,7 +11,7 @@ It turns that into decisions a planner, teacher or student can read in seconds: 
 Searching the whole south pole with NASA's own maps, it also found landing spots with power and Earth contact at the same time 60% of the year, more than any official candidate in the app.
 
 ## Project Demonstration
-(the 7-slide deck or 30-second video link, see the plan below)
+The 30-second video (recorded from `app.html?film=30`), uploaded to YouTube as Unlisted or to Google Drive with "anyone with the link", and the link pasted here.
 
 ## Project
 https://rimlight-navigator.vercel.app
@@ -57,7 +57,7 @@ Real topography at the pole, partial Sun discs at grazing angles, lunar curvatur
 - Technical write-up: https://github.com/MujtabaF/rimlight-navigator/blob/main/docs/TECHNICAL_OVERVIEW.md
 
 **Use of AI**
-The app's code and documentation were written with the help of an AI coding assistant (Anthropic's Claude), under the team's direction and review. This is disclosed in the README and in every commit message ("Helped by Claude"). All data comes from NASA, and all results are computed by the app and verified with automated tests against NASA JPL Horizons and published studies. No AI-generated images, video or audio are used: every image is rendered by the app itself from NASA data.
+The app's code and documentation were written with the help of an AI coding assistant (Anthropic's Claude), under the team's direction and review. This is disclosed in the README and in every commit message ("Helped by Claude"). All data comes from NASA, and all results are computed by the app and verified with automated tests against NASA JPL Horizons and published studies. No AI-generated images, video or audio are used: every frame is the app itself, rendered from NASA data, and the narration is the team member's own voice.
 
 ## Use of Super Intelligence (SI)
 Select the options for **code** and for **text/documentation** (whatever the form calls them). Don't select images, video or audio.
