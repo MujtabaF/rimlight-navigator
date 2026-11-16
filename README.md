@@ -35,13 +35,13 @@ Answering "will my lander have power and contact here, on this date?" usually me
 | **Share** | The address bar always holds the exact view (Copy link), plus a CSV export of the numbers. |
 | **Film modes** | The app can present itself: `?film=30` plays a captioned 30-second demo, `?film=1` a 3-minute walkthrough with a pointer that uses the app like a person would. |
 
-## Rimlight picks: we found better landing spots
+## Rimlight picks: I found better landing spots
 
-We searched the whole south pole for places that get **both** power and Earth contact.
+I searched the whole south pole for places that get **both** power and Earth contact.
 
 1. **Score every 120 m cell from 85°S to the pole** (`scripts/find_picks.py`) with NASA's LOLA team maps: average sunlight × (0.4 + 0.6 × Earth visibility) × safe slope (8° or less) × ice nearby (permanent shadow within 1–5 km).
 2. **Keep the best spots** at least 12 km apart and away from existing sites.
-3. **Re-check every candidate with our own engine** (our skyline, our ephemeris, a full year) and find its best landing dates.
+3. **Re-check every candidate with my own engine** (my skyline, my ephemeris, a full year) and find its best landing dates.
 
 | Pick | Sunlight | Earth in view | Power and Earth at once | Best 2027 landing |
 |---|---|---|---|---|
@@ -58,12 +58,12 @@ Three models, each tested on its own.
 
 ### 1. Where are the Sun and Earth? (`src/core/ephemeris.js`)
 - [Astronomy Engine](https://github.com/cosinekitty/astronomy) gives the Sun's and Moon's positions at any moment.
-- We rotate them into the **Moon's own body-fixed frame** with the IAU rotation model, which builds in **libration**, the Moon's monthly wobble.
-- Then we convert them to compass direction and height above the horizon **as seen from the exact landing point**, including the site's elevation and **topocentric parallax** (standing on the surface instead of at the Moon's centre shifts Earth by up to about 1°).
+- I rotate them into the **Moon's own body-fixed frame** with the IAU rotation model, which builds in **libration**, the Moon's monthly wobble.
+- Then I convert them to compass direction and height above the horizon **as seen from the exact landing point**, including the site's elevation and **topocentric parallax** (standing on the surface instead of at the Moon's centre shifts Earth by up to about 1°).
 - **Checked against NASA JPL Horizons: worst error 0.004°**, under 1% of the Sun's width.
 
 ### 2. What blocks them? The terrain skyline (`scripts/build_horizons.py`, `src/core/horizon.js`)
-- For each site we cast **720 rays**, one every half degree, each **300 km** long through NASA LOLA elevation maps, following great circles.
+- For each site I cast **720 rays**, one every half degree, each **300 km** long through NASA LOLA elevation maps, following great circles.
 - **Lunar curvature** is included: the Moon is small, so distant terrain drops about 26 km over 300 km.
 - The highest angle along each ray becomes the skyline in that direction.
 - The Sun or Earth counts as **visible** when more than half its disc clears the skyline. **Power** uses the exact visible fraction of the Sun's disc, because at the pole the Sun often grazes the ridge line.
@@ -100,7 +100,7 @@ Type any point south of about 83°S, and the browser computes its skyline the sa
 
 NASA Moon Trek and ASU LROC QuickMap were used for reference. The raw NASA files (about 270 MB) are processed once, offline; the browser loads about 16 MB of compact skylines, terrain patches and grids from `public/data/`.
 
-## How we know it's right
+## How I know it's right
 
 `npm test` runs three layers, and **GitHub Actions** runs them on every push:
 
@@ -121,7 +121,7 @@ NASA Moon Trek and ASU LROC QuickMap were used for reference. The raw NASA files
 
 3. **A production build**, plus headless-Chrome screenshots of every tour scene (`npm run screenshots`).
 
-## How we built it
+## How I built it
 
 | Layer | Choice | Why |
 |---|---|---|
@@ -137,13 +137,13 @@ NASA Moon Trek and ASU LROC QuickMap were used for reference. The raw NASA files
 
 **Process:** one feature at a time. Each feature went through automated checks, then a review in the browser, then a commit. Design and science decisions are recorded in [docs/DECISIONS.md](docs/DECISIONS.md), and the session-by-session history is in [docs/PROGRESS_LOG.md](docs/PROGRESS_LOG.md).
 
-### Challenges we solved
-- **NASA's map orientation.** The textbook pixel formula put features in the wrong place because one axis is flipped. We proved the correct orientation with known landmarks: Shackleton's bowl and Malapert's peak.
+### Challenges I solved
+- **NASA's map orientation.** The textbook pixel formula put features in the wrong place because one axis is flipped. I proved the correct orientation with known landmarks: Shackleton's bowl and Malapert's peak.
 - **Tiny angles matter.** With the Sun at 2°, lunar curvature, site height, the partial Sun disc and the lander's own height all change the answer, so all of them are modelled.
-- **Realism with a moving Sun.** NASA's photo maps have shadows baked in from when they were taken, which would clash with our moving Sun. We built realism that stays correct instead: finer terrain, a procedural surface and physically motivated lighting.
+- **Realism with a moving Sun.** NASA's photo maps have shadows baked in from when they were taken, which would clash with the moving Sun. I built realism that stays correct instead: finer terrain, a procedural surface and physically motivated lighting.
 - **Pitch-black shadow scenes.** Physically true, but useless on screen. Camera-style auto-exposure and a soft bounce light (sunlight reflected off crater walls) make them readable without changing any number.
-- **Placing future targets.** NASA describes Artemis III candidates as regions. We place each at the highest point on its crater rim, found from the terrain data.
-- **One rule everywhere.** The verdict, best-days chart and comparison cards started with slightly different definitions. We unified them, so a green day always means a green verdict.
+- **Placing future targets.** NASA describes Artemis III candidates as regions. I place each at the highest point on its crater rim, found from the terrain data.
+- **One rule everywhere.** The verdict, best-days chart and comparison cards started with slightly different definitions. I unified them, so a green day always means a green verdict.
 
 ### Honest limitations
 - Terrain is 40 m and 240 m at the pole but 1.9 km elsewhere, so non-polar skylines are smooth up close.
@@ -196,6 +196,6 @@ docs/           technical overview, science, decisions, testing, demo scripts
 
 **Rimlight** is a solo team. At the lunar south pole almost everything sits in shadow; only the raised crater rims catch the light. Finding that rim light is what this tool does.
 
-**AI disclosure:** development was assisted by an AI coding assistant (Claude), under the team's direction and review, and every commit says so. All data comes from NASA, and all results are computed by the app and tested as described above. No AI-generated images, video or audio are used. Not an official NASA product.
+**AI disclosure:** development was assisted by an AI coding assistant (Claude), under my direction and review, and every commit says so. All data comes from NASA, and all results are computed by the app and tested as described above. No AI-generated images, video or audio are used. Not an official NASA product.
 
 License: MIT

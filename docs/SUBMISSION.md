@@ -31,7 +31,7 @@ Rimlight Navigator lets mission planners, educators and the public compare lunar
 
 **How it works**
 1. Ephemeris: Sun and Earth positions come from Astronomy Engine, rotated into the Moon's body-fixed frame (IAU model, including libration and topocentric parallax). They agree with NASA JPL Horizons to within 0.004°.
-2. Terrain horizon: for each site we cast 720 rays out to 300 km through NASA LOLA elevation maps (40 m and 240 m at the pole, 1.9 km globally), including lunar curvature. There's no atmosphere, so no refraction. The Sun or Earth is visible when more than half its disc clears the skyline; power uses the exact visible fraction.
+2. Terrain horizon: for each site I cast 720 rays out to 300 km through NASA LOLA elevation maps (40 m and 240 m at the pole, 1.9 km globally), including lunar curvature. There's no atmosphere, so no refraction. The Sun or Earth is visible when more than half its disc clears the skyline; power uses the exact visible fraction.
 3. Mission metrics: sampled every 30–60 minutes over 30 days or a year: sunlit %, Earth-visible %, both at once, longest night, countdowns refined to the minute.
 
 **Validation**
@@ -40,7 +40,7 @@ Rimlight Navigator lets mission planners, educators and the public compare lunar
 - GitHub Actions runs all tests on every change.
 
 **Creativity: Rimlight picks**
-We searched every 120 m cell from 85°S to the pole using NASA's LOLA sunlight, Earth-visibility, permanent-shadow and slope maps, then re-checked the best candidates with our own engine. Two picks have power and direct Earth contact at the same time about 60% of the year, versus 49% for the best official candidate in the app, with possible ice (permanent shadow) within 1–5 km. Clicking a pick jumps to its best 2027 landing date.
+I searched every 120 m cell from 85°S to the pole using NASA's LOLA sunlight, Earth-visibility, permanent-shadow and slope maps, then re-checked the best candidates with my own engine. Two picks have power and direct Earth contact at the same time about 60% of the year, versus 49% for the best official candidate in the app, with possible ice (permanent shadow) within 1–5 km. Clicking a pick jumps to its best 2027 landing date.
 
 **Benefits and impact**
 When hardware or launch schedules slip, planners can evaluate alternative dates and nearby sites in seconds instead of navigating several expert tools. Educators and the public get an intuitive way to see why the south pole is so hard, and why past missions like Chandrayaan-3 never woke up after the lunar night.
@@ -48,7 +48,7 @@ When hardware or launch schedules slip, planners can evaluate alternative dates 
 **Tools and technologies**
 JavaScript, Three.js (WebGL 3D), Astronomy Engine, Vite, Vitest; Python (NumPy, SciPy, Pillow) for processing NASA data; GitHub Actions for testing; Vercel for hosting. It's a static site with no backend, so it also works offline.
 
-**Factors we considered**
+**Factors I considered**
 Real topography at the pole, partial Sun discs at grazing angles, lunar curvature, libration, the lack of atmosphere, polar seasons, accessibility for non-specialists (a plain-English verdict, a guided tour, explainers), and honest labelling of limitations (approximate future targets, coarser terrain away from the pole).
 
 **Links**
@@ -57,7 +57,7 @@ Real topography at the pole, partial Sun discs at grazing angles, lunar curvatur
 - Technical write-up: https://github.com/MujtabaF/rimlight-navigator/blob/main/docs/TECHNICAL_OVERVIEW.md
 
 **Use of AI**
-The app's code and documentation were written with the help of an AI coding assistant (Anthropic's Claude), under the team's direction and review. This is disclosed in the README and in every commit message ("Helped by Claude"). All data comes from NASA, and all results are computed by the app and verified with automated tests against NASA JPL Horizons and published studies. No AI-generated images, video or audio are used: every frame is the app itself, rendered from NASA data, and the narration is the team member's own voice.
+The app's code and documentation were written with the help of an AI coding assistant (Anthropic's Claude), under my direction and review. This is disclosed in the README and in every commit message ("Helped by Claude"). All data comes from NASA, and all results are computed by the app and verified with automated tests against NASA JPL Horizons and published studies. No AI-generated images, video or audio are used: every frame is the app itself, rendered from NASA data, and the narration is my own voice.
 
 ## Use of Super Intelligence (SI)
 Select the options for **code** and for **text/documentation** (whatever the form calls them). Don't select images, video or audio.
