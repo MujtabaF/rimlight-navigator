@@ -1,6 +1,6 @@
 # Rimlight Navigator
 
-**Live: https://rimlight-navigator.vercel.app** · [Open the navigator](https://rimlight-navigator.vercel.app/app.html) · [Take the guided tour](https://rimlight-navigator.vercel.app/app.html?tour=1) · [Watch the 30-second demo](https://rimlight-navigator.vercel.app/app.html?film=30)
+**Live: https://rimlight-navigator.vercel.app** · [Open the navigator](https://rimlight-navigator.vercel.app/app.html) · [Take the guided tour](https://rimlight-navigator.vercel.app/app.html?tour=1) · [Watch the 30-second demo video](https://youtu.be/YkNO_n1ZwcA)
 
 **Team Rimlight**, NASA Space Apps Challenge 2026, challenge [*Lunar Landing Site Navigator*](https://www.spaceappschallenge.org/2026/challenges/lunar-landing-site-navigator/)
 
@@ -9,6 +9,8 @@
 Pick a spot on the Moon and a date. Rimlight Navigator shows whether a lander there would have **sunlight for power** and **a clear line to Earth**, computed against the **real terrain skyline** from NASA laser-altimeter data.
 
 ![Rimlight Navigator](docs/img/screenshot.png)
+
+**Demo video (30 s):** https://youtu.be/YkNO_n1ZwcA
 
 ## The problem
 

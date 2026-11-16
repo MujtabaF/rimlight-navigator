@@ -11,7 +11,7 @@ It turns that into decisions a planner, teacher or student can read in seconds: 
 Searching the whole south pole with NASA's own maps, it also found landing spots with power and Earth contact at the same time 60% of the year, more than any official candidate in the app.
 
 ## Project Demonstration
-The 30-second video (recorded from `app.html?film=30`), uploaded to YouTube as Unlisted or to Google Drive with "anyone with the link", and the link pasted here.
+https://youtu.be/YkNO_n1ZwcA (30-second video, recorded from the live app with `app.html?film=30`)
 
 ## Project
 https://rimlight-navigator.vercel.app
@@ -53,6 +53,7 @@ Real topography at the pole, partial Sun discs at grazing angles, lunar curvatur
 
 **Links**
 - Live app: https://rimlight-navigator.vercel.app
+- Demo video: https://youtu.be/YkNO_n1ZwcA
 - Source code: https://github.com/MujtabaF/rimlight-navigator
 - Technical write-up: https://github.com/MujtabaF/rimlight-navigator/blob/main/docs/TECHNICAL_OVERVIEW.md
 
